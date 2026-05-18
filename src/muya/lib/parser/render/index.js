@@ -103,9 +103,11 @@ class StateRender {
   async renderMermaid() {
     if (this.mermaidCache.size) {
       const mermaid = await loadRenderer('mermaid')
+      // Mermaid v11 初始化配置
       mermaid.initialize({
-        securityLevel: 'strict',
-        theme: this.muya.options.mermaidTheme
+        securityLevel: 'loose',
+        theme: this.muya.options.mermaidTheme,
+        startOnLoad: false
       })
       for (const [key, value] of this.mermaidCache.entries()) {
         const { code } = value
@@ -114,10 +116,15 @@ class StateRender {
           continue
         }
         try {
-          mermaid.parse(code)
+          // Mermaid v11 使用异步 parse
+          await mermaid.parse(code)
           target.innerHTML = sanitize(code, PREVIEW_DOMPURIFY_CONFIG, true)
-          mermaid.init(undefined, target)
+          // Mermaid v11 使用 run() 替代 init()
+          await mermaid.run({
+            nodes: [target]
+          })
         } catch (err) {
+          console.error('Mermaid rendering error:', err)
           target.innerHTML = '< Invalid Mermaid Codes >'
           target.classList.add(CLASS_OR_ID.AG_MATH_ERROR)
         }

@@ -122,6 +122,7 @@ class EditorWindow extends BaseWindow {
 
     let win: BrowserWindow | null = (this.browserWindow = new BrowserWindow(winOptions))
 
+    remoteEnable(win.webContents)
     // Give every editor window a stable id for session buffer persistence.
     // We cant use win.id as it might collide with same IDs from closed windows
     this.bufferStoreInfo = {

@@ -42,15 +42,21 @@ class ExportHtml {
     }
     const mermaid = await loadRenderer('mermaid')
     // We only export light theme, so set mermaid theme to `default`, in the future, we can choose whick theme to export.
+    // Mermaid v11 初始化配置
     mermaid.initialize({
-      securityLevel: 'strict',
-      theme: 'default'
+      securityLevel: 'loose',
+      theme: 'default',
+      startOnLoad: false
     })
-    mermaid.init(undefined, this.exportContainer.querySelectorAll('div.mermaid'))
+    // Mermaid v11 使用 run() 替代 init()
+    await mermaid.run({
+      nodes: this.exportContainer.querySelectorAll('div.mermaid')
+    })
     if (this.muya) {
       mermaid.initialize({
-        securityLevel: 'strict',
-        theme: this.muya.options.mermaidTheme
+        securityLevel: 'loose',
+        theme: this.muya.options.mermaidTheme,
+        startOnLoad: false
       })
     }
   }
