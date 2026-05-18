@@ -55,8 +55,9 @@ export const useLayoutStore = defineStore('layout', {
       this.SET_SIDE_BAR_WIDTH(layout.sideBarWidth, { scheduleBufferUpdate: false })
       this.SET_LAYOUT(
         {
-          rightColumn: layout.rightColumn,
-          showSideBar: layout.showSideBar,
+          // 如果没有保存的状态,使用默认值 toc
+          rightColumn: layout.rightColumn || 'toc',
+          showSideBar: layout.showSideBar !== undefined ? layout.showSideBar : true,
           showTabBar: layout.showTabBar
         },
         { scheduleBufferUpdate: false }

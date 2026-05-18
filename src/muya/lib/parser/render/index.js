@@ -119,6 +119,10 @@ class StateRender {
           // Mermaid v11 使用异步 parse
           await mermaid.parse(code)
           target.innerHTML = sanitize(code, PREVIEW_DOMPURIFY_CONFIG, true)
+
+          // 等待 DOM 更新完成后再渲染 Mermaid
+          await new Promise((resolve) => window.requestAnimationFrame(resolve))
+
           // Mermaid v11 使用 run() 替代 init()
           await mermaid.run({
             nodes: [target]
