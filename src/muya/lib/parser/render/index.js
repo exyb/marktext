@@ -154,20 +154,42 @@ class StateRender {
     const svg = container.querySelector('svg')
     if (!svg) return
 
+    // 设置容器为可调整大小
+    container.style.cssText = `
+      position: relative;
+      resize: both;
+      overflow: hidden;
+      min-width: 200px;
+      min-height: 150px;
+      max-width: 100%;
+    `
+
     const wrapper = document.createElement('div')
     wrapper.className = 'mermaid-wrapper'
     wrapper.style.cssText = `
-      overflow: auto;
       position: relative;
       width: 100%;
       height: 100%;
       cursor: grab;
+      overflow: visible;
     `
 
     // 包裹 SVG
+    svg.style.position = 'relative'
+    svg.style.zIndex = '1'
     container.insertBefore(wrapper, container.firstChild)
     wrapper.appendChild(svg)
+
+    // 确保控制按钮在最上层
+    controls.style.zIndex = '100'
     container.appendChild(controls)
+
+    // 添加resize手柄指示器
+    const resizeHandle = document.createElement('div')
+    resizeHandle.className = 'mermaid-resize-handle'
+    resizeHandle.innerHTML = '⋮'
+    resizeHandle.style.zIndex = '100'
+    container.appendChild(resizeHandle)
 
     // 缩放状态
     let scale = 1
@@ -206,6 +228,9 @@ class StateRender {
     // 鼠标拖拽
     wrapper.addEventListener('mousedown', (e) => {
       if (e.button !== 0) return // 只响应左键
+      // 如果点击的是resize手柄,不启动拖拽
+      if (e.target.classList.contains('mermaid-resize-handle')) return
+
       isDragging = true
       startX = e.clientX - translateX
       startY = e.clientY - translateY
