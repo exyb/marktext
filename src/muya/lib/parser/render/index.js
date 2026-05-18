@@ -123,6 +123,8 @@ class StateRender {
           await mermaid.run({
             nodes: [target]
           })
+          // 添加缩放和拖拽功能
+          this.addMermaidControls(target)
         } catch (err) {
           console.error('Mermaid rendering error:', err)
           target.innerHTML = '< Invalid Mermaid Codes >'
@@ -132,6 +134,104 @@ class StateRender {
 
       this.mermaidCache.clear()
     }
+  }
+
+  /**
+   * 为 Mermaid 图表添加缩放和拖拽控制
+   * @param {HTMLElement} container - Mermaid 图表容器
+   */
+  addMermaidControls(container) {
+    // 创建控制面板
+    const controls = document.createElement('div')
+    controls.className = 'mermaid-controls'
+    controls.innerHTML = `
+      <button class="mermaid-btn mermaid-zoom-in" title="放大">+</button>
+      <button class="mermaid-btn mermaid-zoom-out" title="缩小">-</button>
+      <button class="mermaid-btn mermaid-zoom-reset" title="重置">⟲</button>
+    `
+
+    // 将图表内容包裹在一个可缩放的容器中
+    const svg = container.querySelector('svg')
+    if (!svg) return
+
+    const wrapper = document.createElement('div')
+    wrapper.className = 'mermaid-wrapper'
+    wrapper.style.cssText = `
+      overflow: auto;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    `
+
+    // 包裹 SVG
+    container.insertBefore(wrapper, container.firstChild)
+    wrapper.appendChild(svg)
+    container.appendChild(controls)
+
+    // 缩放状态
+    let scale = 1
+    let isDragging = false
+    let startX = 0
+    let startY = 0
+    let translateX = 0
+    let translateY = 0
+
+    // 更新变换
+    const updateTransform = () => {
+      svg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
+      svg.style.transformOrigin = 'top left'
+    }
+
+    // 放大
+    controls.querySelector('.mermaid-zoom-in').addEventListener('click', () => {
+      scale = Math.min(scale * 1.2, 5)
+      updateTransform()
+    })
+
+    // 缩小
+    controls.querySelector('.mermaid-zoom-out').addEventListener('click', () => {
+      scale = Math.max(scale / 1.2, 0.2)
+      updateTransform()
+    })
+
+    // 重置
+    controls.querySelector('.mermaid-zoom-reset').addEventListener('click', () => {
+      scale = 1
+      translateX = 0
+      translateY = 0
+      updateTransform()
+    })
+
+    // 鼠标拖拽
+    wrapper.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return // 只响应左键
+      isDragging = true
+      startX = e.clientX - translateX
+      startY = e.clientY - translateY
+      wrapper.style.cursor = 'grabbing'
+      e.preventDefault()
+    })
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return
+      translateX = e.clientX - startX
+      translateY = e.clientY - startY
+      updateTransform()
+    })
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false
+      wrapper.style.cursor = 'grab'
+    })
+
+    // 鼠标滚轮缩放
+    wrapper.addEventListener('wheel', (e) => {
+      e.preventDefault()
+      const delta = e.deltaY > 0 ? 0.9 : 1.1
+      scale = Math.max(0.2, Math.min(5, scale * delta))
+      updateTransform()
+    })
   }
 
   async renderDiagram() {

@@ -718,3 +718,63 @@ figure[data-role] svg use[fill='black'] {
 figure[data-role] svg use[fill='#000000'] {
   fill: var(--editorColor);
 }
+
+/*
+ * Mermaid 图表控制按钮样式
+ */
+.ag-container-preview.mermaid {
+  position: relative;
+}
+
+.mermaid-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.ag-container-preview.mermaid:hover .mermaid-controls {
+  opacity: 1;
+}
+
+.mermaid-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--floatBorderColor);
+  background-color: var(--floatBgColor);
+  color: var(--floatFontColor);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mermaid-btn:hover {
+  background-color: var(--themeColor);
+  color: white;
+  border-color: var(--themeColor);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mermaid-btn:active {
+  transform: translateY(0);
+}
+
+.mermaid-wrapper {
+  transition: transform 0.1s ease;
+}
+
+.mermaid-wrapper svg {
+  display: block;
+  max-width: none !important;
+}
