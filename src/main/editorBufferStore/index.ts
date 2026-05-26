@@ -115,7 +115,12 @@ class EditorBufferStore extends TypedEmitter<EditorBufferStoreEvents> {
         const buffer = this.readBufferStoreFile(this.bufferStores[restoreBufferId].filePath)
         const allSaved = buffer.tabs.every((file) => file.isSaved)
         if (buffer.tabs.length === 0 || allSaved) {
-          fs.unlinkSync(this.bufferStores[restoreBufferId].filePath)
+          // 使用异步删除，避免阻塞
+          fs.unlink(this.bufferStores[restoreBufferId].filePath, (err) => {
+            if (err) {
+              console.error('Failed to delete buffer store file during cleanup', err)
+            }
+          })
           delete this.bufferStores[restoreBufferId]
         }
       } catch (e) {

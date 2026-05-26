@@ -330,6 +330,14 @@ class WindowManager extends TypedEmitter<WindowManagerEvents> {
     const { id: windowId } = browserWindow
     const { _appMenu, _windows } = this
 
+    // 立即停止所有渲染器进程的活动，防止阻塞
+    try {
+      browserWindow.webContents.stop()
+      browserWindow.webContents.closeDevTools()
+    } catch (e) {
+      log.warn('Failed to stop webContents:', e)
+    }
+
     // Free watchers used by this window
     this._watcher.unwatchByWindowId(windowId)
 
@@ -347,7 +355,10 @@ class WindowManager extends TypedEmitter<WindowManagerEvents> {
 
     // Quit application on macOS if not windows are opened.
     if (_windows.size === 0) {
-      app.quit()
+      // 使用exit而不是quit，确保立即退出
+      setImmediate(() => {
+        app.exit(0)
+      })
     }
     return true
   }
@@ -387,6 +398,10 @@ class WindowManager extends TypedEmitter<WindowManagerEvents> {
         (win as unknown as { restoreBufferId?: string })?.restoreBufferId,
         this.getWindowsByType('editor')
       )
+      // 在后台异步处理缓冲状态清理，不阻塞窗口关闭
+      setImmediate(() => {
+        this.editorBufferStore.handleClose(win?.restoreBufferId, this.getWindowsByType('editor'))
+      })
       this.forceClose(win)
     })
 

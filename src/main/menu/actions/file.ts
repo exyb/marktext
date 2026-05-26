@@ -443,7 +443,15 @@ ipcMain.on('mt::close-window-confirm', async(e, unsavedFiles: UnsavedFile[]) => 
           })
       })
   } else {
-    ipcMain.emit('window-close-by-id', win.id)
+    // 用户选择不保存，先强制关闭所有tabs，再关闭窗口
+    // 这样可以确保所有tab的清理工作完成
+    const tabIds = unsavedFiles.map((f) => f.id)
+    win.webContents.send('mt::force-close-tabs-by-id', tabIds)
+
+    // 等待一小段时间让renderer完成tab清理，然后关闭窗口
+    setTimeout(() => {
+      ipcMain.emit('window-close-by-id', win.id)
+    }, 100)
   }
 })
 

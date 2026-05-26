@@ -611,33 +611,34 @@ export const useEditorStore = defineStore('editor', {
       const projectStore = useProjectStore()
       const preferencesStore = usePreferencesStore()
       window.electron.ipcRenderer.on('mt::ask-for-close', () => {
-        sendBufferedState()
-          .catch((err) => {
-            console.error('Failed to update buffered state before closing', err)
-          })
-          .then(() => {
-            const unsavedFiles = this.tabs
-              .filter((file) => !file.isSaved)
-              .map((file) => {
-                const { id, filename, pathname, markdown } = file
-                const options = getOptionsFromState(file)
-                return {
-                  id,
-                  filename,
-                  pathname,
-                  markdown,
-                  options,
-                  defaultPath: getRootFolderFromState(projectStore)
-                }
-              })
-
-            if (unsavedFiles.length && preferencesStore.startUpAction !== 'restoreAll') {
-              // Ignore unsaved files when user has chosen to restore all on startup, as they will be restored anyway.
-              window.electron.ipcRenderer.send('mt::close-window-confirm', deepClone(unsavedFiles))
-            } else {
-              window.electron.ipcRenderer.send('mt::close-window')
+        // 先收集未保存文件信息，避免在异步操作后状态发生变化
+        const unsavedFiles = this.tabs
+          .filter((file) => !file.isSaved)
+          .map((file) => {
+            const { id, filename, pathname, markdown } = file
+            const options = getOptionsFromState(file)
+            return {
+              id,
+              filename,
+              pathname,
+              markdown,
+              options,
+              defaultPath: getRootFolderFromState(projectStore)
             }
           })
+
+        // 立即继续关闭流程，不等待缓冲状态保存
+        // 缓冲状态保存会在后台异步进行，不会阻塞关闭
+        if (unsavedFiles.length && preferencesStore.startUpAction !== 'restoreAll') {
+          // Ignore unsaved files when user has chosen to restore all on startup, as they will be restored anyway.
+          window.electron.ipcRenderer.send('mt::close-window-confirm', deepClone(unsavedFiles))
+        } else {
+          window.electron.ipcRenderer.send('mt::close-window')
+        }
+
+        // 完全跳过缓冲状态保存，因为窗口即将关闭
+        // 如果需要恢复状态，下次启动时会从磁盘读取已保存的文件
+        // sendBufferedState() 被移除，因为它可能导致进程无法退出
       })
     },
 
@@ -1047,6 +1048,13 @@ export const useEditorStore = defineStore('editor', {
           window.electron.ipcRenderer.send('mt::window-tab-closed', pathname)
         }
 
+        // 清除自动保存定时器，防止阻塞
+        if (id && autoSaveTimers.has(id)) {
+          const timer = autoSaveTimers.get(id)
+          clearTimeout(timer)
+          autoSaveTimers.delete(id)
+        }
+
         this.tabs.splice(index, 1)
         if (this.currentFile?.id === id) {
           this.currentFile = null
@@ -1083,7 +1091,8 @@ export const useEditorStore = defineStore('editor', {
         this.listToc = []
         this.toc = []
       }
-      debouncedSendBufferedState()
+      // 在窗口关闭时不调用缓冲状态保存，避免阻塞
+      // debouncedSendBufferedState()
     },
 
     EXCHANGE_TABS_BY_ID(tabIDs: { fromId: string; toId: string | null }): void {
