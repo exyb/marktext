@@ -785,6 +785,13 @@ figure[data-role] svg use[fill='#000000'] {
   z-index: 1;
 }
 
+.mermaid-wrapper img {
+  display: block;
+  max-width: none !important;
+  position: relative;
+  z-index: 1;
+}
+
 /* Resize 手柄样式 */
 .mermaid-resize-handle {
   position: absolute;

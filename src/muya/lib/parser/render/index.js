@@ -145,6 +145,15 @@ class StateRender {
    * @param {HTMLElement} container - Mermaid 图表容器
    */
   addMermaidControls(container) {
+    this.addDiagramControls(container, 'Mermaid')
+  }
+
+  /**
+   * 为图表(Mermaid/PlantUML等)添加缩放、拖拽和调整大小控制
+   * @param {HTMLElement} container - 图表容器
+   * @param {string} diagramType - 图表类型 ('Mermaid' | 'PlantUML')
+   */
+  addDiagramControls(container, diagramType = 'Mermaid') {
     // 创建控制面板
     const controls = document.createElement('div')
     controls.className = 'mermaid-controls'
@@ -154,9 +163,9 @@ class StateRender {
       <button class="mermaid-btn mermaid-zoom-reset" title="重置">⟲</button>
     `
 
-    // 将图表内容包裹在一个可缩放的容器中
-    const svg = container.querySelector('svg')
-    if (!svg) return
+    // 根据图表类型获取可缩放元素 (Mermaid 是 SVG, PlantUML 是 IMG)
+    const scalableElement = container.querySelector('svg') || container.querySelector('img')
+    if (!scalableElement) return
 
     // 设置容器为可调整大小
     container.style.cssText = `
@@ -178,11 +187,11 @@ class StateRender {
       overflow: visible;
     `
 
-    // 包裹 SVG
-    svg.style.position = 'relative'
-    svg.style.zIndex = '1'
+    // 包裹可缩放元素
+    scalableElement.style.position = 'relative'
+    scalableElement.style.zIndex = '1'
     container.insertBefore(wrapper, container.firstChild)
-    wrapper.appendChild(svg)
+    wrapper.appendChild(scalableElement)
 
     // 确保控制按钮在最上层
     controls.style.zIndex = '100'
@@ -205,8 +214,8 @@ class StateRender {
 
     // 更新变换
     const updateTransform = () => {
-      svg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
-      svg.style.transformOrigin = 'top left'
+      scalableElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
+      scalableElement.style.transformOrigin = 'top left'
     }
 
     // 放大
@@ -300,6 +309,9 @@ class StateRender {
             const diagram = render.parse(code)
             target.innerHTML = ''
             diagram.insertImgElement(target)
+            // 等待 DOM 更新后添加交互控制
+            await new Promise((resolve) => window.requestAnimationFrame(resolve))
+            this.addDiagramControls(target, 'PlantUML')
           } else if (functionType === 'vega-lite') {
             await render(key, JSON.parse(code), options)
           }
