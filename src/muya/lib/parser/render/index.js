@@ -211,11 +211,30 @@ class StateRender {
     let startY = 0
     let translateX = 0
     let translateY = 0
+    let hasTransformed = false // 标记是否已经进行了变换
+    let dragJustEnded = false // 标记拖拽是否刚刚结束
 
     // 更新变换
     const updateTransform = () => {
       scalableElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
       scalableElement.style.transformOrigin = 'top left'
+      
+      // 如果有变换,添加视觉反馈
+      if (scale !== 1 || translateX !== 0 || translateY !== 0) {
+        container.classList.add('diagram-focused')
+        hasTransformed = true
+      } else {
+        container.classList.remove('diagram-focused')
+        hasTransformed = false
+      }
+    }
+
+    // 重置变换
+    const resetTransform = () => {
+      scale = 1
+      translateX = 0
+      translateY = 0
+      updateTransform()
     }
 
     // 放大
@@ -230,12 +249,9 @@ class StateRender {
       updateTransform()
     })
 
-    // 重置
+    // 重置按钮
     controls.querySelector('.mermaid-zoom-reset').addEventListener('click', () => {
-      scale = 1
-      translateX = 0
-      translateY = 0
-      updateTransform()
+      resetTransform()
     })
 
     // 鼠标拖拽
@@ -249,6 +265,7 @@ class StateRender {
       startY = e.clientY - translateY
       wrapper.style.cursor = 'grabbing'
       e.preventDefault()
+      e.stopPropagation() // 阻止事件冒泡
     })
 
     document.addEventListener('mousemove', (e) => {
@@ -259,6 +276,14 @@ class StateRender {
     })
 
     document.addEventListener('mouseup', () => {
+      // 注意: 不在这里重置,保持拖拽后的位置
+      if (isDragging) {
+        dragJustEnded = true // 标记拖拽刚刚结束
+        // 延迟重置标记,给 click 事件一个忽略的机会
+        setTimeout(() => {
+          dragJustEnded = false
+        }, 100)
+      }
       isDragging = false
       wrapper.style.cursor = 'grab'
     })
@@ -270,6 +295,26 @@ class StateRender {
       scale = Math.max(0.2, Math.min(5, scale * delta))
       updateTransform()
     })
+
+    // 点击画布外部时重置
+    document.addEventListener(
+      'click',
+      (e) => {
+        // 如果已经重置、正在拖拽、或拖拽刚刚结束,不处理
+        if (!hasTransformed || isDragging || dragJustEnded) return
+
+        // 检查点击是否在容器内部
+        const isInsideContainer = container.contains(e.target)
+        const isControls = controls.contains(e.target)
+        const isResizeHandle = resizeHandle.contains(e.target)
+
+        // 如果点击在容器外部,且不是控制按钮或resize手柄,则重置
+        if (!isInsideContainer && !isControls && !isResizeHandle) {
+          resetTransform()
+        }
+      },
+      true
+    ) // 使用捕获阶段,确保能捕获到所有点击事件
   }
 
   async renderDiagram() {

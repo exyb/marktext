@@ -8,7 +8,9 @@ interface LayoutPartial {
   rightColumn?: string
   showSideBar?: boolean
   showTabBar?: boolean
+  showRightToc?: boolean
   sideBarWidth?: number | string
+  rightTocWidth?: number | string
 }
 
 interface SetLayoutOptions {
@@ -20,11 +22,18 @@ const normalizeSideBarWidth = (width: unknown): number => {
   return Number.isFinite(numericWidth) ? Math.max(numericWidth, 220) : 280
 }
 
+const normalizeRightTocWidth = (width: unknown): number => {
+  const numericWidth = Number(width)
+  return Number.isFinite(numericWidth) ? Math.max(numericWidth, 0) : 250  // ✅ 最小宽度 0px
+}
+
 interface BufferedLayout {
   rightColumn: string | undefined
   showSideBar: boolean
   showTabBar: boolean
+  showRightToc: boolean
   sideBarWidth: number
+  rightTocWidth: number
 }
 
 const createBufferedLayoutState = (state: unknown): BufferedLayout | null => {
@@ -38,18 +47,25 @@ const createBufferedLayoutState = (state: unknown): BufferedLayout | null => {
     rightColumn: s.rightColumn,
     showSideBar: !!s.showSideBar,
     showTabBar: !!s.showTabBar,
-    sideBarWidth: normalizeSideBarWidth(s.sideBarWidth)
+    showRightToc: !!s.showRightToc,
+    sideBarWidth: normalizeSideBarWidth(s.sideBarWidth),
+    rightTocWidth: normalizeRightTocWidth(s.rightTocWidth)
   }
 }
 
 const initialWidth = localStorage.getItem('side-bar-width')
 const initialSideBarWidth = normalizeSideBarWidth(initialWidth)
 
+const initialRightTocWidthValue = localStorage.getItem('right-toc-width')
+const initialRightTocWidth = normalizeRightTocWidth(initialRightTocWidthValue)
+
 export const useLayoutStore = defineStore('layout', () => {
   const rightColumn = ref<string>('files')
   const showSideBar = ref(false)
   const showTabBar = ref(false)
+  const showRightToc = ref(false)
   const sideBarWidth = ref<number>(initialSideBarWidth)
+  const rightTocWidth = ref<number>(initialRightTocWidth)
 
   // Actual rendered sidebar width. `sideBarWidth` is the right-column width
   // (clamped to ≥220 by `normalizeSideBarWidth`); when `rightColumn` is empty
@@ -84,7 +100,9 @@ export const useLayoutStore = defineStore('layout', () => {
     if (layout.rightColumn !== undefined) rightColumn.value = layout.rightColumn
     if (layout.showSideBar !== undefined) showSideBar.value = !!layout.showSideBar
     if (layout.showTabBar !== undefined) showTabBar.value = !!layout.showTabBar
+    if (layout.showRightToc !== undefined) showRightToc.value = !!layout.showRightToc
     if (layout.sideBarWidth !== undefined) sideBarWidth.value = layout.sideBarWidth as number
+    if (layout.rightTocWidth !== undefined) rightTocWidth.value = layout.rightTocWidth as number
     if (scheduleBufferUpdate) {
       debouncedSendBufferedState()
     }
@@ -95,7 +113,9 @@ export const useLayoutStore = defineStore('layout', () => {
       rightColumn: rightColumn.value,
       showSideBar: showSideBar.value,
       showTabBar: showTabBar.value,
-      sideBarWidth: sideBarWidth.value
+      showRightToc: showRightToc.value,
+      sideBarWidth: sideBarWidth.value,
+      rightTocWidth: rightTocWidth.value
     })
   }
 
@@ -104,18 +124,20 @@ export const useLayoutStore = defineStore('layout', () => {
     if (!layout) return
 
     SET_SIDE_BAR_WIDTH(layout.sideBarWidth, { scheduleBufferUpdate: false })
+    SET_RIGHT_TOC_WIDTH(layout.rightTocWidth, { scheduleBufferUpdate: false })
     SET_LAYOUT(
       {
         rightColumn: layout.rightColumn,
         showSideBar: layout.showSideBar,
-        showTabBar: layout.showTabBar
+        showTabBar: layout.showTabBar,
+        showRightToc: layout.showRightToc
       },
       { scheduleBufferUpdate: false }
     )
     DISPATCH_LAYOUT_MENU_ITEMS()
   }
 
-  function TOGGLE_LAYOUT_ENTRY(entryName: 'showSideBar' | 'showTabBar'): void {
+  function TOGGLE_LAYOUT_ENTRY(entryName: 'showSideBar' | 'showTabBar' | 'showRightToc'): void {
     if (entryName === 'showSideBar') {
       showSideBar.value = !showSideBar.value
       const preferencesStore = usePreferencesStore()
@@ -125,6 +147,8 @@ export const useLayoutStore = defineStore('layout', () => {
       })
     } else if (entryName === 'showTabBar') {
       showTabBar.value = !showTabBar.value
+    } else if (entryName === 'showRightToc') {
+      showRightToc.value = !showRightToc.value
     }
     debouncedSendBufferedState()
   }
@@ -136,6 +160,18 @@ export const useLayoutStore = defineStore('layout', () => {
     const normalizedWidth = normalizeSideBarWidth(width)
     localStorage.setItem('side-bar-width', String(normalizedWidth))
     sideBarWidth.value = normalizedWidth
+    if (scheduleBufferUpdate) {
+      debouncedSendBufferedState()
+    }
+  }
+
+  function SET_RIGHT_TOC_WIDTH(
+    width: number | string,
+    { scheduleBufferUpdate = true }: SetLayoutOptions = {}
+  ): void {
+    const normalizedWidth = normalizeRightTocWidth(width)
+    localStorage.setItem('right-toc-width', String(normalizedWidth))
+    rightTocWidth.value = normalizedWidth
     if (scheduleBufferUpdate) {
       debouncedSendBufferedState()
     }
@@ -157,16 +193,21 @@ export const useLayoutStore = defineStore('layout', () => {
     })
 
     window.electron.ipcRenderer.on('mt::toggle-view-layout-entry', (_e, entryName) => {
-      TOGGLE_LAYOUT_ENTRY(entryName as 'showSideBar' | 'showTabBar')
+      TOGGLE_LAYOUT_ENTRY(entryName as 'showSideBar' | 'showTabBar' | 'showRightToc')
       DISPATCH_LAYOUT_MENU_ITEMS()
     })
 
     bus.on('view:toggle-layout-entry', (entryName: unknown) => {
-      const name = entryName as 'showSideBar' | 'showTabBar'
+      const name = entryName as 'showSideBar' | 'showTabBar' | 'showRightToc'
       TOGGLE_LAYOUT_ENTRY(name)
       const { windowId } = window.marktext?.env ?? {}
       window.electron.ipcRenderer.send('mt::view-layout-changed', Number(windowId), {
-        [name]: name === 'showSideBar' ? showSideBar.value : showTabBar.value
+        [name]:
+          name === 'showSideBar'
+            ? showSideBar.value
+            : name === 'showTabBar'
+              ? showTabBar.value
+              : showRightToc.value
       })
     })
   }
@@ -175,7 +216,8 @@ export const useLayoutStore = defineStore('layout', () => {
     const { windowId } = window.marktext?.env ?? {}
     window.electron.ipcRenderer.send('mt::view-layout-changed', Number(windowId), {
       showTabBar: showTabBar.value,
-      showSideBar: showSideBar.value
+      showSideBar: showSideBar.value,
+      showRightToc: showRightToc.value
     })
   }
 
@@ -183,19 +225,27 @@ export const useLayoutStore = defineStore('layout', () => {
     SET_SIDE_BAR_WIDTH(width)
   }
 
+  function CHANGE_RIGHT_TOC_WIDTH(width: number | string): void {
+    SET_RIGHT_TOC_WIDTH(width)
+  }
+
   return {
     rightColumn,
     showSideBar,
     showTabBar,
+    showRightToc,
     sideBarWidth,
+    rightTocWidth,
     effectiveSideBarWidth,
     SET_LAYOUT,
     CREATE_BUFFERED_STATE,
     RESTORE_BUFFERED_STATE,
     TOGGLE_LAYOUT_ENTRY,
     SET_SIDE_BAR_WIDTH,
+    SET_RIGHT_TOC_WIDTH,
     LISTEN_FOR_LAYOUT,
     DISPATCH_LAYOUT_MENU_ITEMS,
-    CHANGE_SIDE_BAR_WIDTH
+    CHANGE_SIDE_BAR_WIDTH,
+    CHANGE_RIGHT_TOC_WIDTH
   }
 })

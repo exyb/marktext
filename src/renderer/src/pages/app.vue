@@ -35,12 +35,19 @@
       <import-modal />
     </div>
 
+    <!-- ✅ 拖拽条:位于正文和右侧TOC之间 -->
+    <div 
+      v-if="showRightToc && init" 
+      ref="resizeHandle"
+      class="resize-handle"
+    ></div>
+
     <right-toc-panel v-if="showRightToc && init"></right-toc-panel>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, nextTick, onMounted, ref } from 'vue'
+import { computed, watch, nextTick, onMounted, onBeforeUnmount, ref } from 'vue'
 import { useMainStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import { addStyles, addThemeStyle, addCustomStyle, type AddStylesOptions } from '@/util/theme'
@@ -77,6 +84,13 @@ const commandCenterStore = useCommandCenterStore()
 const notificationStore = useNotificationStore()
 
 const timer = ref<ReturnType<typeof setTimeout> | null>(null)
+const resizeHandle = ref<HTMLElement | null>(null)
+
+// 拖拽相关变量
+let startX = 0
+let startWidth = 0
+let mouseMoveHandler: ((event: MouseEvent) => void) | null = null
+let mouseUpHandler: (() => void) | null = null
 
 // States from Pinia
 const { windowActive, platform, init } = storeToRefs(mainStore)
@@ -215,6 +229,75 @@ onMounted(async () => {
     }
     addStyles(style)
   })
+
+  // ✅ 初始化拖拽条
+  const initResizeHandle = () => {
+    nextTick(() => {
+      const handle = resizeHandle.value
+      if (!handle) return
+
+      const onMouseDown = (event: MouseEvent) => {
+        event.preventDefault()
+        startX = event.clientX
+        
+        // 获取当前右侧 TOC 面板的宽度
+        const tocPanel = document.querySelector('.right-toc-panel') as HTMLElement
+        if (tocPanel) {
+          startWidth = tocPanel.offsetWidth
+        }
+
+        // 添加全局事件监听
+        mouseMoveHandler = (e: MouseEvent) => {
+          const offset = startX - e.clientX  // 向左拖动增加宽度,向右减小
+          const newWidth = Math.max(0, startWidth + offset)  // ✅ 最小宽度 0px
+          
+          // 更新 store 中的宽度
+          layoutStore.CHANGE_RIGHT_TOC_WIDTH(newWidth)
+        }
+
+        mouseUpHandler = () => {
+          // 清理事件监听
+          if (mouseMoveHandler) {
+            document.removeEventListener('mousemove', mouseMoveHandler)
+            mouseMoveHandler = null
+          }
+          if (mouseUpHandler) {
+            document.removeEventListener('mouseup', mouseUpHandler)
+            mouseUpHandler = null
+          }
+          document.body.style.cursor = ''
+          document.body.style.userSelect = ''
+        }
+
+        document.addEventListener('mousemove', mouseMoveHandler)
+        document.addEventListener('mouseup', mouseUpHandler)
+        document.body.style.cursor = 'col-resize'
+        document.body.style.userSelect = 'none'
+      }
+
+      handle.addEventListener('mousedown', onMouseDown)
+    })
+  }
+
+  // 初始化拖拽条
+  initResizeHandle()
+  
+  // ✅ 监听 showRightToc 变化,重新初始化拖拽条
+  watch(showRightToc, (newValue) => {
+    if (newValue) {
+      initResizeHandle()
+    }
+  })
+})
+
+// ✅ 组件卸载时清理
+onBeforeUnmount(() => {
+  if (mouseMoveHandler) {
+    document.removeEventListener('mousemove', mouseMoveHandler)
+  }
+  if (mouseUpHandler) {
+    document.removeEventListener('mouseup', mouseUpHandler)
+  }
 })
 </script>
 
@@ -249,5 +332,65 @@ onMounted(async () => {
   & > .editor {
     flex: 1;
   }
+}
+
+/* ✅ 拖拽条样式:位于正文和右侧TOC之间 */
+.resize-handle {
+  width: 4px;  /* 最小宽度,几乎不可见 */
+  height: 100%;
+  cursor: col-resize;
+  z-index: 9999;
+  background: transparent;  /* 默认完全透明 */
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  flex-shrink: 0;  /* 防止被压缩 */
+}
+
+.resize-handle:hover {
+  background: rgba(65, 105, 225, 0.3);  /* 悬停时显示淡蓝色 */
+  width: 6px;
+}
+
+.resize-handle:active {
+  background: rgba(65, 105, 225, 0.5);
+}
+</style>
+
+<style>
+/* 全局样式:优化滚动条显示 */
+.editor-middle ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.editor-middle ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editor-middle ::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.editor-middle:hover ::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.6);
+}
+
+.editor-middle ::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.8);
+}
+
+/* Firefox 滚动条样式 */
+.editor-middle {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+}
+
+.editor-middle:hover {
+  scrollbar-color: rgba(128, 128, 128, 0.6) transparent;
 }
 </style>

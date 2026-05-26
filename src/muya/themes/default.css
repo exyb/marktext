@@ -836,3 +836,15 @@ figure[data-role] svg use[fill='#000000'] {
 .ag-container-preview.mermaid:hover {
   border-color: var(--floatBorderColor);
 }
+
+/* 聚焦查看模式 - 当图表被缩放或拖拽时 */
+.ag-container-preview.mermaid.diagram-focused {
+  border-color: var(--themeColor);
+  box-shadow: 0 0 0 2px var(--themeColor);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ag-container-preview.mermaid.diagram-focused:hover {
+  border-color: var(--themeColor);
+  box-shadow: 0 0 0 2px var(--themeColor);
+}

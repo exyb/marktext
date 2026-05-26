@@ -165,8 +165,9 @@ export const updateSidebarMenu = (applicationMenu: any, value: unknown): void =>
   sideBarMenuItem.checked = !!value
 }
 
-export const updateRightTocMenu = (applicationMenu, value) => {
-  const rightTocMenuItem = applicationMenu.getMenuItemById('rightTocMenuItem')
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const updateRightTocMenu = (applicationMenu: any, value: unknown): void => {
+  const rightTocMenuItem: MenuItem | null = applicationMenu.getMenuItemById('rightTocMenuItem')
   if (rightTocMenuItem) {
     rightTocMenuItem.checked = !!value
   }

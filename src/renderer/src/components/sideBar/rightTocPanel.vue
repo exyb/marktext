@@ -1,6 +1,7 @@
 <template>
   <div
     class="right-toc-panel"
+    :style="{ width: `${panelWidth}px` }"
     :class="[
       { 'right-toc-overflow': !wordWrapInToc },
       { 'right-toc-wordwrap': wordWrapInToc }
@@ -29,10 +30,12 @@
     <div v-else class="empty-toc">
       {{ t('sideBar.toc.empty') }}
     </div>
+    <!-- ✅ 拖拽条已移到 app.vue 中 -->
   </div>
 </template>
 
 <script setup>
+import { ref, computed, onMounted, watch } from 'vue'
 import { Close } from '@element-plus/icons-vue'
 import { useEditorStore } from '@/store/editor'
 import { usePreferencesStore } from '@/store/preferences'
@@ -54,6 +57,10 @@ const defaultProps = {
 
 const { toc } = storeToRefs(editorStore)
 const { wordWrapInToc } = storeToRefs(preferencesStore)
+const { rightTocWidth } = storeToRefs(layoutStore)
+
+// ✅ 面板宽度直接从 store 读取,响应式更新
+const panelWidth = computed(() => rightTocWidth.value)
 
 const handleClick = ({ slug }) => {
   bus.emit('scroll-to-header', slug)
@@ -71,7 +78,9 @@ const handleClose = () => {
   flex-direction: column;
   background: var(--sideBarBgColor);
   border-left: 1px solid var(--floatBorderColor);
-  overflow: hidden;
+  overflow: visible;  /* 改为 visible,允许拖拽条超出 */
+  position: relative;
+  flex-shrink: 0;
 }
 
 .toc-header {
