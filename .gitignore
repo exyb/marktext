@@ -19,3 +19,7 @@ playwright-report/
 .agents/
 .agent/
 *_*.md
+/.idea/
+/test/temp/
+.antigravitycli/
+.antigravity/

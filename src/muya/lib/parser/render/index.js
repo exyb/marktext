@@ -104,7 +104,6 @@ class StateRender {
 
   async renderMermaid() {
     if (this.mermaidCache.size) {
-      console.log('[Diagram] === renderMermaid called, cache size:', this.mermaidCache.size, '===')
       const mermaid = await loadRenderer('mermaid')
       // Mermaid v11 初始化配置
       mermaid.initialize({
@@ -118,22 +117,16 @@ class StateRender {
         if (!target) {
           continue
         }
-        console.log('[Diagram] === Processing mermaid block:', key, '===')
-        console.log('[Diagram] 1. Before anything, target.dataset.diagramTransform:', target.dataset.diagramTransform)
         try {
           // 保存当前的 transform 状态（从 container 的 dataset 中读取）
           let savedTransform = target.dataset.diagramTransform || null
-          console.log('[Diagram] 2. savedTransform after reading:', savedTransform)
           
           // 如果 dataset 中没有，尝试从现有的 wrapper 中读取
           if (!savedTransform) {
             const existingWrapper = target.querySelector('.mermaid-wrapper')
-            console.log('[Diagram] 3. existingWrapper:', existingWrapper ? 'found' : 'not found')
             const existingScalable = existingWrapper?.querySelector('svg')
-            console.log('[Diagram] 4. existingScalable:', existingScalable ? 'found' : 'not found')
             if (existingScalable && existingScalable.style.transform) {
               savedTransform = existingScalable.style.transform
-              console.log('[Diagram] 5. savedTransform from wrapper:', savedTransform)
             }
           }
 
@@ -148,9 +141,18 @@ class StateRender {
           await mermaid.run({
             nodes: [target]
           })
-          console.log('[Diagram] After mermaid.run, dataset:', target.dataset.diagramTransform)
+          
+          // 如果有保存的 transform，立即应用（在 addMermaidControls 之前）
+          if (savedTransform) {
+            const scalableElement = target.querySelector('svg')
+            if (scalableElement) {
+              scalableElement.style.transform = savedTransform
+              scalableElement.style.transformOrigin = 'top left'
+              target.classList.add('diagram-focused')
+            }
+          }
+          
           // 添加缩放和拖拽功能，并传入保存的状态
-          console.log('[Diagram] Calling addMermaidControls with savedTransform:', savedTransform)
           this.addMermaidControls(target, savedTransform)
         } catch (err) {
           console.error('Mermaid rendering error:', err)
@@ -179,9 +181,6 @@ class StateRender {
    * @param {string|null} savedTransform - 之前保存的 transform 状态
    */
   addDiagramControls(container, diagramType = 'Mermaid', savedTransform = null) {
-    console.log('[Diagram] === addDiagramControls called for', diagramType, '===')
-    console.log('[Diagram] container id:', container.id, 'savedTransform:', savedTransform)
-    
     // 创建控制面板
     const controls = document.createElement('div')
     controls.className = 'mermaid-controls'
@@ -194,10 +193,8 @@ class StateRender {
     // 根据图表类型获取可缩放元素 (Mermaid 是 SVG, PlantUML 是 IMG)
     const scalableElement = container.querySelector('svg') || container.querySelector('img')
     if (!scalableElement) {
-      console.log('[Diagram] No scalable element (svg/img) found in container, skipping controls')
       return
     }
-    console.log('[Diagram] Found scalable element:', scalableElement.tagName)
 
     // 设置容器为可调整大小
     container.style.cssText = `
@@ -217,7 +214,7 @@ class StateRender {
       height: 100%;
       cursor: grab;
       overflow: visible;
-      background: rgba(255, 0, 0, 0.1); /* Debug: show wrapper area */
+      transition: none !important;
     `
 
     // 包裹可缩放元素
@@ -243,7 +240,6 @@ class StateRender {
     let translateY = 0
     
     if (savedTransform) {
-      console.log('[Diagram] Parsing saved transform:', savedTransform)
       // 解析 transform 字符串: "translate(xpx, ypx) scale(s)"
       const translateMatch = savedTransform.match(/translate\(([^,]+)px,\s*([^)]+)px\)/)
       const scaleMatch = savedTransform.match(/scale\(([^)]+)\)/)
@@ -262,46 +258,40 @@ class StateRender {
     let startY = 0
     let hasTransformed = scale !== 1 || translateX !== 0 || translateY !== 0 // 根据保存的状态设置
 
-    // 应用保存的 transform 状态
-    if (hasTransformed) {
-      console.log('[Diagram] Applying saved transform:', savedTransform)
-      // 使用 requestAnimationFrame 确保在浏览器下一帧应用，避免被 Vue 覆盖
-      requestAnimationFrame(() => {
-        scalableElement.style.transform = savedTransform
-        scalableElement.style.transformOrigin = 'top left'
-        container.classList.add('diagram-focused')
-        console.log('[Diagram] Transform applied in rAF')
-      })
-    } else {
-      console.log('[Diagram] No saved transform, starting fresh')
-    }
+    // 注意：transform 已经在 renderMermaid/renderDiagram 中应用了，这里不需要重复应用
 
-    // 更新变换
+    // 更新变换（使用 requestAnimationFrame 优化性能）
+    let rafId = null
     const updateTransform = () => {
-      const transformValue = `translate(${translateX}px, ${translateY}px) scale(${scale})`
-      console.log('[Diagram] updateTransform called:', transformValue)
-      scalableElement.style.transform = transformValue
-      scalableElement.style.transformOrigin = 'top left'
-      
-      // 将 transform 状态保存到 container 的 dataset 中，以便重新渲染时恢复
-      container.dataset.diagramTransform = transformValue
-      console.log('[Diagram] Saved to dataset:', container.dataset.diagramTransform)
-      
-      // 如果有变换,添加视觉反馈
-      if (scale !== 1 || translateX !== 0 || translateY !== 0) {
-        container.classList.add('diagram-focused')
-        hasTransformed = true
-      } else {
-        container.classList.remove('diagram-focused')
-        hasTransformed = false
-        // 清除保存的状态
-        delete container.dataset.diagramTransform
+      if (rafId) {
+        cancelAnimationFrame(rafId)
       }
+      
+      rafId = requestAnimationFrame(() => {
+        const transformValue = `translate(${translateX}px, ${translateY}px) scale(${scale})`
+        scalableElement.style.transform = transformValue
+        scalableElement.style.transformOrigin = 'top left'
+        
+        // 将 transform 状态保存到 container 的 dataset 中，以便重新渲染时恢复
+        container.dataset.diagramTransform = transformValue
+        
+        // 如果有变换,添加视觉反馈
+        if (scale !== 1 || translateX !== 0 || translateY !== 0) {
+          container.classList.add('diagram-focused')
+          hasTransformed = true
+        } else {
+          container.classList.remove('diagram-focused')
+          hasTransformed = false
+          // 清除保存的状态
+          delete container.dataset.diagramTransform
+        }
+        
+        rafId = null
+      })
     }
 
     // 重置变换
     const resetTransform = () => {
-      console.log('[Diagram] resetTransform called')
       scale = 1
       translateX = 0
       translateY = 0
@@ -335,9 +325,6 @@ class StateRender {
       // 如果点击的是resize手柄,不启动拖拽
       if (e.target.classList.contains('mermaid-resize-handle')) return
 
-      console.log('[Diagram] mousedown on wrapper, target:', e.target.tagName, e.target.className || e.target.id)
-      console.log('[Diagram] Current isDragging:', isDragging, 'scale:', scale, 'translateX:', translateX, 'translateY:', translateY)
-      
       // 完全阻止事件传播（在设置状态之前）
       e.preventDefault()
       e.stopPropagation()
@@ -353,29 +340,52 @@ class StateRender {
       startX = e.clientX - translateX
       startY = e.clientY - translateY
       wrapper.style.cursor = 'grabbing'
+      // 拖拽时禁用 transition，防止残影
+      scalableElement.style.transition = 'none'
       
-      console.log('[Diagram] After setting isDragging:', isDragging, 'startX:', startX, 'startY:', startY)
-      
-      // 定义 mousemove 处理函数
+      // 定义 mousemove 处理函数（使用节流优化性能）
+      let lastMoveTime = 0
       handleMouseMove = (moveEvent) => {
-        console.log('[Diagram] handleMouseMove called, isDragging:', isDragging)
         if (!isDragging) return
+        
+        // 节流：最多每 16ms (60fps) 更新一次
+        const now = Date.now()
+        if (now - lastMoveTime < 16) {
+          return
+        }
+        lastMoveTime = now
+        
         translateX = moveEvent.clientX - startX
         translateY = moveEvent.clientY - startY
-        console.log('[Diagram] Moving to:', translateX, translateY)
         updateTransform()
-        // 阻止事件冒泡
+        // 完全阻止事件传播
+        moveEvent.preventDefault()
         moveEvent.stopPropagation()
+        moveEvent.stopImmediatePropagation()
       }
       
       // 定义 mouseup 处理函数
       handleMouseUp = (upEvent) => {
-        console.log('[Diagram] mouseup, isDragging was:', isDragging)
-        console.log('[Diagram] container.dataset.diagramTransform:', container?.dataset?.diagramTransform)
+        // 完全阻止事件传播，防止触发 Vue 更新
+        if (upEvent) {
+          upEvent.preventDefault()
+          upEvent.stopPropagation()
+          upEvent.stopImmediatePropagation()
+        }
+        
         isDragging = false
         wrapper.style.cursor = 'grab'
-        // 阻止事件冒泡
-        if (upEvent) upEvent.stopPropagation()
+        
+        // 强制应用当前的 transform，防止残影
+        const currentTransform = scalableElement.style.transform
+        if (currentTransform) {
+          // 确保 transform 被正确应用
+          scalableElement.style.transform = currentTransform
+          scalableElement.style.transformOrigin = 'top left'
+          // 使用 offsetWidth 强制触发重排（reflow），清除渲染残影
+          void scalableElement.offsetWidth
+        }
+        
         // 移除监听器
         document.removeEventListener('mouseup', handleMouseUp)
         document.removeEventListener('mousemove', handleMouseMove)
@@ -384,29 +394,22 @@ class StateRender {
       }
       
       // 立即添加监听器
-      console.log('[Diagram] Adding mousemove and mouseup listeners in mousedown')
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
     })
-    
-    console.log('[Diagram] Wrapper created, size:', wrapper.offsetWidth, 'x', wrapper.offsetHeight)
-    console.log('[Diagram] Scalable element size:', scalableElement.offsetWidth, 'x', scalableElement.offsetHeight)
 
     // 阻止控制按钮的 click 事件冒泡
     controls.addEventListener('click', (e) => {
-      console.log('[Diagram] controls click, stopped')
       e.stopPropagation()
     })
 
     // 阻止 resize 手柄的 click 事件冒泡
     resizeHandle.addEventListener('click', (e) => {
-      console.log('[Diagram] resizeHandle click, stopped')
       e.stopPropagation()
     })
 
     // 双击画布时重置
     wrapper.addEventListener('dblclick', (e) => {
-      console.log('[Diagram] Double click detected, resetting transform')
       resetTransform()
     })
 
@@ -417,6 +420,28 @@ class StateRender {
       scale = Math.max(0.2, Math.min(5, scale * delta))
       updateTransform()
     })
+
+    // 添加全局双击重置功能（只添加一次）
+    if (!this.diagramEventListenersAdded) {
+      this.diagramEventListenersAdded = true
+      document.addEventListener('dblclick', (e) => {
+        // 检查双击的是否是图表区域
+        const diagramContainer = e.target.closest('[data-diagram-transform]')
+        if (!diagramContainer) {
+          // 双击的是画布外，重置所有图表
+          const allContainers = document.querySelectorAll('[data-diagram-transform]')
+          allContainers.forEach(container => {
+            const scalableElement = container.querySelector('.mermaid-wrapper svg') || container.querySelector('.mermaid-wrapper img')
+            if (scalableElement) {
+              scalableElement.style.transform = ''
+              scalableElement.style.transformOrigin = ''
+            }
+            delete container.dataset.diagramTransform
+            container.classList.remove('diagram-focused')
+          })
+        }
+      }, true) // 使用捕获阶段，确保能捕获到所有双击事件
+    }
   }
 
   async renderDiagram() {
@@ -468,8 +493,18 @@ class StateRender {
             const diagram = render.parse(code)
             target.innerHTML = ''
             diagram.insertImgElement(target)
-            // 等待 DOM 更新后添加交互控制
-            await new Promise((resolve) => window.requestAnimationFrame(resolve))
+            
+            // 如果有保存的 transform，立即应用（在 addDiagramControls 之前）
+            if (savedTransform) {
+              const scalableElement = target.querySelector('img')
+              if (scalableElement) {
+                scalableElement.style.transform = savedTransform
+                scalableElement.style.transformOrigin = 'top left'
+                target.classList.add('diagram-focused')
+              }
+            }
+            
+            // 立即添加交互控制
             this.addDiagramControls(target, 'PlantUML', savedTransform)
           } else if (functionType === 'vega-lite') {
             await render(key, JSON.parse(code), options)
