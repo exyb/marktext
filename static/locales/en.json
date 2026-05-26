@@ -138,6 +138,7 @@
       "showTabBar": "Show Tab Bar",
       "toc": "Table of Contents",
       "toggleTableOfContents": "Toggle Table of Contents",
+      "toggleRightToc": "Toggle Right TOC Panel",
       "reloadImages": "Reload Images",
       "showDeveloperTools": "Show Developer Tools",
       "reloadWindow": "Reload Window"

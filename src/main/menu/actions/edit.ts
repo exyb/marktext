@@ -164,3 +164,10 @@ export const updateSidebarMenu = (applicationMenu: any, value: unknown): void =>
   const sideBarMenuItem: MenuItem = applicationMenu.getMenuItemById('sideBarMenuItem')
   sideBarMenuItem.checked = !!value
 }
+
+export const updateRightTocMenu = (applicationMenu, value) => {
+  const rightTocMenuItem = applicationMenu.getMenuItemById('rightTocMenuItem')
+  if (rightTocMenuItem) {
+    rightTocMenuItem.checked = !!value
+  }
+}

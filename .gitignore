@@ -18,3 +18,4 @@ playwright-report/
 .claude/
 .agents/
 .agent/
+*_*.md

@@ -138,6 +138,7 @@
       "showTabBar": "显示标签栏",
       "toc": "目录",
       "toggleTableOfContents": "切换目录",
+      "toggleRightToc": "切换右侧目录面板",
       "reloadImages": "重新加载图片",
       "showDeveloperTools": "显示开发者工具",
       "reloadWindow": "重新加载窗口"

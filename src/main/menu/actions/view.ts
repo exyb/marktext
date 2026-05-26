@@ -59,6 +59,10 @@ export const toggleTabBar = (win: Win): void => {
   toggleLayout(win, 'showTabBar')
 }
 
+export const toggleRightToc = (win: Win): void => {
+  toggleLayout(win, 'showRightToc')
+}
+
 export const showTabBar = (win: Win): void => {
   setLayout(win, 'showTabBar', true)
 }
@@ -87,6 +91,7 @@ export const loadViewCommands = (commandManager: CommandManager): void => {
   commandManager.add(COMMANDS.VIEW_TOGGLE_SIDEBAR, toggleSidebar)
   commandManager.add(COMMANDS.VIEW_TOGGLE_TABBAR, toggleTabBar)
   commandManager.add(COMMANDS.VIEW_TOGGLE_TOC, showTableOfContents)
+  commandManager.add(COMMANDS.VIEW_TOGGLE_RIGHT_TOC, toggleRightToc)
   commandManager.add(COMMANDS.VIEW_TYPEWRITER_MODE, toggleTypewriterMode)
 
   commandManager.add(COMMANDS.VIEW_DEV_RELOAD, debugReloadWindow)
@@ -124,6 +129,9 @@ export const viewLayoutChanged = (
         break
       case 'showTabBar':
         changeMenuByName('tabBarMenuItem', value)
+        break
+      case 'showRightToc':
+        changeMenuByName('rightTocMenuItem', value)
         break
       case 'sourceCode':
         changeMenuByName('sourceCodeModeMenuItem', !!value)

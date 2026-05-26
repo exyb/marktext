@@ -34,6 +34,8 @@
       <rename />
       <import-modal />
     </div>
+
+    <right-toc-panel v-if="showRightToc && init"></right-toc-panel>
   </div>
 </template>
 
@@ -46,10 +48,12 @@ import Recent from '@/components/recent/index.vue'
 import EditorWithTabs from '@/components/editorWithTabs/index.vue'
 import TitleBar from '@/components/titleBar/index.vue'
 import SideBar from '@/components/sideBar/index.vue'
+import RightTocPanel from '@/components/sideBar/rightTocPanel.vue'
 import AboutDialog from '@/components/about/index.vue'
 import CommandPalette from '@/components/commandPalette/index.vue'
 import ExportSettingDialog from '@/components/exportSettings/index.vue'
 import Rename from '@/components/rename/index.vue'
+import Tweet from '@/components/tweet'
 import ImportModal from '@/components/import/index.vue'
 import bus from '@/bus'
 import { DEFAULT_STYLE } from '@/config'
@@ -76,7 +80,7 @@ const timer = ref<ReturnType<typeof setTimeout> | null>(null)
 
 // States from Pinia
 const { windowActive, platform, init } = storeToRefs(mainStore)
-const { showTabBar } = storeToRefs(layoutStore)
+const { showTabBar, showRightToc } = storeToRefs(layoutStore)
 const { sourceCode, theme, customCss, textDirection, zoom } = storeToRefs(preferencesStore)
 const { projectTree } = storeToRefs(projectStore)
 const { currentFile } = storeToRefs(editorStore)

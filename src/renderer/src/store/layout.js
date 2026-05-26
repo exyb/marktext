@@ -15,6 +15,7 @@ const createBufferedLayoutState = (state) => {
     rightColumn: state.rightColumn,
     showSideBar: !!state.showSideBar,
     showTabBar: !!state.showTabBar,
+    showRightToc: !!state.showRightToc,
     sideBarWidth: normalizeSideBarWidth(state.sideBarWidth)
   }
 }
@@ -27,6 +28,7 @@ export const useLayoutStore = defineStore('layout', {
     rightColumn: 'toc', // 默认显示 Table of Contents
     showSideBar: true, // 默认显示侧边栏
     showTabBar: false,
+    showRightToc: false, // 右侧 TOC 面板,默认隐藏
     sideBarWidth
   }),
   actions: {
@@ -58,7 +60,8 @@ export const useLayoutStore = defineStore('layout', {
           // 如果没有保存的状态,使用默认值 toc
           rightColumn: layout.rightColumn || 'toc',
           showSideBar: layout.showSideBar !== undefined ? layout.showSideBar : true,
-          showTabBar: layout.showTabBar
+          showTabBar: layout.showTabBar,
+          showRightToc: layout.showRightToc || false
         },
         { scheduleBufferUpdate: false }
       )
@@ -113,10 +116,11 @@ export const useLayoutStore = defineStore('layout', {
 
     DISPATCH_LAYOUT_MENU_ITEMS() {
       const { windowId } = global.marktext.env
-      const { showTabBar, showSideBar } = this
+      const { showTabBar, showSideBar, showRightToc } = this
       window.electron.ipcRenderer.send('mt::view-layout-changed', windowId, {
         showTabBar,
-        showSideBar
+        showSideBar,
+        showRightToc
       })
     },
 
