@@ -282,6 +282,11 @@
     "enum": ["hand", "simple"],
     "default": "hand"
   },
+  "clickDiagramToEdit": {
+    "description": "Markdown--Click diagram preview to edit source code",
+    "type": "boolean",
+    "default": true
+  },
   "theme": {
     "description": "Theme--Select the theme used in MarkText",
     "type": "string",

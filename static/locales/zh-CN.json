@@ -772,7 +772,8 @@
           "title": "序列图主题",
           "handDrawn": "手绘",
           "simple": "简单"
-        }
+        },
+        "clickDiagramToEdit": "点击图表切换源码编辑"
       },
       "math": {
         "title": "数学",

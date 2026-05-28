@@ -55,6 +55,7 @@
   "isHtmlEnabled": true,
   "isGitlabCompatibilityEnabled": false,
   "sequenceTheme": "hand",
+  "clickDiagramToEdit": true,
 
   "theme": "light",
   "followSystemTheme": true,

@@ -100,6 +100,11 @@
           :on-change="(value) => onSelectChange('sequenceTheme', value)"
           more="https://bramp.github.io/js-sequence-diagrams/"
         />
+        <bool
+          :description="t('preferences.markdown.diagrams.clickDiagramToEdit')"
+          :bool="clickDiagramToEdit"
+          :on-change="(value) => onSelectChange('clickDiagramToEdit', value)"
+        />
       </template>
     </compound>
 
@@ -154,7 +159,8 @@ const {
   footnote,
   isHtmlEnabled,
   isGitlabCompatibilityEnabled,
-  sequenceTheme
+  sequenceTheme,
+  clickDiagramToEdit
 } = storeToRefs(preferenceStore)
 
 const onSelectChange = (type: keyof PreferencesState, value: unknown): void => {

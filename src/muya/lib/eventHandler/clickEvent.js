@@ -214,7 +214,7 @@ class ClickEvent {
         if (target.closest('div.ag-container-preview')) {
           event.preventDefault()
           const figureEle = target.closest('figure')
-          contentState.handleContainerBlockClick(figureEle)
+          contentState.handleContainerBlockClick(figureEle, false)
         }
         return
       }
@@ -224,7 +224,7 @@ class ClickEvent {
         event.preventDefault()
         event.stopPropagation()
         if (editIcon.parentNode.classList.contains('ag-container-block')) {
-          contentState.handleContainerBlockClick(editIcon.parentNode)
+          contentState.handleContainerBlockClick(editIcon.parentNode, true)
         }
       }
 

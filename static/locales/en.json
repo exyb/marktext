@@ -770,7 +770,8 @@
           "title": "Sequence Theme",
           "handDrawn": "Hand Drawn",
           "simple": "Simple"
-        }
+        },
+        "clickDiagramToEdit": "Click diagram to edit source"
       },
       "math": {
         "title": "Math",

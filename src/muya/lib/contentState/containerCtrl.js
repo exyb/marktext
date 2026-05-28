@@ -88,7 +88,11 @@ const containerCtrl = (ContentState) => {
     return preBlock.children[0].children[0]
   }
 
-  ContentState.prototype.handleContainerBlockClick = function(figureEle) {
+  ContentState.prototype.handleContainerBlockClick = function(figureEle, isIconClick = false) {
+    if (!isIconClick && this.muya.options.clickDiagramToEdit === false) {
+      return
+    }
+
     const { id } = figureEle
     const mathBlock = this.getBlock(id)
     const preBlock = mathBlock.children[0]

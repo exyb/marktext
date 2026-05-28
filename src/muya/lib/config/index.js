@@ -444,7 +444,8 @@ export const MUYA_DEFAULT_OPTION = Object.freeze({
   isGitlabCompatibilityEnabled: false,
 
   // Whether HTML rendering is disabled or not.
-  disableHtml: true
+  disableHtml: true,
+  clickDiagramToEdit: true
 })
 
 // export const DIAGRAM_TEMPLATE = Object.freeze({

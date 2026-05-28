@@ -179,6 +179,7 @@ const {
   imageFolderPath,
   theme,
   sequenceTheme,
+  clickDiagramToEdit,
   hideScrollbar,
   spellcheckerEnabled,
   spellcheckerNoUnderline,
@@ -364,6 +365,12 @@ watch(theme, (value, oldValue) => {
 watch(sequenceTheme, (value, oldValue) => {
   if (value !== oldValue && editor.value) {
     editor.value.setOptions({ sequenceTheme: value }, true)
+  }
+})
+
+watch(clickDiagramToEdit, (value, oldValue) => {
+  if (value !== oldValue && editor.value) {
+    editor.value.setOptions({ clickDiagramToEdit: value })
   }
 })
 
@@ -1189,6 +1196,7 @@ onMounted(() => {
     hideLinkPopup: hideLinkPopup.value,
     autoCheck: autoCheck.value,
     sequenceTheme: sequenceTheme.value,
+    clickDiagramToEdit: clickDiagramToEdit.value,
     spellcheckEnabled: spellcheckerEnabled.value,
     imageAction,
     imagePathPicker,
