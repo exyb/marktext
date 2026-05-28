@@ -865,13 +865,16 @@ const scrollToHighlight = () => {
 }
 
 const scrollToHeader = (slug: unknown) => {
+  console.log('[editor.vue] scrollToHeader called, slug:', slug)
   return scrollToElement(`#${slug}`)
 }
 
 const scrollToElement = (selector: string) => {
   // Scroll to search highlight word
   const { container } = editor.value
+  console.log('[editor.vue] scrollToElement selector:', selector, 'container:', container)
   const anchor = document.querySelector(selector)
+  console.log('[editor.vue] scrollToElement anchor:', anchor)
   if (anchor) {
     const { y } = anchor.getBoundingClientRect()
     const DURATION = 300

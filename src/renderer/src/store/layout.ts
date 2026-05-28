@@ -24,7 +24,7 @@ const normalizeSideBarWidth = (width: unknown): number => {
 
 const normalizeRightTocWidth = (width: unknown): number => {
   const numericWidth = Number(width)
-  return Number.isFinite(numericWidth) ? Math.max(numericWidth, 0) : 250  // ✅ 最小宽度 0px
+  return Number.isFinite(numericWidth) && numericWidth > 0 ? numericWidth : 250
 }
 
 interface BufferedLayout {
@@ -81,8 +81,10 @@ export const useLayoutStore = defineStore('layout', () => {
     layout: LayoutPartial,
     { scheduleBufferUpdate = true }: SetLayoutOptions = {}
   ): void {
+    console.log('[layoutStore] SET_LAYOUT called:', layout)
     if (layout.showSideBar !== undefined) {
       const { windowId } = window.marktext?.env ?? {}
+      console.log('[layoutStore] sending mt::update-sidebar-menu, windowId:', windowId, 'value:', !!layout.showSideBar)
       window.electron.ipcRenderer.send(
         'mt::update-sidebar-menu',
         Number(windowId),
@@ -96,6 +98,7 @@ export const useLayoutStore = defineStore('layout', () => {
     }
     if (layout.showRightToc !== undefined) {
       const { windowId } = window.marktext?.env ?? {}
+      console.log('[layoutStore] sending mt::update-right-toc-menu, windowId:', windowId, 'value:', !!layout.showRightToc)
       window.electron.ipcRenderer.send(
         'mt::update-right-toc-menu',
         Number(windowId),
@@ -146,6 +149,7 @@ export const useLayoutStore = defineStore('layout', () => {
   }
 
   function TOGGLE_LAYOUT_ENTRY(entryName: 'showSideBar' | 'showTabBar' | 'showRightToc'): void {
+    console.log('[layoutStore] TOGGLE_LAYOUT_ENTRY:', entryName, 'before:', { showSideBar: showSideBar.value, showTabBar: showTabBar.value, showRightToc: showRightToc.value })
     if (entryName === 'showSideBar') {
       showSideBar.value = !showSideBar.value
       const preferencesStore = usePreferencesStore()
@@ -158,6 +162,7 @@ export const useLayoutStore = defineStore('layout', () => {
     } else if (entryName === 'showRightToc') {
       showRightToc.value = !showRightToc.value
     }
+    console.log('[layoutStore] TOGGLE_LAYOUT_ENTRY after:', { showSideBar: showSideBar.value, showTabBar: showTabBar.value, showRightToc: showRightToc.value })
     debouncedSendBufferedState()
   }
 
@@ -186,7 +191,9 @@ export const useLayoutStore = defineStore('layout', () => {
   }
 
   function LISTEN_FOR_LAYOUT(): void {
+    console.log('[layoutStore] LISTEN_FOR_LAYOUT registering listeners')
     window.electron.ipcRenderer.on('mt::set-view-layout', (_e, layout) => {
+      console.log('[layoutStore] received mt::set-view-layout:', layout)
       const l = layout as unknown as LayoutPartial
       if (l.rightColumn) {
         SET_LAYOUT({
@@ -201,11 +208,13 @@ export const useLayoutStore = defineStore('layout', () => {
     })
 
     window.electron.ipcRenderer.on('mt::toggle-view-layout-entry', (_e, entryName) => {
+      console.log('[layoutStore] received mt::toggle-view-layout-entry:', entryName)
       TOGGLE_LAYOUT_ENTRY(entryName as 'showSideBar' | 'showTabBar' | 'showRightToc')
       DISPATCH_LAYOUT_MENU_ITEMS()
     })
 
     bus.on('view:toggle-layout-entry', (entryName: unknown) => {
+      console.log('[layoutStore] bus event view:toggle-layout-entry:', entryName)
       const name = entryName as 'showSideBar' | 'showTabBar' | 'showRightToc'
       TOGGLE_LAYOUT_ENTRY(name)
       const { windowId } = window.marktext?.env ?? {}

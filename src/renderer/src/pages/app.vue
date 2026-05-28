@@ -284,9 +284,15 @@ onMounted(async () => {
   
   // ✅ 监听 showRightToc 变化,重新初始化拖拽条
   watch(showRightToc, (newValue) => {
+    console.log('[app.vue] showRightToc changed:', newValue, 'init:', init.value)
     if (newValue) {
       initResizeHandle()
     }
+  })
+
+  // ✅ 监听 init 变化
+  watch(init, (newValue) => {
+    console.log('[app.vue] init changed:', newValue)
   })
 })
 

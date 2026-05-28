@@ -4,7 +4,7 @@ import { app, Menu, ipcMain, type BrowserWindow } from 'electron'
 import log from 'electron-log'
 import { ensureDirSync, isDirectory2, isFile2 } from 'common/filesystem'
 import { isLinux, isOsx, isWindows } from '../config'
-import { updateSidebarMenu } from '../menu/actions/edit'
+import { updateSidebarMenu, updateRightTocMenu } from '../menu/actions/edit'
 import { updateFormatMenu } from '../menu/actions/format'
 import { updateSelectionMenus } from '../menu/actions/paragraph'
 import { viewLayoutChanged } from '../menu/actions/view'
@@ -454,15 +454,25 @@ class AppMenu {
       }
     )
     ipcMain.on('mt::update-sidebar-menu', (_e, windowId: number, value: unknown) => {
+      log.info(`[main/menu] mt::update-sidebar-menu windowId=${windowId} value=${value}`)
       if (!this.has(windowId)) {
         log.error(`UpdateApplicationMenu: Cannot find window menu for window id ${windowId}.`)
         return
       }
       updateSidebarMenu(this.getWindowMenuById(windowId), value)
     })
+    ipcMain.on('mt::update-right-toc-menu', (_e, windowId: number, value: unknown) => {
+      log.info(`[main/menu] mt::update-right-toc-menu windowId=${windowId} value=${value}`)
+      if (!this.has(windowId)) {
+        log.error(`UpdateApplicationMenu: Cannot find window menu for window id ${windowId}.`)
+        return
+      }
+      updateRightTocMenu(this.getWindowMenuById(windowId), value)
+    })
     ipcMain.on(
       'mt::view-layout-changed',
       (_e, windowId: number, viewSettings: Record<string, unknown>) => {
+        log.info(`[main/menu] mt::view-layout-changed windowId=${windowId}`, viewSettings)
         if (!this.has(windowId)) {
           log.error(`UpdateApplicationMenu: Cannot find window menu for window id ${windowId}.`)
           return

@@ -59,7 +59,7 @@ const keybindings: Map<string, string> = new Map([
   ['paragraph.upgrade-heading', 'Ctrl+Plus'],
   ['paragraph.degrade-heading', 'Ctrl+-'],
   ['paragraph.table', 'Ctrl+Shift+T'],
-  ['paragraph.code-fence', 'Ctrl+Shift+K'],
+  ['paragraph.code-fence', 'Ctrl+Shift+A'],
   ['paragraph.quote-block', 'Ctrl+Shift+Q'],
   ['paragraph.math-formula', 'Ctrl+Alt+N'],
   ['paragraph.html-block', 'Ctrl+Alt+H'],

@@ -1,4 +1,5 @@
 import { ipcMain, type BrowserWindow, type MenuItem } from 'electron'
+import log from 'electron-log'
 import { COMMANDS } from '../../commands'
 import type { CommandManager } from '../../commands'
 
@@ -60,6 +61,7 @@ export const toggleTabBar = (win: Win): void => {
 }
 
 export const toggleRightToc = (win: Win): void => {
+  log.info('[main/menu/view] toggleRightToc called, winId:', win?.id)
   toggleLayout(win, 'showRightToc')
 }
 
@@ -112,12 +114,17 @@ export const viewLayoutChanged = (
   applicationMenu: any,
   changes: Record<string, unknown>
 ): void => {
+  log.info('[main/menu/view] viewLayoutChanged:', changes)
   const disableMenuByName = (id: string, value: boolean): void => {
     const menuItem: MenuItem = applicationMenu.getMenuItemById(id)
     menuItem.enabled = value
   }
   const changeMenuByName = (id: string, value: unknown): void => {
     const menuItem: MenuItem = applicationMenu.getMenuItemById(id)
+    if (!menuItem) {
+      log.warn(`[main/menu/view] menuItem not found: ${id}`)
+      return
+    }
     menuItem.checked = !!value
   }
 

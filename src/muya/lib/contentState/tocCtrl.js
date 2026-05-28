@@ -4,12 +4,14 @@ const tocCtrl = (ContentState) => {
   ContentState.prototype.getTOC = function() {
     const { blocks } = this
     const toc = []
+    console.log('[tocCtrl] getTOC called, blocks count:', blocks?.length ?? 0)
 
     for (const block of blocks) {
       if (/^h\d$/.test(block.type)) {
         const { headingStyle, key, type } = block
         const child = block.children?.[0]
         if (!child || typeof child.text !== 'string') {
+          console.warn('[tocCtrl] skip heading block, child invalid:', { key, type, children: block.children })
           continue
         }
         const { text } = child
@@ -26,6 +28,7 @@ const tocCtrl = (ContentState) => {
       }
     }
 
+    console.log('[tocCtrl] generated toc count:', toc.length)
     return toc
   }
 }

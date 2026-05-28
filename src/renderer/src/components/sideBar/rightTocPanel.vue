@@ -63,16 +63,27 @@ const { rightTocWidth } = storeToRefs(layoutStore)
 const panelWidth = computed(() => rightTocWidth.value)
 
 const handleClick = (data) => {
+  console.log('[rightTocPanel] handleClick called:', data)
   const slug = data?.slug
   if (typeof slug !== 'string' || slug.length === 0) {
+    console.warn('[rightTocPanel] invalid slug, abort')
     return
   }
   bus.emit('scroll-to-header', slug)
 }
 
 const handleClose = () => {
+  console.log('[rightTocPanel] handleClose called')
   layoutStore.TOGGLE_LAYOUT_ENTRY('showRightToc')
 }
+
+watch(toc, (newVal) => {
+  console.log('[rightTocPanel] toc changed, length:', newVal?.length ?? 0)
+})
+
+onMounted(() => {
+  console.log('[rightTocPanel] mounted, toc length:', toc.value?.length ?? 0, 'panelWidth:', panelWidth.value)
+})
 </script>
 
 <style scoped>

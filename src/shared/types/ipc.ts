@@ -171,6 +171,7 @@ export interface IpcSendChannels {
   'mt::update-format-menu': [windowId: number, state: Record<string, boolean>]
   'mt::update-line-ending-menu': [windowId: number, lineEnding: LineEnding]
   'mt::update-sidebar-menu': [windowId: number, visible: boolean]
+  'mt::update-right-toc-menu': [windowId: number, visible: boolean]
   'mt::view-layout-changed': [windowId: number, layout: unknown]
   'mt::win::close': []
   'mt::win::maximize': []

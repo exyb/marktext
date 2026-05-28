@@ -1,7 +1,7 @@
 <template>
   <div
     class="editor-with-tabs"
-    :style="{ 'max-width': `calc(100vw - ${effectiveSideBarWidth}px)` }"
+    :style="{ 'max-width': `calc(100vw - ${effectiveSideBarWidth}px - ${effectiveRightTocWidth}px)` }"
   >
     <tabs v-show="showTabBar" />
     <div class="container">
@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useLayoutStore } from '@/store/layout'
 import { storeToRefs } from 'pinia'
 import Tabs from './tabs.vue'
@@ -43,7 +44,9 @@ defineProps<{
   platform: string
 }>()
 
-const { effectiveSideBarWidth } = storeToRefs(useLayoutStore())
+const { effectiveSideBarWidth, showRightToc, rightTocWidth } = storeToRefs(useLayoutStore())
+
+const effectiveRightTocWidth = computed(() => (showRightToc.value ? rightTocWidth.value : 0))
 </script>
 
 <style scoped>
