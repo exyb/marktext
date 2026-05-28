@@ -4,6 +4,7 @@
 
     <div class="editor-middle">
       <title-bar
+        v-if="!showTabBar"
         :project="projectTree"
         :pathname="pathname"
         :filename="filename"

@@ -1,5 +1,49 @@
 <template>
-  <div class="editor-tabs">
+  <div
+    class="editor-tabs"
+    :class="{
+      'has-window-controls': showWindowControls,
+      'has-left-toolbar': showCustomTitleBar || !!wordCount
+    }"
+  >
+    <!-- Left toolbar: menu button + word count (fixed to top-left) -->
+    <div
+      v-if="showCustomTitleBar || wordCount"
+      class="left-toolbar-fixed"
+    >
+      <div
+        v-if="showCustomTitleBar"
+        class="frameless-titlebar-menu"
+        @click.stop="handleMenuClick"
+      >
+        <span>&#9776;</span>
+      </div>
+      <el-tooltip
+        v-if="wordCount"
+        class="item"
+        :content="`${wordCount[show]} ${HASH[show].full + (wordCount[show] > 1 ? 's' : '')}`"
+        placement="bottom-end"
+      >
+        <template #content>
+          <div class="title-item">
+            <span class="front">{{ t('menu.counter.words') }}:</span><span class="text">{{ wordCount['word'] }}</span>
+          </div>
+          <div class="title-item">
+            <span class="front">{{ t('menu.counter.characters') }}:</span><span class="text">{{ wordCount['character'] }}</span>
+          </div>
+          <div class="title-item">
+            <span class="front">{{ t('menu.counter.paragraphs') }}:</span><span class="text">{{ wordCount['paragraph'] }}</span>
+          </div>
+        </template>
+        <div
+          class="word-count"
+          @click.stop="handleWordClick"
+        >
+          <span>{{ `${HASH[show].short} ${wordCount[show]}` }}</span>
+        </div>
+      </el-tooltip>
+    </div>
+
     <div
       ref="tabContainer"
       class="scrollable-tabs"
@@ -38,25 +82,86 @@
         <Plus />
       </el-icon>
     </div>
+
+    <!-- Window controls (non-macOS custom mode only) -->
+    <div
+      v-if="showWindowControls"
+      class="window-controls"
+    >
+      <div
+        class="frameless-titlebar-button frameless-titlebar-close"
+        @click.stop="handleCloseClick"
+      >
+        <div>
+          <svg
+            width="10"
+            height="10"
+          >
+            <path :d="windowIconClose" />
+          </svg>
+        </div>
+      </div>
+      <div
+        class="frameless-titlebar-button frameless-titlebar-toggle"
+        @click.stop="handleMaximizeClick"
+      >
+        <div>
+          <svg
+            width="10"
+            height="10"
+          >
+            <path
+              v-show="!isMaximized"
+              :d="windowIconMaximize"
+            />
+            <path
+              v-show="isMaximized"
+              :d="windowIconRestore"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        class="frameless-titlebar-button frameless-titlebar-minimize"
+        @click.stop="handleMinimizeClick"
+      >
+        <div>
+          <svg
+            width="10"
+            height="10"
+          >
+            <path :d="windowIconMinimize" />
+          </svg>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useEditorStore } from '@/store/editor'
 import { useLayoutStore } from '@/store/layout'
+import { usePreferencesStore } from '@/store/preferences'
 import { storeToRefs } from 'pinia'
 import autoScroll from 'dom-autoscroller'
 import dragula from 'dragula'
 import { Plus, Close } from '@element-plus/icons-vue'
 import { showContextMenu } from '../../contextMenu/tabs'
+import { minimizePath, restorePath, maximizePath, closePath } from '../../assets/window-controls.js'
+import { isOsx as isOsxPlatform } from '@/util'
+import { useI18n } from 'vue-i18n'
 import bus from '../../bus'
 import type { IFileState } from '@shared/types/files'
+import type { FileWordCount } from '@shared/types/files'
 
+const { t } = useI18n()
 const editorStore = useEditorStore()
 const layoutStore = useLayoutStore()
+const preferencesStore = usePreferencesStore()
 
 const { currentFile, tabs } = storeToRefs(editorStore)
+const { titleBarStyle } = storeToRefs(preferencesStore)
 
 const tabContainer = ref<HTMLElement | null>(null)
 const tabDropContainer = ref<HTMLElement | null>(null)
@@ -64,6 +169,83 @@ const tabDropContainer = ref<HTMLElement | null>(null)
 // loose at the top of the file rather than retyping the libraries.
 let autoScroller: any = null
 let drake: dragula.Drake | null = null
+
+// Window controls state
+const isOsx = isOsxPlatform
+const isFullScreen = ref(false)
+const isMaximized = ref(false)
+
+const showWindowControls = computed(() => {
+  return titleBarStyle.value === 'custom' && !isOsx && !isFullScreen.value
+})
+
+const showCustomTitleBar = computed(() => {
+  return titleBarStyle.value === 'custom' && !isOsx
+})
+
+const wordCount = computed<FileWordCount | null>(() => {
+  return currentFile.value?.wordCount ?? null
+})
+
+const HASH = {
+  word: {
+    short: 'W',
+    full: 'word'
+  },
+  character: {
+    short: 'C',
+    full: 'character'
+  },
+  paragraph: {
+    short: 'P',
+    full: 'paragraph'
+  },
+  all: {
+    short: 'A',
+    full: '(with space)character'
+  }
+}
+const show = ref<'word' | 'paragraph' | 'character' | 'all'>('word')
+
+const handleMenuClick = () => {
+  window.electron.windowControl.popupApplicationMenu({ x: 23, y: 20 })
+}
+
+const handleWordClick = () => {
+  const ITEMS = ['word', 'paragraph', 'character', 'all'] as const
+  const len = ITEMS.length
+  let index = ITEMS.indexOf(show.value)
+  index += 1
+  if (index >= len) index = 0
+  show.value = ITEMS[index]!
+}
+
+const windowIconMinimize = minimizePath
+const windowIconRestore = restorePath
+const windowIconMaximize = maximizePath
+const windowIconClose = closePath
+
+const handleCloseClick = () => {
+  window.electron.windowControl.close()
+}
+
+const handleMaximizeClick = async () => {
+  if (isFullScreen.value) {
+    window.electron.windowControl.setFullScreen(false)
+    return
+  }
+  if (isMaximized.value) window.electron.windowControl.unmaximize()
+  else window.electron.windowControl.maximize()
+}
+
+const handleMinimizeClick = () => {
+  window.electron.windowControl.minimize()
+}
+
+let offMaximize: (() => void) | null = null
+let offUnmaximize: (() => void) | null = null
+let offEnterFullScreen: (() => void) | null = null
+let offLeaveFullScreen: (() => void) | null = null
 
 // Computed properties
 
@@ -164,6 +346,27 @@ onMounted(() => {
   bus.on('TABS::show-in-folder', showInFolder)
   bus.on('EDITOR_TABS::change-max-width', changeMaxWidth)
 
+  // Initialize window state for controls
+  try {
+    Promise.all([
+      window.electron.windowControl.isFullScreen(),
+      window.electron.windowControl.isMaximized()
+    ]).then(([fs, max]) => {
+      isFullScreen.value = !!fs
+      isMaximized.value = !!max
+    })
+  } catch {}
+
+  const onMaximize = () => { isMaximized.value = true }
+  const onUnmaximize = () => { isMaximized.value = false }
+  const onEnterFullScreen = () => { isFullScreen.value = true }
+  const onLeaveFullScreen = () => { isFullScreen.value = false }
+
+  offMaximize = window.electron.ipcRenderer.on('mt::window-maximize', onMaximize)
+  offUnmaximize = window.electron.ipcRenderer.on('mt::window-unmaximize', onUnmaximize)
+  offEnterFullScreen = window.electron.ipcRenderer.on('mt::window-enter-full-screen', onEnterFullScreen)
+  offLeaveFullScreen = window.electron.ipcRenderer.on('mt::window-leave-full-screen', onLeaveFullScreen)
+
   const tabsEl = tabContainer.value
   if (!tabsEl || !tabDropContainer.value) return
 
@@ -228,6 +431,11 @@ onBeforeUnmount(() => {
   bus.off('TABS::copy-path', copyPath)
   bus.off('TABS::show-in-folder', showInFolder)
   bus.off('EDITOR_TABS::change-max-width', changeMaxWidth)
+
+  if (offMaximize) offMaximize()
+  if (offUnmaximize) offUnmaximize()
+  if (offEnterFullScreen) offEnterFullScreen()
+  if (offLeaveFullScreen) offLeaveFullScreen()
 })
 </script>
 
@@ -249,9 +457,17 @@ onBeforeUnmount(() => {
   user-select: none;
   box-shadow: 0px 0px 9px 2px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  -webkit-app-region: drag;
   &:hover > .new-file {
     opacity: 1 !important;
   }
+}
+.scrollable-tabs,
+.tabs-container,
+.new-file,
+.window-controls,
+.window-controls .frameless-titlebar-button {
+  -webkit-app-region: no-drag;
 }
 .scrollable-tabs {
   flex: 0 1 auto;
@@ -371,6 +587,98 @@ onBeforeUnmount(() => {
   transition: all 0.15s ease-in-out;
   & > svg {
     fill: var(--focusColor);
+  }
+}
+
+/* Window controls in tabs */
+.editor-tabs.has-window-controls {
+  padding-right: 138px;
+}
+.window-controls {
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  height: 28px;
+  z-index: 10;
+}
+.frameless-titlebar-button {
+  position: relative;
+  display: block;
+  width: 46px;
+  height: 28px;
+  cursor: pointer;
+}
+.frameless-titlebar-button > div {
+  position: absolute;
+  display: inline-flex;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+.frameless-titlebar-close:hover {
+  background-color: rgb(228, 79, 79);
+}
+.frameless-titlebar-minimize:hover,
+.frameless-titlebar-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.frameless-titlebar-button svg {
+  fill: #000000;
+}
+.frameless-titlebar-close:hover svg {
+  fill: #ffffff;
+}
+
+/* Left toolbar in tabs */
+.editor-tabs.has-left-toolbar {
+  padding-left: 138px;
+}
+.left-toolbar-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 28px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 8px;
+  -webkit-app-region: no-drag;
+}
+.frameless-titlebar-menu {
+  color: var(--sideBarColor);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 28px;
+  padding: 0 5px;
+}
+.word-count {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--editorColor30);
+  text-align: center;
+  line-height: 24px;
+  padding: 0 5px;
+  box-sizing: border-box;
+  transition: all 0.25s ease-in-out;
+}
+.word-count:hover {
+  background: var(--sideBarBgColor);
+  color: var(--sideBarTitleColor);
+}
+
+/* tooltip content */
+.title-item {
+  height: 28px;
+  line-height: 28px;
+  & .front {
+    opacity: 0.7;
+  }
+  & .text {
+    margin-left: 10px;
   }
 }
 
