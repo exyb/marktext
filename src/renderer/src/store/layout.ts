@@ -94,6 +94,14 @@ export const useLayoutStore = defineStore('layout', () => {
         value: !!layout.showSideBar
       })
     }
+    if (layout.showRightToc !== undefined) {
+      const { windowId } = window.marktext?.env ?? {}
+      window.electron.ipcRenderer.send(
+        'mt::update-right-toc-menu',
+        Number(windowId),
+        !!layout.showRightToc
+      )
+    }
     // Match the pre-migration `Object.assign(this, layout)` semantics: assign
     // each known field as-is (no normalization here; SET_SIDE_BAR_WIDTH owns
     // sideBarWidth's normalization), and skip unknown keys silently.

@@ -62,7 +62,11 @@ const { rightTocWidth } = storeToRefs(layoutStore)
 // ✅ 面板宽度直接从 store 读取,响应式更新
 const panelWidth = computed(() => rightTocWidth.value)
 
-const handleClick = ({ slug }) => {
+const handleClick = (data) => {
+  const slug = data?.slug
+  if (typeof slug !== 'string' || slug.length === 0) {
+    return
+  }
   bus.emit('scroll-to-header', slug)
 }
 
