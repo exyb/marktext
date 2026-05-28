@@ -417,6 +417,7 @@
         "zoom": "The zoom level. Between 0.5 and 2.0 inclusive",
         "hideScrollbar": "Whether to hide scrollbars",
         "wordWrapInToc": "Whether to enable word wrap in TOC",
+        "tocInFileBar": "Whether to embed the TOC in the file sidebar",
         "fileSortBy": "Sort files in opened folder by created time, modified time and title",
         "startUpAction": "The action after MarkText startup, open the last edited content, open the specified folder or blank page",
         "restoreLayoutState": "Restore previous editor state on startup",
@@ -523,6 +524,7 @@
         "title": "Sidebar",
         "wrapTextInToc": "Wrap text in table of contents",
         "showOpenedFiles": "Show opened files",
+        "tocInFileBar": "Embed TOC in file sidebar",
         "excludePatterns": "Exclude patterns",
         "excludePatternsNotes": "Exclude patterns (Notes)",
         "fileSortBy": {

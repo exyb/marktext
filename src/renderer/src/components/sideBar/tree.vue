@@ -15,56 +15,29 @@
         >
           <ArrowRight />
         </el-icon>
-        <span
-          class="default-cursor text-overflow"
-          @click.stop="toggleOpenedFiles()"
-        >{{
+        <span class="default-cursor text-overflow" @click.stop="toggleOpenedFiles()">{{
           t('sideBar.tree.openedFiles')
         }}</span>
-        <a
-          href="javascript:;"
-          :title="t('sideBar.tree.saveAll')"
-          @click.stop="saveAll(false)"
-        >
-          <svg
-            class="icon"
-            aria-hidden="true"
-          >
+        <a href="javascript:;" :title="t('sideBar.tree.saveAll')" @click.stop="saveAll(false)">
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-save-all" />
           </svg>
         </a>
-        <a
-          href="javascript:;"
-          :title="t('sideBar.tree.closeAll')"
-          @click.stop="saveAll(true)"
-        >
-          <svg
-            class="icon"
-            aria-hidden="true"
-          >
+        <a href="javascript:;" :title="t('sideBar.tree.closeAll')" @click.stop="saveAll(true)">
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-close-all" />
           </svg>
         </a>
       </div>
-      <div
-        v-show="showOpenedFiles"
-        class="opened-files-list"
-      >
+      <div v-show="showOpenedFiles" class="opened-files-list">
         <transition-group name="list">
-          <opened-file
-            v-for="tab of tabs"
-            :key="tab.id"
-            :file="tab"
-          />
+          <opened-file v-for="tab of tabs" :key="tab.id" :file="tab" />
         </transition-group>
       </div>
     </div>
 
     <!-- Project tree view -->
-    <div
-      v-if="projectTree"
-      class="project-tree"
-    >
+    <div v-if="projectTree" class="project-tree">
       <div class="title">
         <el-icon
           class="icon-arrow"
@@ -74,17 +47,11 @@
         >
           <ArrowRight />
         </el-icon>
-        <span
-          class="default-cursor text-overflow"
-          @click.stop="toggleDirectories()"
-        >{{
+        <span class="default-cursor text-overflow" @click.stop="toggleDirectories()">{{
           projectTree.name
         }}</span>
       </div>
-      <div
-        v-show="showDirectories"
-        class="tree-wrapper"
-      >
+      <div v-show="showDirectories" class="tree-wrapper">
         <folder
           v-for="folder of projectTree.folders"
           :key="folder.id"
@@ -100,46 +67,59 @@
           class="new-input"
           :style="{ 'margin-left': `${depth * 5 + 15}px` }"
           @keypress.enter="handleInputEnter"
-        >
-        <file
-          v-for="file of projectTree.files"
-          :key="file.id"
-          :file="file"
-          :depth="depth"
         />
+        <file v-for="file of projectTree.files" :key="file.id" :file="file" :depth="depth" />
         <div
           v-if="
             projectTree.files.length === 0 &&
-              projectTree.folders.length === 0 &&
-              createCacheDirname !== projectTree.pathname
+            projectTree.folders.length === 0 &&
+            createCacheDirname !== projectTree.pathname
           "
           class="empty-project"
         >
           <span>{{ t('sideBar.tree.emptyProject') }}</span>
           <div class="centered-group">
-            <button
-              class="button-primary"
-              @click.stop="createFile"
-            >
+            <button class="button-primary" @click.stop="createFile">
               {{ t('sideBar.tree.createFile') }}
             </button>
           </div>
         </div>
       </div>
     </div>
-    <div
-      v-else
-      class="open-project"
-    >
+    <div v-else class="open-project">
       <div class="centered-group">
-        <el-button
-          text
-          bg
-          type="primary"
-          @click="openFolder"
-        >
+        <el-button text bg type="primary" @click="openFolder">
           {{ t('sideBar.tree.openFolder') }}
         </el-button>
+      </div>
+    </div>
+
+    <!-- Document TOC -->
+    <div v-if="tocInFileBar" class="document-toc">
+      <div class="title">
+        <el-icon
+          class="icon-arrow"
+          :class="{ fold: !showToc }"
+          :size="12"
+          @click.stop="toggleToc()"
+        >
+          <ArrowRight />
+        </el-icon>
+        <span class="default-cursor text-overflow" @click.stop="toggleToc()">{{
+          t('sideBar.toc.title')
+        }}</span>
+      </div>
+      <div v-show="showToc" class="toc-wrapper" :class="{ 'toc-wordwrap': wordWrapInToc }">
+        <el-tree
+          v-if="toc.length"
+          :data="toc"
+          :default-expand-all="true"
+          :props="defaultProps"
+          :expand-on-click-node="false"
+          :indent="10"
+          :icon="ArrowRight"
+          @node-click="handleTocClick"
+        />
       </div>
     </div>
   </div>
@@ -174,6 +154,7 @@ const props = defineProps<{
 const depth = 0
 const showDirectories = ref(true)
 const showOpenedFiles = ref(true)
+const showToc = ref(true)
 const createName = ref('')
 const input = ref<HTMLInputElement | null>(null)
 
@@ -183,7 +164,13 @@ const preferencesStore = usePreferencesStore()
 
 // Computed properties
 const { createCache } = storeToRefs(projectStore)
-const { openedFilesInSidebar } = storeToRefs(preferencesStore)
+const { openedFilesInSidebar, tocInFileBar, wordWrapInToc } = storeToRefs(preferencesStore)
+const { toc } = storeToRefs(editorStore)
+
+const defaultProps = {
+  children: 'children',
+  label: 'label'
+}
 
 // The createCache state is `{ dirname, type }` while an input is shown, and
 // `{}` otherwise. Expose a typed accessor for the template so we don't have
@@ -213,6 +200,15 @@ const toggleOpenedFiles = (): void => {
 
 const toggleDirectories = (): void => {
   showDirectories.value = !showDirectories.value
+}
+
+const toggleToc = (): void => {
+  showToc.value = !showToc.value
+}
+
+const handleTocClick = (data: { slug?: unknown }): void => {
+  if (typeof data.slug !== 'string' || data.slug.length === 0) return
+  bus.emit('scroll-to-header', data.slug)
 }
 
 // From createFileOrDirectoryMixins
@@ -281,6 +277,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: auto;
 }
 .tree-view > .title {
   height: 35px;
@@ -355,8 +352,6 @@ onMounted(() => {
 .project-tree {
   display: flex;
   flex-direction: column;
-  overflow: auto;
-  flex: 1;
 }
 
 .project-tree > .title {
@@ -398,7 +393,6 @@ onMounted(() => {
   opacity: 1;
 }
 .open-project {
-  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -462,5 +456,53 @@ onMounted(() => {
 }
 .bold {
   font-weight: 600;
+}
+
+/* Document TOC */
+.document-toc {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.document-toc > .title {
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+  padding-right: 15px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.document-toc > .title > span {
+  flex: 1;
+  user-select: none;
+}
+
+.document-toc .toc-wrapper {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}
+
+.document-toc .el-tree {
+  background: transparent;
+  color: var(--sideBarColor);
+}
+
+.document-toc .el-tree-node:focus > .el-tree-node__content {
+  background-color: var(--sideBarItemHoverBgColor);
+}
+
+.document-toc .el-tree-node__content:hover {
+  background: var(--sideBarItemHoverBgColor);
+}
+
+.toc-wordwrap .el-tree-node__content {
+  white-space: normal;
+  height: auto;
+  min-height: 26px;
 }
 </style>

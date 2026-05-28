@@ -373,6 +373,11 @@
     "type": "boolean",
     "default": true
   },
+  "tocInFileBar": {
+    "description": "General--Whether to embed the TOC in the file sidebar.",
+    "type": "boolean",
+    "default": false
+  },
   "searchExclusions": {
     "description": "Searcher--List of glob patterns to exclude from search.--internal",
     "type": "array",
