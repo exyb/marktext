@@ -3,47 +3,10 @@
     class="editor-tabs"
     :class="{
       'has-window-controls': showWindowControls,
-      'has-left-toolbar': showCustomTitleBar || !!wordCount
+      'has-left-toolbar': showCustomTitleBar || !!wordCount,
+      'has-menu-only': showCustomTitleBar && !wordCount
     }"
   >
-    <!-- Left toolbar: menu button + word count (fixed to top-left) -->
-    <div
-      v-if="showCustomTitleBar || wordCount"
-      class="left-toolbar-fixed"
-    >
-      <div
-        v-if="showCustomTitleBar"
-        class="frameless-titlebar-menu"
-        @click.stop="handleMenuClick"
-      >
-        <span>&#9776;</span>
-      </div>
-      <el-tooltip
-        v-if="wordCount"
-        class="item"
-        :content="`${wordCount[show]} ${HASH[show].full + (wordCount[show] > 1 ? 's' : '')}`"
-        placement="bottom-end"
-      >
-        <template #content>
-          <div class="title-item">
-            <span class="front">{{ t('menu.counter.words') }}:</span><span class="text">{{ wordCount['word'] }}</span>
-          </div>
-          <div class="title-item">
-            <span class="front">{{ t('menu.counter.characters') }}:</span><span class="text">{{ wordCount['character'] }}</span>
-          </div>
-          <div class="title-item">
-            <span class="front">{{ t('menu.counter.paragraphs') }}:</span><span class="text">{{ wordCount['paragraph'] }}</span>
-          </div>
-        </template>
-        <div
-          class="word-count"
-          @click.stop="handleWordClick"
-        >
-          <span>{{ `${HASH[show].short} ${wordCount[show]}` }}</span>
-        </div>
-      </el-tooltip>
-    </div>
-
     <div
       ref="tabContainer"
       class="scrollable-tabs"
@@ -150,12 +113,10 @@ import { Plus, Close } from '@element-plus/icons-vue'
 import { showContextMenu } from '../../contextMenu/tabs'
 import { minimizePath, restorePath, maximizePath, closePath } from '../../assets/window-controls.js'
 import { isOsx as isOsxPlatform } from '@/util'
-import { useI18n } from 'vue-i18n'
 import bus from '../../bus'
 import type { IFileState } from '@shared/types/files'
 import type { FileWordCount } from '@shared/types/files'
 
-const { t } = useI18n()
 const editorStore = useEditorStore()
 const layoutStore = useLayoutStore()
 const preferencesStore = usePreferencesStore()
@@ -186,39 +147,6 @@ const showCustomTitleBar = computed(() => {
 const wordCount = computed<FileWordCount | null>(() => {
   return currentFile.value?.wordCount ?? null
 })
-
-const HASH = {
-  word: {
-    short: 'W',
-    full: 'word'
-  },
-  character: {
-    short: 'C',
-    full: 'character'
-  },
-  paragraph: {
-    short: 'P',
-    full: 'paragraph'
-  },
-  all: {
-    short: 'A',
-    full: '(with space)character'
-  }
-}
-const show = ref<'word' | 'paragraph' | 'character' | 'all'>('word')
-
-const handleMenuClick = () => {
-  window.electron.windowControl.popupApplicationMenu({ x: 23, y: 20 })
-}
-
-const handleWordClick = () => {
-  const ITEMS = ['word', 'paragraph', 'character', 'all'] as const
-  const len = ITEMS.length
-  let index = ITEMS.indexOf(show.value)
-  index += 1
-  if (index >= len) index = 0
-  show.value = ITEMS[index]!
-}
 
 const windowIconMinimize = minimizePath
 const windowIconRestore = restorePath
@@ -632,42 +560,12 @@ onBeforeUnmount(() => {
   fill: #ffffff;
 }
 
-/* Left toolbar in tabs */
+/* Left toolbar spacing in tabs */
 .editor-tabs.has-left-toolbar {
-  padding-left: 138px;
+  padding-left: 100px;
 }
-.left-toolbar-fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 28px;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  gap: 8px;
-  -webkit-app-region: no-drag;
-}
-.frameless-titlebar-menu {
-  color: var(--sideBarColor);
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 28px;
-  padding: 0 5px;
-}
-.word-count {
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--editorColor30);
-  text-align: center;
-  line-height: 24px;
-  padding: 0 5px;
-  box-sizing: border-box;
-  transition: all 0.25s ease-in-out;
-}
-.word-count:hover {
-  background: var(--sideBarBgColor);
-  color: var(--sideBarTitleColor);
+.editor-tabs.has-menu-only {
+  padding-left: 40px;
 }
 
 /* tooltip content */

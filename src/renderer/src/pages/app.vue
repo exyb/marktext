@@ -1,5 +1,43 @@
 <template>
   <div class="editor-container">
+    <!-- Fixed left toolbar (menu button + word count) -->
+    <div
+      v-if="showTabBar && (showCustomTitleBar || wordCount)"
+      class="left-toolbar-fixed"
+    >
+      <div
+        v-if="showCustomTitleBar"
+        class="frameless-titlebar-menu"
+        @click.stop="handleMenuClick"
+      >
+        <span>&#9776;</span>
+      </div>
+      <el-tooltip
+        v-if="wordCount"
+        class="item"
+        :content="`${wordCount[show]} ${HASH[show].full + (wordCount[show] > 1 ? 's' : '')}`"
+        placement="bottom-end"
+      >
+        <template #content>
+          <div class="title-item">
+            <span class="front">{{ t('menu.counter.words') }}:</span><span class="text">{{ wordCount['word'] }}</span>
+          </div>
+          <div class="title-item">
+            <span class="front">{{ t('menu.counter.characters') }}:</span><span class="text">{{ wordCount['character'] }}</span>
+          </div>
+          <div class="title-item">
+            <span class="front">{{ t('menu.counter.paragraphs') }}:</span><span class="text">{{ wordCount['paragraph'] }}</span>
+          </div>
+        </template>
+        <div
+          class="word-count"
+          @click.stop="handleWordClick"
+        >
+          <span>{{ `${HASH[show].short} ${wordCount[show]}` }}</span>
+        </div>
+      </el-tooltip>
+    </div>
+
     <side-bar v-if="init" />
 
     <div class="editor-middle">
@@ -37,13 +75,13 @@
     </div>
 
     <!-- ✅ 拖拽条:位于正文和右侧TOC之间 -->
-    <div 
-      v-if="showRightToc && init" 
+    <div
+      v-if="showRightToc && init"
       ref="resizeHandle"
       class="resize-handle"
-    ></div>
+    />
 
-    <right-toc-panel v-if="showRightToc && init"></right-toc-panel>
+    <right-toc-panel v-if="showRightToc && init" />
   </div>
 </template>
 
@@ -61,10 +99,11 @@ import AboutDialog from '@/components/about/index.vue'
 import CommandPalette from '@/components/commandPalette/index.vue'
 import ExportSettingDialog from '@/components/exportSettings/index.vue'
 import Rename from '@/components/rename/index.vue'
-import Tweet from '@/components/tweet'
 import ImportModal from '@/components/import/index.vue'
 import bus from '@/bus'
 import { DEFAULT_STYLE } from '@/config'
+import { isOsx } from '@/util'
+import { useI18n } from 'vue-i18n'
 import { useLayoutStore } from '@/store/layout'
 import { useListenForMainStore } from '@/store/listenForMain'
 import { usePreferencesStore } from '@/store/preferences'
@@ -73,7 +112,9 @@ import { useCommandCenterStore } from '@/store/commandCenter'
 import { useProjectStore } from '@/store/project'
 import { useAutoUpdatesStore } from '@/store/autoUpdates'
 import { useNotificationStore } from '@/store/notification'
+import type { FileWordCount } from '@shared/types/files'
 
+const { t } = useI18n()
 const mainStore = useMainStore()
 const editorStore = useEditorStore()
 const preferencesStore = usePreferencesStore()
@@ -96,7 +137,7 @@ let mouseUpHandler: (() => void) | null = null
 // States from Pinia
 const { windowActive, platform, init } = storeToRefs(mainStore)
 const { showTabBar, showRightToc } = storeToRefs(layoutStore)
-const { sourceCode, theme, customCss, textDirection, zoom } = storeToRefs(preferencesStore)
+const { sourceCode, theme, customCss, textDirection, zoom, titleBarStyle } = storeToRefs(preferencesStore)
 const { projectTree } = storeToRefs(projectStore)
 const { currentFile } = storeToRefs(editorStore)
 
@@ -109,7 +150,7 @@ const isSaved = computed(() => currentFile.value?.isSaved)
 // type is `string`. The `<editor-with-tabs>` mount is still gated.
 const markdown = computed<string>(() => currentFile.value?.markdown ?? '')
 const cursor = computed(() => currentFile.value?.cursor)
-const wordCount = computed(() => currentFile.value?.wordCount)
+const wordCount = computed<FileWordCount | null>(() => currentFile.value?.wordCount ?? null)
 // `muyaIndexCursor` is loosely typed as `unknown` on the editor store; the
 // downstream prop expects `Object | undefined`. Cast at the boundary.
 const muyaIndexCursor = computed<Record<string, unknown> | undefined>(
@@ -119,6 +160,31 @@ const muyaIndexCursor = computed<Record<string, unknown> | undefined>(
 const hasCurrentFile = computed<boolean>(() => {
   return currentFile.value?.markdown !== undefined
 })
+
+const showCustomTitleBar = computed(() => {
+  return titleBarStyle.value === 'custom' && !isOsx
+})
+
+const handleMenuClick = () => {
+  window.electron.windowControl.popupApplicationMenu({ x: 23, y: 20 })
+}
+
+const HASH = {
+  word: { short: 'W', full: 'word' },
+  character: { short: 'C', full: 'character' },
+  paragraph: { short: 'P', full: 'paragraph' },
+  all: { short: 'A', full: '(with space)character' }
+}
+const show = ref<'word' | 'paragraph' | 'character' | 'all'>('word')
+
+const handleWordClick = () => {
+  const ITEMS = ['word', 'paragraph', 'character', 'all'] as const
+  const len = ITEMS.length
+  let index = ITEMS.indexOf(show.value)
+  index += 1
+  if (index >= len) index = 0
+  show.value = ITEMS[index]!
+}
 
 // Watchers
 watch(theme, (value, oldValue) => {
@@ -240,7 +306,7 @@ onMounted(async () => {
       const onMouseDown = (event: MouseEvent) => {
         event.preventDefault()
         startX = event.clientX
-        
+
         // 获取当前右侧 TOC 面板的宽度
         const tocPanel = document.querySelector('.right-toc-panel') as HTMLElement
         if (tocPanel) {
@@ -251,7 +317,7 @@ onMounted(async () => {
         mouseMoveHandler = (e: MouseEvent) => {
           const offset = startX - e.clientX  // 向左拖动增加宽度,向右减小
           const newWidth = Math.max(0, startWidth + offset)  // ✅ 最小宽度 0px
-          
+
           // 更新 store 中的宽度
           layoutStore.CHANGE_RIGHT_TOC_WIDTH(newWidth)
         }
@@ -282,7 +348,7 @@ onMounted(async () => {
 
   // 初始化拖拽条
   initResizeHandle()
-  
+
   // ✅ 监听 showRightToc 变化,重新初始化拖拽条
   watch(showRightToc, (newValue) => {
     console.log('[app.vue] showRightToc changed:', newValue, 'init:', init.value)
@@ -339,6 +405,41 @@ onBeforeUnmount(() => {
   & > .editor {
     flex: 1;
   }
+}
+
+/* Fixed left toolbar (menu button + word count) when tab bar is visible */
+.left-toolbar-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 28px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 0 5px;
+  gap: 8px;
+  -webkit-app-region: no-drag;
+}
+.frameless-titlebar-menu {
+  color: var(--sideBarColor);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 28px;
+  padding: 0 5px;
+}
+.word-count {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--editorColor30);
+  text-align: center;
+  line-height: 24px;
+  padding: 0 5px;
+  box-sizing: border-box;
+  transition: all 0.25s ease-in-out;
+}
+.word-count:hover {
+  background: var(--sideBarBgColor);
+  color: var(--sideBarTitleColor);
 }
 
 /* ✅ 拖拽条样式:位于正文和右侧TOC之间 */
