@@ -72,6 +72,7 @@
   "sourceCodeModeEnabled": false,
   "openedFilesInSidebar": true,
   "tocInFileBar": false,
+  "showMinimap": false,
 
   "searchExclusions": [],
   "searchMaxFileSize": "",

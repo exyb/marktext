@@ -179,6 +179,11 @@
           :bool="autoCheck"
           :on-change="(value) => onSelectChange('autoCheck', value)"
         />
+        <bool
+          :description="t('preferences.editor.misc.showMinimap')"
+          :bool="showMinimap"
+          :on-change="(value) => onSelectChange('showMinimap', value)"
+        />
       </template>
     </compound>
   </div>
@@ -230,7 +235,8 @@ const {
   editorLineWidth,
   defaultEncoding,
   autoGuessEncoding,
-  trimTrailingNewline
+  trimTrailingNewline,
+  showMinimap
 } = storeToRefs(preferenceStore)
 
 const onSelectChange = (type: keyof PreferencesState, value: unknown): void => {

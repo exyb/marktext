@@ -378,6 +378,11 @@
     "type": "boolean",
     "default": false
   },
+  "showMinimap": {
+    "description": "Editor--Whether to show the document minimap on the right side.",
+    "type": "boolean",
+    "default": false
+  },
   "searchExclusions": {
     "description": "Searcher--List of glob patterns to exclude from search.--internal",
     "type": "array",

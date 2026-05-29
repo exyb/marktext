@@ -100,6 +100,7 @@ export interface PreferencesState {
   sourceCodeModeEnabled: boolean
   openedFilesInSidebar: boolean
   tocInFileBar: boolean
+  showMinimap: boolean
 
   // ----- Search -----
   searchExclusions: string[]
@@ -215,6 +216,7 @@ export const usePreferencesStore = defineStore('preferences', {
     sourceCodeModeEnabled: false,
     openedFilesInSidebar: true,
     tocInFileBar: false,
+    showMinimap: false,
 
     searchExclusions: [],
     searchMaxFileSize: '',

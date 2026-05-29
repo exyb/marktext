@@ -82,6 +82,7 @@
     />
 
     <right-toc-panel v-if="showRightToc && init" />
+    <minimap-panel v-if="showMinimap && init" />
   </div>
 </template>
 
@@ -95,6 +96,7 @@ import EditorWithTabs from '@/components/editorWithTabs/index.vue'
 import TitleBar from '@/components/titleBar/index.vue'
 import SideBar from '@/components/sideBar/index.vue'
 import RightTocPanel from '@/components/sideBar/rightTocPanel.vue'
+import MinimapPanel from '@/components/minimap/index.vue'
 import AboutDialog from '@/components/about/index.vue'
 import CommandPalette from '@/components/commandPalette/index.vue'
 import ExportSettingDialog from '@/components/exportSettings/index.vue'
@@ -137,7 +139,7 @@ let mouseUpHandler: (() => void) | null = null
 // States from Pinia
 const { windowActive, platform, init } = storeToRefs(mainStore)
 const { showTabBar, showRightToc } = storeToRefs(layoutStore)
-const { sourceCode, theme, customCss, textDirection, zoom, titleBarStyle } = storeToRefs(preferencesStore)
+const { sourceCode, theme, customCss, textDirection, zoom, titleBarStyle, showMinimap } = storeToRefs(preferencesStore)
 const { projectTree } = storeToRefs(projectStore)
 const { currentFile } = storeToRefs(editorStore)
 

@@ -1,7 +1,7 @@
 <template>
   <div
     class="editor-with-tabs"
-    :style="{ 'max-width': `calc(100vw - ${effectiveSideBarWidth}px - ${effectiveRightTocWidth}px)` }"
+    :style="{ 'max-width': `calc(100vw - ${effectiveSideBarWidth}px - ${effectiveRightTocWidth}px - ${effectiveMinimapWidth}px)` }"
   >
     <tabs v-show="showTabBar" />
     <div class="container">
@@ -25,11 +25,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useLayoutStore } from '@/store/layout'
+import { usePreferencesStore } from '@/store/preferences'
 import { storeToRefs } from 'pinia'
 import Tabs from './tabs.vue'
 import Editor from './editor.vue'
 import SourceCode from './sourceCode.vue'
 import TabNotifications from './notifications.vue'
+
+const MINIMAP_WIDTH = 100
 
 defineProps<{
   markdown: string
@@ -45,8 +48,10 @@ defineProps<{
 }>()
 
 const { effectiveSideBarWidth, showRightToc, rightTocWidth } = storeToRefs(useLayoutStore())
+const { showMinimap } = storeToRefs(usePreferencesStore())
 
 const effectiveRightTocWidth = computed(() => (showRightToc.value ? rightTocWidth.value : 0))
+const effectiveMinimapWidth = computed(() => (showMinimap.value ? MINIMAP_WIDTH : 0))
 </script>
 
 <style scoped>
