@@ -26,6 +26,26 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
       }
     },
     {
+      id: 'sideBySideModeMenuItem',
+      label: t('menu.view.sideBySideMode'),
+      accelerator: keybindings.getAccelerator('view.side-by-side-mode') ?? undefined,
+      type: 'checkbox',
+      checked: false,
+      click(_item, focusedWindow) {
+        actions.toggleSideBySideMode(focusedWindow as BrowserWindow | undefined)
+      }
+    },
+    {
+      id: 'sideBySideSourceLeftMenuItem',
+      label: t('menu.view.sideBySideSourceLeft'),
+      accelerator: keybindings.getAccelerator('view.toggle-side-by-side-source-left') ?? undefined,
+      type: 'checkbox',
+      checked: false,
+      click(_item, focusedWindow) {
+        actions.toggleSideBySideSourceLeft(focusedWindow as BrowserWindow | undefined)
+      }
+    },
+    {
       id: 'typewriterModeMenuItem',
       label: t('menu.view.typewriterMode'),
       accelerator: keybindings.getAccelerator('view.typewriter-mode') ?? undefined,
@@ -81,7 +101,7 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
       accelerator: keybindings.getAccelerator('view.toggle-right-toc'),
       type: 'checkbox',
       checked: false,
-      click (item, focusedWindow) {
+      click(item, focusedWindow) {
         actions.toggleRightToc(focusedWindow)
       }
     }, {

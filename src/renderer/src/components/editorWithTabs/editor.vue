@@ -219,6 +219,7 @@ let printer: any = null
 let spellchecker: any = null
 let switchLanguageCommand: any = null
 let imageViewer: SimpleImageViewer | null = null
+let isExternalUpdate = false
 
 class SimpleImageViewer {
   container: HTMLElement
@@ -1148,6 +1149,26 @@ const handleLanguageChanged = () => {
 }
 const resizeObserverForEditor = new ResizeObserver(handleResetPaddingBottom)
 
+const silentSetMarkdown = (markdown: string) => {
+  if (!editor.value) return
+  isExternalUpdate = true
+  // Do not render cursor so the editor does not steal focus during
+  // side-by-side sync.
+  editor.value.setMarkdown(markdown, null, false)
+  isExternalUpdate = false
+}
+
+const setReadOnly = (readOnly: boolean) => {
+  if (!editor.value) return
+  const container = editor.value.container
+  container.setAttribute('contenteditable', readOnly ? 'false' : 'true')
+  if (readOnly) {
+    editor.value.blur(false, true)
+  }
+}
+
+defineExpose({ silentSetMarkdown, setReadOnly, editor })
+
 onMounted(() => {
   printer = new Printer()
   const ele = editorRef.value
@@ -1267,6 +1288,8 @@ onMounted(() => {
   bus.on('replace-misspelling', replaceMisspelling)
 
   editor.value.on('change', (changes: MuyaChange) => {
+    // Skip change events triggered by external silentSetMarkdown calls
+    if (isExternalUpdate) return
     // There is a chance that this event is fired AFTER the tab is switched. If we purely rely on this.currentFile later on
     // it can cause invalid updates. Hence, we need the id to identify changes as part of each tab
     if (!currentFile.value) return
@@ -1491,5 +1514,29 @@ onBeforeUnmount(() => {
   justify-content: center;
   cursor: grab;
   overflow: hidden;
+}
+
+/* The #ag-editor-id has a hard-coded min-width of 400px in Muya's
+   default theme. When the editor container is narrower than that
+   (e.g. narrow window, side-by-side mode, or with sidebar/toc open)
+   this causes a horizontal scrollbar. Override it so the editor always
+   adapts to its container width. */
+.editor-wrapper #ag-editor-id {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Make tables responsive in narrow containers: force the table to fill
+   the available width and allow long words (e.g. URLs, code identifiers)
+   to break so cells do not overflow the editor area. */
+.editor-wrapper #ag-editor-id table {
+  width: 100%;
+}
+
+.editor-wrapper #ag-editor-id td,
+.editor-wrapper #ag-editor-id th {
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 </style>

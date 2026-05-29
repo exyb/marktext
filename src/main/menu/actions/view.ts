@@ -52,6 +52,16 @@ export const toggleSourceCodeMode = (win: Win): void => {
   toggleTypeMode(win, 'sourceCode')
 }
 
+export const toggleSideBySideMode = (win: Win): void => {
+  toggleTypeMode(win, 'sideBySide')
+}
+
+export const toggleSideBySideSourceLeft = (win: Win): void => {
+  if (win && win.webContents) {
+    win.webContents.send('mt::toggle-view-mode-entry', 'sideBySideSourceLeft')
+  }
+}
+
 export const toggleSidebar = (win: Win): void => {
   toggleLayout(win, 'showSideBar')
 }
@@ -90,6 +100,7 @@ export const loadViewCommands = (commandManager: CommandManager): void => {
   commandManager.add(COMMANDS.VIEW_FOCUS_MODE, toggleFocusMode)
   commandManager.add(COMMANDS.VIEW_FORCE_RELOAD_IMAGES, reloadImageCache)
   commandManager.add(COMMANDS.VIEW_SOURCE_CODE_MODE, toggleSourceCodeMode)
+  commandManager.add(COMMANDS.VIEW_TOGGLE_SIDE_BY_SIDE_SOURCE_LEFT, toggleSideBySideSourceLeft)
   commandManager.add(COMMANDS.VIEW_TOGGLE_SIDEBAR, toggleSidebar)
   commandManager.add(COMMANDS.VIEW_TOGGLE_TABBAR, toggleTabBar)
   commandManager.add(COMMANDS.VIEW_TOGGLE_TOC, showTableOfContents)
@@ -142,8 +153,16 @@ export const viewLayoutChanged = (
         break
       case 'sourceCode':
         changeMenuByName('sourceCodeModeMenuItem', !!value)
+        changeMenuByName('sideBySideModeMenuItem', false)
         disableMenuByName(focusModeMenuItemId, !value)
         disableMenuByName(typewriterModeMenuItemId, !value)
+        break
+      case 'sideBySide':
+        changeMenuByName('sideBySideModeMenuItem', !!value)
+        changeMenuByName('sourceCodeModeMenuItem', false)
+        break
+      case 'sideBySideSourceLeft':
+        changeMenuByName('sideBySideSourceLeftMenuItem', !!value)
         break
       case 'typewriter':
         changeMenuByName(typewriterModeMenuItemId, value)

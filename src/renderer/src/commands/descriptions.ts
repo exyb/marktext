@@ -167,6 +167,8 @@ const COMMAND_KEY_MAP: Record<string, string> = {
   // Edit modes
   'view.toggle-source-code-mode': 'commands.view.toggleSourceCodeMode',
   'view.source-code-mode': 'commands.view.sourceCodeMode',
+  'view.side-by-side-mode': 'commands.view.sideBySideMode',
+  'view.toggle-side-by-side-source-left': 'commands.view.toggleSideBySideSourceLeft',
   'view.toggle-typewriter-mode': 'commands.view.toggleTypewriterMode',
   'view.typewriter-mode': 'commands.view.typewriterMode',
   'view.toggle-focus-mode': 'commands.view.toggleFocusMode',

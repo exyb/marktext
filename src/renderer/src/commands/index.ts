@@ -592,6 +592,18 @@ const commands: CommandDescriptor[] = [
     }
   },
   {
+    id: 'view.side-by-side-mode',
+    execute: async() => {
+      bus.emit('view:toggle-view-entry', 'sideBySide')
+    }
+  },
+  {
+    id: 'view.toggle-side-by-side-source-left',
+    execute: async() => {
+      bus.emit('view:toggle-view-entry', 'sideBySideSourceLeft')
+    }
+  },
+  {
     id: 'view.typewriter-mode',
     execute: async() => {
       focusEditorAndExecute(() => bus.emit('view:toggle-view-entry', 'typewriter'))
@@ -617,7 +629,7 @@ const commands: CommandDescriptor[] = [
   },
   {
     id: 'view.toggle-right-toc',
-    execute: async () => {
+    execute: async() => {
       bus.emit('view:toggle-layout-entry', 'showRightToc')
     }
   },

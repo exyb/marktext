@@ -115,6 +115,8 @@ export interface PreferencesState {
   typewriter: boolean
   focus: boolean
   sourceCode: boolean
+  sideBySide: boolean
+  sideBySideSourceLeft: boolean
 
   // ----- User config -----
   imageFolderPath: string
@@ -135,7 +137,7 @@ interface SetUserDataPayload {
 }
 
 interface ModeTogglePayload {
-  type: keyof PreferencesState | 'typewriter' | 'focus' | 'sourceCode'
+  type: keyof PreferencesState | 'typewriter' | 'focus' | 'sourceCode' | 'sideBySide'
   checked: boolean
 }
 
@@ -232,6 +234,8 @@ export const usePreferencesStore = defineStore('preferences', {
     typewriter: false, // typewriter mode
     focus: false, // focus mode
     sourceCode: false, // source code mode
+    sideBySide: false, // side-by-side mode
+    sideBySideSourceLeft: false, // source code on left in side-by-side mode
 
     // user configration
     imageFolderPath: '',
@@ -272,7 +276,22 @@ export const usePreferencesStore = defineStore('preferences', {
 
     TOGGLE_VIEW_MODE(entryName: keyof PreferencesState | string): void {
       const target = this as unknown as Record<string, unknown>
-      target[entryName as string] = !target[entryName as string]
+      const newValue = !target[entryName as string]
+      target[entryName as string] = newValue
+
+      // sourceCode and sideBySide are mutually exclusive
+      if (entryName === 'sourceCode' && newValue) {
+        target.sideBySide = false
+      } else if (entryName === 'sideBySide' && newValue) {
+        target.sourceCode = false
+      }
+
+      // Persist sideBySideSourceLeft preference to electron-store
+      if (entryName === 'sideBySideSourceLeft') {
+        window.electron.ipcRenderer.send('mt::set-user-preference', {
+          sideBySideSourceLeft: newValue
+        })
+      }
     },
 
     ASK_FOR_USER_PREFERENCE(): void {

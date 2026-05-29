@@ -63,6 +63,7 @@
         :cursor="cursor"
         :muya-index-cursor="muyaIndexCursor"
         :source-code="sourceCode"
+        :side-by-side="sideBySide"
         :show-tab-bar="showTabBar"
         :text-direction="textDirection"
         :platform="platform"
@@ -139,7 +140,7 @@ let mouseUpHandler: (() => void) | null = null
 // States from Pinia
 const { windowActive, platform, init } = storeToRefs(mainStore)
 const { showTabBar, showRightToc } = storeToRefs(layoutStore)
-const { sourceCode, theme, customCss, textDirection, zoom, titleBarStyle, showMinimap } = storeToRefs(preferencesStore)
+const { sourceCode, sideBySide, theme, customCss, textDirection, zoom, titleBarStyle, showMinimap } = storeToRefs(preferencesStore)
 const { projectTree } = storeToRefs(projectStore)
 const { currentFile } = storeToRefs(editorStore)
 

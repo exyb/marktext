@@ -41,6 +41,7 @@ const editor = ref<CMInstance>(null)
 const commitTimer = ref<ReturnType<typeof setTimeout> | null>(null)
 const viewDestroyed = ref(false)
 const tabId = ref<string | null>(null)
+let isExternalUpdate = false
 
 const { theme, sourceCode } = storeToRefs(preferencesStore)
 const { currentFile: currentTab } = storeToRefs(editorStore)
@@ -186,7 +187,7 @@ const handleInvalidateImageCache = () => {
 }
 
 const handleSelectAll = () => {
-  if (!sourceCode.value) {
+  if (!sourceCode.value && !preferencesStore.sideBySide) {
     return
   }
 
@@ -261,6 +262,8 @@ const handleImageAction = (payload: unknown) => {
 }
 
 const saveContent = (cm: CMInstance) => {
+  // Skip save when content is being set externally (side-by-side sync)
+  if (isExternalUpdate) return
   const { cursor, markdown: newMarkdown } = getMarkdownAndCursor(cm)
   // Attention: the cursor may be `{focus: null, anchor: null}` when press `backspace`
   const wordCount = getWordCount(newMarkdown)
@@ -353,6 +356,19 @@ onMounted(() => {
 
   listenChange()
 })
+
+const silentSetValue = (markdown: string) => {
+  if (!editor.value) return
+  const scrollInfo = editor.value.getScrollInfo()
+  const cursor = editor.value.getCursor()
+  isExternalUpdate = true
+  editor.value.setValue(markdown)
+  editor.value.setCursor(cursor)
+  editor.value.scrollTo(scrollInfo.left, scrollInfo.top)
+  isExternalUpdate = false
+}
+
+defineExpose({ silentSetValue, editor, sourceCodeContainer })
 
 onBeforeUnmount(() => {
   viewDestroyed.value = true
