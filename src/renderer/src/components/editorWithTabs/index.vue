@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref, nextTick, onBeforeUnmount } from 'vue'
+import { computed, watch, ref, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useLayoutStore } from '@/store/layout'
 import { usePreferencesStore } from '@/store/preferences'
 import { useEditorStore } from '@/store/editor'
@@ -190,6 +190,15 @@ watch(
     }
   }
 )
+
+onMounted(() => {
+  if (props.sideBySide) {
+    nextTick(() => {
+      teardownScrollSync()
+      setupScrollSync()
+    })
+  }
+})
 
 onBeforeUnmount(() => {
   teardownScrollSync()
