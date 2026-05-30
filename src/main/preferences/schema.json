@@ -383,6 +383,11 @@
     "type": "boolean",
     "default": false
   },
+  "editorLineNumbers": {
+    "description": "Editor--Whether to show line numbers in the WYSIWYG editor.",
+    "type": "boolean",
+    "default": false
+  },
   "searchExclusions": {
     "description": "Searcher--List of glob patterns to exclude from search.--internal",
     "type": "array",

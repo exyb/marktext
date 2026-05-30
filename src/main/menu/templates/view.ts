@@ -98,11 +98,11 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
     }, {
       label: t('menu.view.toggleRightToc'),
       id: 'rightTocMenuItem',
-      accelerator: keybindings.getAccelerator('view.toggle-right-toc'),
+      accelerator: keybindings.getAccelerator('view.toggle-right-toc') ?? undefined,
       type: 'checkbox',
       checked: false,
       click(item, focusedWindow) {
-        actions.toggleRightToc(focusedWindow)
+        actions.toggleRightToc(focusedWindow as BrowserWindow | undefined)
       }
     }, {
       label: t('menu.view.reloadImages'),

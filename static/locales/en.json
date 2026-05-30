@@ -421,6 +421,7 @@
         "wordWrapInToc": "Whether to enable word wrap in TOC",
         "tocInFileBar": "Whether to embed the TOC in the file sidebar",
         "showMinimap": "Whether to show the document minimap on the right side",
+        "editorLineNumbers": "Whether to show line numbers in the WYSIWYG editor",
         "fileSortBy": "Sort files in opened folder by created time, modified time and title",
         "startUpAction": "The action after MarkText startup, open the last edited content, open the specified folder or blank page",
         "restoreLayoutState": "Restore previous editor state on startup",
@@ -614,7 +615,8 @@
         "autoCheck": "Auto check",
         "autoNormalizeLineEndings": "Auto-normalize line endings to LF on open",
         "wrapCodeBlocks": "Wrap code blocks",
-        "showMinimap": "Show document minimap"
+        "showMinimap": "Show document minimap",
+        "editorLineNumbers": "Show line numbers"
       }
     },
     "image": {

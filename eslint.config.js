@@ -15,6 +15,7 @@ export default [
   {
     ignores: [
       '.claude/**',
+      '.history/**',
       'out/**',
       'dist/**',
       'src/muya/lib/assets/libs/**',

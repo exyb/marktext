@@ -184,6 +184,11 @@
           :bool="showMinimap"
           :on-change="(value) => onSelectChange('showMinimap', value)"
         />
+        <bool
+          :description="t('preferences.editor.misc.editorLineNumbers')"
+          :bool="editorLineNumbers"
+          :on-change="(value) => onSelectChange('editorLineNumbers', value)"
+        />
       </template>
     </compound>
   </div>
@@ -236,7 +241,8 @@ const {
   defaultEncoding,
   autoGuessEncoding,
   trimTrailingNewline,
-  showMinimap
+  showMinimap,
+  editorLineNumbers
 } = storeToRefs(preferenceStore)
 
 const onSelectChange = (type: keyof PreferencesState, value: unknown): void => {

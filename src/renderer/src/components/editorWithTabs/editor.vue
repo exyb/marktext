@@ -1,7 +1,7 @@
 <template>
   <div
     class="editor-wrapper"
-    :class="[{ typewriter: typewriter, focus: focus, source: sourceCode }]"
+    :class="[{ typewriter: typewriter, focus: focus, source: sourceCode, 'with-line-numbers': editorLineNumbers }]"
     :style="{
       lineHeight: lineHeight,
       fontSize: `${fontSize}px`,
@@ -11,6 +11,19 @@
     }"
     :dir="textDirection"
   >
+    <div
+      v-show="editorLineNumbers && lineNumbersData.length"
+      class="editor-line-numbers"
+    >
+      <div
+        v-for="item in lineNumbersData"
+        :key="item.key"
+        class="line-number"
+        :style="{ top: `${item.top - lineNumberScrollTop}px` }"
+      >
+        {{ item.number }}
+      </div>
+    </div>
     <div
       ref="editorRef"
       class="editor-component"
@@ -87,6 +100,7 @@
 import { ref, reactive, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import log from 'electron-log'
 import Muya from 'muya/lib'
+import ExportMarkdown from 'muya/lib/utils/exportMarkdown'
 import TablePicker from 'muya/lib/ui/tablePicker'
 import QuickInsert from 'muya/lib/ui/quickInsert'
 import CodePicker from 'muya/lib/ui/codePicker'
@@ -184,6 +198,7 @@ const {
   spellcheckerEnabled,
   spellcheckerNoUnderline,
   spellcheckerLanguage,
+  editorLineNumbers,
 
   // Edit modes
   typewriter,
@@ -204,6 +219,8 @@ const editor = ref<MuyaInstance>(null)
 const isShowClose = ref(false)
 const dialogTableVisible = ref(false)
 const imageViewerVisible = ref<boolean | null>(null)
+const lineNumbersData = ref<Array<{ key: string; number: number; top: number }>>([])
+const lineNumberScrollTop = ref(0)
 const tableChecker = reactive({
   rows: 4,
   columns: 3
@@ -220,6 +237,7 @@ let spellchecker: any = null
 let switchLanguageCommand: any = null
 let imageViewer: SimpleImageViewer | null = null
 let isExternalUpdate = false
+let lineNumberResizeObserver: ResizeObserver | null = null
 
 class SimpleImageViewer {
   container: HTMLElement
@@ -557,6 +575,87 @@ watch(sourceCode, (value, oldValue) => {
     }
   }
 })
+
+watch(editorLineNumbers, (value, oldValue) => {
+  if (value && value !== oldValue) {
+    nextTick(updateLineNumbers)
+  } else if (!value) {
+    lineNumbersData.value = []
+  }
+})
+
+// Line numbers for WYSIWYG mode
+const updateLineNumbers = () => {
+  if (!editor.value || !editorLineNumbers.value || sourceCode.value) {
+    lineNumbersData.value = []
+    return
+  }
+
+  const { contentState } = editor.value
+  const blocks = contentState?.blocks
+  if (!blocks || !editorRef.value) {
+    lineNumbersData.value = []
+    return
+  }
+
+  const editorComponent = editorRef.value
+  const editorRect = editorComponent.getBoundingClientRect()
+
+  // Calculate source line number for each top-level block.
+  let currentLine = 1
+  const blockLineMap = new Map<string, number>()
+
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i]
+    blockLineMap.set(block.key, currentLine)
+
+    const blockMarkdown = new ExportMarkdown(
+      [block],
+      contentState.listIndentation,
+      contentState.isGitlabCompatibilityEnabled
+    ).generate()
+    const blockLineCount = (blockMarkdown.match(/\n/g) || []).length
+    currentLine += blockLineCount
+
+    // Top-level blocks are separated by an empty line in exported markdown.
+    if (i < blocks.length - 1) {
+      currentLine += 1
+    }
+  }
+
+  const newLineNumbers: Array<{ key: string; number: number; top: number }> = []
+
+  blocks.forEach((block: { key: string }) => {
+    const dom = document.getElementById(block.key)
+    if (dom) {
+      const rect = dom.getBoundingClientRect()
+      const startLine = blockLineMap.get(block.key)
+      if (startLine !== undefined) {
+        newLineNumbers.push({
+          key: block.key,
+          number: startLine,
+          top: rect.top - editorRect.top + editorComponent.scrollTop
+        })
+      }
+    }
+  })
+
+  lineNumbersData.value = newLineNumbers
+}
+
+const handleEditorScroll = () => {
+  if (!editorRef.value) return
+  lineNumberScrollTop.value = editorRef.value.scrollTop
+}
+
+let lineNumberRafId: ReturnType<typeof requestAnimationFrame> | null = null
+const scheduleUpdateLineNumbers = () => {
+  if (lineNumberRafId) cancelAnimationFrame(lineNumberRafId)
+  lineNumberRafId = requestAnimationFrame(() => {
+    updateLineNumbers()
+    lineNumberRafId = null
+  })
+}
 
 // Methods
 const photoCreatorClick = (url: string) => {
@@ -1299,12 +1398,16 @@ onMounted(() => {
         Object.assign(changes, { id, blocks: editor.value.contentState.getBlocks() })
       )
     }
+    scheduleUpdateLineNumbers()
   })
 
   editor.value.on('scroll', (scrollEvent: { scrollTop: number }) => {
     if (currentFile.value) {
       editorStore.updateScrollPosition(currentFile.value.id, scrollEvent.scrollTop)
     }
+    handleEditorScroll()
+    // Update line numbers after scrolling stops so newly-visible blocks get their line numbers.
+    scheduleUpdateLineNumbers()
   })
 
   editor.value.on('heading-copy-link', ({ key }: { key: string }) => {
@@ -1371,8 +1474,20 @@ onMounted(() => {
 
   document.addEventListener('keyup', keyup)
 
+  // Line numbers resize observer
+  lineNumberResizeObserver = new ResizeObserver(() => {
+    scheduleUpdateLineNumbers()
+  })
+  if (editorRef.value) {
+    lineNumberResizeObserver.observe(editorRef.value)
+  }
+
   setWrapCodeBlocks(wrapCodeBlocks.value)
   setEditorWidth(editorLineWidth.value)
+
+  if (editorLineNumbers.value) {
+    nextTick(updateLineNumbers)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -1418,6 +1533,8 @@ onBeforeUnmount(() => {
   }
 
   resizeObserverForEditor.disconnect()
+  if (lineNumberRafId) cancelAnimationFrame(lineNumberRafId)
+  lineNumberResizeObserver?.disconnect()
 
   if (imageViewer) {
     imageViewer.destroy()
@@ -1538,5 +1655,32 @@ onBeforeUnmount(() => {
 .editor-wrapper #ag-editor-id th {
   word-break: break-word;
   overflow-wrap: break-word;
+}
+
+/* Line numbers for WYSIWYG mode */
+.editor-wrapper.with-line-numbers .editor-component {
+  padding-left: 40px;
+}
+
+.editor-line-numbers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+  font-size: 12px;
+  line-height: inherit;
+  color: var(--editorColor50);
+  user-select: none;
+}
+
+.editor-line-numbers .line-number {
+  position: absolute;
+  right: 8px;
+  text-align: right;
+  min-width: 20px;
 }
 </style>

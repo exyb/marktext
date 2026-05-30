@@ -120,7 +120,7 @@ class StateRender {
         try {
           // 保存当前的 transform 状态（从 container 的 dataset 中读取）
           let savedTransform = target.dataset.diagramTransform || null
-          
+
           // 如果 dataset 中没有，尝试从现有的 wrapper 中读取
           if (!savedTransform) {
             const existingWrapper = target.querySelector('.mermaid-wrapper')
@@ -141,7 +141,7 @@ class StateRender {
           await mermaid.run({
             nodes: [target]
           })
-          
+
           // 如果有保存的 transform，立即应用（在 addMermaidControls 之前）
           if (savedTransform) {
             const scalableElement = target.querySelector('svg')
@@ -151,7 +151,7 @@ class StateRender {
               target.classList.add('diagram-focused')
             }
           }
-          
+
           // 添加缩放和拖拽功能，并传入保存的状态
           this.addMermaidControls(target, savedTransform)
         } catch (err) {
@@ -238,12 +238,12 @@ class StateRender {
     let scale = 1
     let translateX = 0
     let translateY = 0
-    
+
     if (savedTransform) {
       // 解析 transform 字符串: "translate(xpx, ypx) scale(s)"
       const translateMatch = savedTransform.match(/translate\(([^,]+)px,\s*([^)]+)px\)/)
       const scaleMatch = savedTransform.match(/scale\(([^)]+)\)/)
-      
+
       if (translateMatch) {
         translateX = parseFloat(translateMatch[1])
         translateY = parseFloat(translateMatch[2])
@@ -252,11 +252,10 @@ class StateRender {
         scale = parseFloat(scaleMatch[1])
       }
     }
-    
+
     let isDragging = false
     let startX = 0
     let startY = 0
-    let hasTransformed = scale !== 1 || translateX !== 0 || translateY !== 0 // 根据保存的状态设置
 
     // 注意：transform 已经在 renderMermaid/renderDiagram 中应用了，这里不需要重复应用
 
@@ -266,26 +265,24 @@ class StateRender {
       if (rafId) {
         cancelAnimationFrame(rafId)
       }
-      
+
       rafId = requestAnimationFrame(() => {
         const transformValue = `translate(${translateX}px, ${translateY}px) scale(${scale})`
         scalableElement.style.transform = transformValue
         scalableElement.style.transformOrigin = 'top left'
-        
+
         // 将 transform 状态保存到 container 的 dataset 中，以便重新渲染时恢复
         container.dataset.diagramTransform = transformValue
-        
+
         // 如果有变换,添加视觉反馈
         if (scale !== 1 || translateX !== 0 || translateY !== 0) {
           container.classList.add('diagram-focused')
-          hasTransformed = true
         } else {
           container.classList.remove('diagram-focused')
-          hasTransformed = false
           // 清除保存的状态
           delete container.dataset.diagramTransform
         }
-        
+
         rafId = null
       })
     }
@@ -318,7 +315,7 @@ class StateRender {
     // 使用命名函数以便可以正确移除
     let handleMouseMove = null
     let handleMouseUp = null
-    
+
     // 鼠标拖拽
     wrapper.addEventListener('mousedown', (e) => {
       if (e.button !== 0) return // 只响应左键
@@ -329,7 +326,7 @@ class StateRender {
       e.preventDefault()
       e.stopPropagation()
       e.stopImmediatePropagation()
-      
+
       // 先移除旧的监听器（如果存在）
       if (handleMouseMove) {
         document.removeEventListener('mousemove', handleMouseMove)
@@ -342,19 +339,19 @@ class StateRender {
       wrapper.style.cursor = 'grabbing'
       // 拖拽时禁用 transition，防止残影
       scalableElement.style.transition = 'none'
-      
+
       // 定义 mousemove 处理函数（使用节流优化性能）
       let lastMoveTime = 0
       handleMouseMove = (moveEvent) => {
         if (!isDragging) return
-        
+
         // 节流：最多每 16ms (60fps) 更新一次
         const now = Date.now()
         if (now - lastMoveTime < 16) {
           return
         }
         lastMoveTime = now
-        
+
         translateX = moveEvent.clientX - startX
         translateY = moveEvent.clientY - startY
         updateTransform()
@@ -363,7 +360,7 @@ class StateRender {
         moveEvent.stopPropagation()
         moveEvent.stopImmediatePropagation()
       }
-      
+
       // 定义 mouseup 处理函数
       handleMouseUp = (upEvent) => {
         // 完全阻止事件传播，防止触发 Vue 更新
@@ -372,10 +369,10 @@ class StateRender {
           upEvent.stopPropagation()
           upEvent.stopImmediatePropagation()
         }
-        
+
         isDragging = false
         wrapper.style.cursor = 'grab'
-        
+
         // 强制应用当前的 transform，防止残影
         const currentTransform = scalableElement.style.transform
         if (currentTransform) {
@@ -383,16 +380,17 @@ class StateRender {
           scalableElement.style.transform = currentTransform
           scalableElement.style.transformOrigin = 'top left'
           // 使用 offsetWidth 强制触发重排（reflow），清除渲染残影
+          // eslint-disable-next-line no-void
           void scalableElement.offsetWidth
         }
-        
+
         // 移除监听器
         document.removeEventListener('mouseup', handleMouseUp)
         document.removeEventListener('mousemove', handleMouseMove)
         handleMouseMove = null
         handleMouseUp = null
       }
-      
+
       // 立即添加监听器
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
@@ -480,7 +478,7 @@ class StateRender {
           } else if (functionType === 'plantuml') {
             // 保存当前的 transform 状态（从 container 的 dataset 中读取）
             let savedTransform = target.dataset.diagramTransform || null
-            
+
             // 如果 dataset 中没有，尝试从现有的 wrapper 中读取
             if (!savedTransform) {
               const existingWrapper = target.querySelector('.mermaid-wrapper')
@@ -489,11 +487,11 @@ class StateRender {
                 savedTransform = existingScalable.style.transform
               }
             }
-            
+
             const diagram = render.parse(code)
             target.innerHTML = ''
             diagram.insertImgElement(target)
-            
+
             // 如果有保存的 transform，立即应用（在 addDiagramControls 之前）
             if (savedTransform) {
               const scalableElement = target.querySelector('img')
@@ -503,7 +501,7 @@ class StateRender {
                 target.classList.add('diagram-focused')
               }
             }
-            
+
             // 立即添加交互控制
             this.addDiagramControls(target, 'PlantUML', savedTransform)
           } else if (functionType === 'vega-lite') {

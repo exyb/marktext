@@ -400,7 +400,10 @@ class WindowManager extends TypedEmitter<WindowManagerEvents> {
       )
       // 在后台异步处理缓冲状态清理，不阻塞窗口关闭
       setImmediate(() => {
-        this.editorBufferStore.handleClose(win?.restoreBufferId, this.getWindowsByType('editor'))
+        this.editorBufferStore.handleClose(
+          (win as unknown as { restoreBufferId?: string })?.restoreBufferId,
+          this.getWindowsByType('editor')
+        )
       })
       this.forceClose(win)
     })

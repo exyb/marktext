@@ -26,8 +26,11 @@
       :expand-on-click-node="false"
       :indent="10"
       @node-click="handleClick"
-    ></el-tree>
-    <div v-else class="empty-toc">
+    />
+    <div
+      v-else
+      class="empty-toc"
+    >
       {{ t('sideBar.toc.empty') }}
     </div>
     <!-- ✅ 拖拽条已移到 app.vue 中 -->
@@ -35,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { Close } from '@element-plus/icons-vue'
 import { useEditorStore } from '@/store/editor'
 import { usePreferencesStore } from '@/store/preferences'
