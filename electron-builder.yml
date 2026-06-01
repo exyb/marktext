@@ -37,6 +37,7 @@ files:
   - '!eslint.config.js'
   - '!jsconfig.json'
   - '!docs/*'
+  - '!v3'
 extraResources:
   - from: build/icons
     to: icons # ends up at resources/icons/
