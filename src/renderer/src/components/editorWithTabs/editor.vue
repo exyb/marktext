@@ -584,21 +584,27 @@ watch(editorLineNumbers, (value, oldValue) => {
   }
 })
 
+// Linearly interpolate a value between two points.
+const lerp = (x: number, x0: number, x1: number, y0: number, y1: number) => {
+  if (x1 === x0) return y0
+  return y0 + ((x - x0) / (x1 - x0)) * (y1 - y0)
+}
+
 // Line numbers for WYSIWYG mode
 const updateLineNumbers = () => {
-  if (!editor.value || !editorLineNumbers.value || sourceCode.value) {
+  if (!editor.value || !editor.value.container) {
     lineNumbersData.value = []
     return
   }
 
   const { contentState } = editor.value
   const blocks = contentState?.blocks
-  if (!blocks || !editorRef.value) {
+  if (!blocks || !editor.value.container) {
     lineNumbersData.value = []
     return
   }
 
-  const editorComponent = editorRef.value
+  const editorComponent = editor.value.container
   const editorRect = editorComponent.getBoundingClientRect()
 
   // Calculate source line number for each top-level block.
@@ -644,8 +650,8 @@ const updateLineNumbers = () => {
 }
 
 const handleEditorScroll = () => {
-  if (!editorRef.value) return
-  lineNumberScrollTop.value = editorRef.value.scrollTop
+  if (!editor.value?.container) return
+  lineNumberScrollTop.value = editor.value.container.scrollTop
 }
 
 let lineNumberRafId: ReturnType<typeof requestAnimationFrame> | null = null
@@ -655,6 +661,88 @@ const scheduleUpdateLineNumbers = () => {
     updateLineNumbers()
     lineNumberRafId = null
   })
+}
+
+// Return the visible source-line range in the viewport.
+// When the exact edge falls between two known blocks we linearly interpolate
+// so that sparse `lineNumbersData` does not create huge jumps.
+const getVisibleLineRange = () => {
+  if (!editor.value?.container || !lineNumbersData.value.length) {
+    return { startLine: 1, endLine: 1 }
+  }
+  const scrollTop = editor.value.container.scrollTop
+  const viewportBottom = scrollTop + editor.value.container.clientHeight
+  const data = lineNumbersData.value
+
+  // ---- startLine (viewport top) ----
+  let prev = data[0]
+  let next = data[data.length - 1]
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].top <= scrollTop) prev = data[i]
+    if (data[i].top >= scrollTop) {
+      next = data[i]
+      break
+    }
+  }
+  const startLine =
+    prev === next
+      ? prev.number
+      : Math.round(lerp(scrollTop, prev.top, next.top, prev.number, next.number))
+
+  // ---- endLine (viewport bottom) ----
+  prev = data[0]
+  next = data[data.length - 1]
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].top <= viewportBottom) prev = data[i]
+    if (data[i].top >= viewportBottom) {
+      next = data[i]
+      break
+    }
+  }
+  const endLine =
+    prev === next
+      ? prev.number
+      : Math.round(lerp(viewportBottom, prev.top, next.top, prev.number, next.number))
+
+  return { startLine, endLine }
+}
+
+// Scroll so that `range.startLine` is positioned at the top of the viewport.
+// Interpolates between the two nearest known blocks so sparse data still works.
+const scrollToLineRange = (range: { startLine: number; endLine: number }) => {
+  const el = editor.value?.container
+  if (!el) return
+
+  if (lineNumbersData.value.length) {
+    const data = lineNumbersData.value
+    let prev = data[0]
+    let next = data[data.length - 1]
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].number <= range.startLine) prev = data[i]
+      if (data[i].number >= range.startLine) {
+        next = data[i]
+        break
+      }
+    }
+    const targetTop =
+      prev === next
+        ? prev.top
+        : lerp(range.startLine, prev.number, next.number, prev.top, next.top)
+    el.scrollTop = targetTop
+  } else {
+    const totalHeight = el.scrollHeight - el.clientHeight
+    if (totalHeight <= 0) return
+    const { contentState } = editor.value || {}
+    const blocks = contentState?.blocks
+    if (!blocks || !blocks.length) return
+    let maxLine = 1
+    blocks.forEach((block: { key: string }) => {
+      const entry = lineNumbersData.value.find(d => d.key === block.key)
+      if (entry && entry.number > maxLine) maxLine = entry.number
+    })
+    const ratio = Math.min(range.startLine / Math.max(maxLine, 1), 1)
+    el.scrollTop = ratio * totalHeight
+  }
 }
 
 // Methods
@@ -1251,10 +1339,9 @@ const resizeObserverForEditor = new ResizeObserver(handleResetPaddingBottom)
 const silentSetMarkdown = (markdown: string) => {
   if (!editor.value) return
   isExternalUpdate = true
-  // Do not render cursor so the editor does not steal focus during
-  // side-by-side sync.
   editor.value.setMarkdown(markdown, null, false)
   isExternalUpdate = false
+  scheduleUpdateLineNumbers()
 }
 
 const setReadOnly = (readOnly: boolean) => {
@@ -1266,7 +1353,7 @@ const setReadOnly = (readOnly: boolean) => {
   }
 }
 
-defineExpose({ silentSetMarkdown, setReadOnly, editor })
+defineExpose({ silentSetMarkdown, setReadOnly, editor, getVisibleLineRange, scrollToLineRange, scheduleUpdateLineNumbers })
 
 onMounted(() => {
   printer = new Printer()
@@ -1478,16 +1565,14 @@ onMounted(() => {
   lineNumberResizeObserver = new ResizeObserver(() => {
     scheduleUpdateLineNumbers()
   })
-  if (editorRef.value) {
-    lineNumberResizeObserver.observe(editorRef.value)
+  if (editor.value?.container) {
+    lineNumberResizeObserver.observe(editor.value.container)
   }
 
   setWrapCodeBlocks(wrapCodeBlocks.value)
   setEditorWidth(editorLineWidth.value)
 
-  if (editorLineNumbers.value) {
-    nextTick(updateLineNumbers)
-  }
+  nextTick(updateLineNumbers)
 })
 
 onBeforeUnmount(() => {

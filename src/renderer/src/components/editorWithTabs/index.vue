@@ -69,53 +69,83 @@ const sourceCodeRef = ref<InstanceType<typeof SourceCode> | null>(null)
 // --------------------------------------------------------------------------
 
 let isSyncingScroll = false
+let syncSource: 'muya' | 'codemirror' | null = null
 let muyaScrollTarget: HTMLElement | null = null
 let cmScrollTarget: HTMLElement | null = null
+let cmScrollElTarget: HTMLElement | null = null
+let cmWheelTarget: HTMLElement | null = null
+let syncScrollRafId: number | null = null
+let cmScrollHandler: (() => void) | null = null
+let syncLockTimer: ReturnType<typeof setTimeout> | null = null
 
 const getScrollTargets = () => {
   const muyaEditor = (editorRef.value as any)?.editor
-  // CodeMirror is configured with height:auto + viewportMargin:Infinity,
-  // so the actual scrollable element is the outer .source-code container,
-  // not CodeMirror's internal .CodeMirror-scroll.
   const cmContainer = (sourceCodeRef.value as any)?.sourceCodeContainer as HTMLElement | null
+  const cmEditor = (sourceCodeRef.value as any)?.editor
+  const cmScrollEl = (cmEditor?.getScrollerElement?.() as HTMLElement | null) ?? null
   return {
     muya: muyaEditor?.container as HTMLElement | null,
-    cm: cmContainer
+    cm: cmContainer,
+    cmScrollEl
   }
 }
 
-const syncScroll = (source: 'muya' | 'codemirror') => {
-  if (isSyncingScroll || !props.sideBySide) return
-  const { muya, cm } = getScrollTargets()
-  if (!muya || !cm) return
-
-  isSyncingScroll = true
-
-  if (source === 'muya') {
-    const ratio =
-      muya.scrollTop / Math.max(1, muya.scrollHeight - muya.clientHeight)
-    const cmMaxScroll = Math.max(1, cm.scrollHeight - cm.clientHeight)
-    cm.scrollTop = ratio * cmMaxScroll
-  } else {
-    const ratio =
-      cm.scrollTop / Math.max(1, cm.scrollHeight - cm.clientHeight)
-    const muyaMaxScroll = Math.max(1, muya.scrollHeight - muya.clientHeight)
-    muya.scrollTop = ratio * muyaMaxScroll
+const releaseSyncLock = () => {
+  isSyncingScroll = false
+  syncSource = null
+  if (syncLockTimer) {
+    clearTimeout(syncLockTimer)
+    syncLockTimer = null
   }
-
-  // Use setTimeout instead of requestAnimationFrame to ensure the flag
-  // is reset after any queued scroll events have been processed.
-  setTimeout(() => {
-    isSyncingScroll = false
-  }, 0)
 }
 
 const onMuyaScroll = () => syncScroll('muya')
 const onCmScroll = () => syncScroll('codemirror')
+const onCmWheel = () => syncScroll('codemirror')
+
+const syncScroll = (source: 'muya' | 'codemirror') => {
+  if (!props.sideBySide) return
+
+  if (isSyncingScroll && syncSource && syncSource !== source) {
+    return
+  }
+
+  const { muya, cm } = getScrollTargets()
+  if (!muya || !cm) return
+
+  if (syncScrollRafId !== null) {
+    return
+  }
+
+  syncScrollRafId = requestAnimationFrame(() => {
+    syncScrollRafId = null
+    isSyncingScroll = true
+    syncSource = source
+
+    if (source === 'muya') {
+      const muyaMax = muya.scrollHeight - muya.clientHeight
+      const cmMax = cm.scrollHeight - cm.clientHeight
+      if (muyaMax > 0 && cmMax > 0) {
+        const ratio = muya.scrollTop / muyaMax
+        cm.scrollTop = ratio * cmMax
+      }
+    } else {
+      const cmMax = cm.scrollHeight - cm.clientHeight
+      const muyaMax = muya.scrollHeight - muya.clientHeight
+      if (cmMax > 0 && muyaMax > 0) {
+        const ratio = cm.scrollTop / cmMax
+        muya.scrollTop = ratio * muyaMax
+      }
+    }
+
+    if (syncLockTimer) clearTimeout(syncLockTimer)
+    syncLockTimer = setTimeout(releaseSyncLock, 150)
+  })
+}
 
 const setupScrollSync = () => {
   teardownScrollSync()
-  const { muya, cm } = getScrollTargets()
+  const { muya, cm, cmScrollEl } = getScrollTargets()
   if (muya) {
     muya.addEventListener('scroll', onMuyaScroll, { passive: true })
     muyaScrollTarget = muya
@@ -123,6 +153,17 @@ const setupScrollSync = () => {
   if (cm) {
     cm.addEventListener('scroll', onCmScroll, { passive: true })
     cmScrollTarget = cm
+    cm.addEventListener('wheel', onCmWheel, { passive: true })
+    cmWheelTarget = cm
+  }
+  if (cmScrollEl) {
+    cmScrollEl.addEventListener('scroll', onCmScroll, { passive: true })
+    cmScrollElTarget = cmScrollEl
+  }
+  const cmEditor = (sourceCodeRef.value as any)?.editor
+  if (cmEditor) {
+    cmScrollHandler = () => syncScroll('codemirror')
+    cmEditor.on('scroll', cmScrollHandler)
   }
 }
 
@@ -135,6 +176,28 @@ const teardownScrollSync = () => {
     cmScrollTarget.removeEventListener('scroll', onCmScroll)
     cmScrollTarget = null
   }
+  if (cmWheelTarget) {
+    cmWheelTarget.removeEventListener('wheel', onCmWheel)
+    cmWheelTarget = null
+  }
+  if (cmScrollElTarget) {
+    cmScrollElTarget.removeEventListener('scroll', onCmScroll)
+    cmScrollElTarget = null
+  }
+  const cmEditor = (sourceCodeRef.value as any)?.editor
+  if (cmEditor && cmScrollHandler) {
+    cmEditor.off('scroll', cmScrollHandler)
+  }
+  cmScrollHandler = null
+  if (syncScrollRafId !== null) {
+    cancelAnimationFrame(syncScrollRafId)
+    syncScrollRafId = null
+  }
+  if (syncLockTimer) {
+    clearTimeout(syncLockTimer)
+    syncLockTimer = null
+  }
+  releaseSyncLock()
 }
 
 watch(
@@ -148,6 +211,8 @@ watch(
       nextTick(() => {
         teardownScrollSync()
         setupScrollSync()
+          ; (editorRef.value as any)?.scheduleUpdateLineNumbers?.()
+          ; (sourceCodeRef.value as any)?.scheduleUpdateLineNumbers?.()
       })
     } else {
       teardownScrollSync()

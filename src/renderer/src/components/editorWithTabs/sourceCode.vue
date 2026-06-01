@@ -368,7 +368,60 @@ const silentSetValue = (markdown: string) => {
   isExternalUpdate = false
 }
 
-defineExpose({ silentSetValue, editor, sourceCodeContainer })
+// Return the 1-based line-number range currently visible in the viewport.
+const getVisibleLineRange = () => {
+  if (!editor.value || !sourceCodeContainer.value) {
+    return { startLine: 1, endLine: 1 }
+  }
+  const cm = editor.value
+  const container = sourceCodeContainer.value
+
+  const scrollInfo = cm.getScrollInfo()
+  const cmIsScroller = scrollInfo.height > scrollInfo.clientHeight + 1
+
+  if (cmIsScroller) {
+    const startLine = cm.lineAtHeight(scrollInfo.top, 'local') + 1
+    const endLine = cm.lineAtHeight(scrollInfo.top + scrollInfo.clientHeight, 'local') + 1
+    return { startLine, endLine }
+  }
+
+  const cmWrapper = cm.getWrapperElement() as HTMLElement | null
+  const offsetTop = cmWrapper
+    ? cmWrapper.getBoundingClientRect().top - container.getBoundingClientRect().top
+    : 0
+
+  const startHeight = -offsetTop
+  const endHeight = -offsetTop + container.clientHeight
+
+  const startLine = cm.lineAtHeight(Math.max(0, startHeight), 'local') + 1
+  const endLine = cm.lineAtHeight(Math.max(0, endHeight), 'local') + 1
+
+  return { startLine, endLine }
+}
+
+const scrollToLineRange = (range: { startLine: number; endLine: number }) => {
+  if (!editor.value || !sourceCodeContainer.value) return
+  const cm = editor.value
+  const container = sourceCodeContainer.value
+
+  const scrollInfo = cm.getScrollInfo()
+  const cmIsScroller = scrollInfo.height > scrollInfo.clientHeight + 1
+
+  if (cmIsScroller) {
+    const top = cm.heightAtLine(range.startLine - 1, 'local')
+    cm.scrollTo(null, top)
+  } else {
+    const height = cm.heightAtLine(range.startLine - 1, 'local')
+    const cmWrapper = cm.getWrapperElement() as HTMLElement | null
+    const offsetTop = cmWrapper
+      ? cmWrapper.getBoundingClientRect().top - container.getBoundingClientRect().top
+      : 0
+    const wrapperContentTop = offsetTop + container.scrollTop
+    container.scrollTop = wrapperContentTop + height
+  }
+}
+
+defineExpose({ silentSetValue, editor, sourceCodeContainer, getVisibleLineRange, scrollToLineRange })
 
 onBeforeUnmount(() => {
   viewDestroyed.value = true
