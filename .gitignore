@@ -23,3 +23,6 @@ playwright-report/
 /test/temp/
 .antigravitycli/
 .antigravity/
+.codegraph/
+.history/
+hop_tasks/
