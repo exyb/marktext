@@ -147,4 +147,5 @@ run(`"${electronRebuildBin}" -f`)
 
 // ── 5. Generate minified locale files ───────────────────────────────────────
 console.log('Minifying locales...')
-run('pnpm tsx scripts/minify-locales.ts')
+const tsxBin = path.join(root, 'node_modules', '.bin', `tsx${ext}`)
+run(`"${tsxBin}" scripts/minify-locales.ts`)
