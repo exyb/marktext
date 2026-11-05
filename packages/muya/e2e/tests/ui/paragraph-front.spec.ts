@@ -1,0 +1,213 @@
+import type { Page } from '@playwright/test';
+import { expect, test } from '../fixtures/muya';
+import { getMarkdown } from '../helpers/api';
+import { editor, floats } from '../helpers/selectors';
+
+/**
+ * Hover the first paragraph so the `ParagraphFrontButton` positions its
+ * handle over it (mousemove is throttled at 300 ms, so move twice with a tick
+ * in between to guarantee the handler observes the latest cursor location —
+ * same trick as drag/paragraph-reorder.spec.ts), then quick-click the handle.
+ *
+ * `ParagraphFrontButton`'s click handler emits the `muya-front-menu` event
+ * carrying the hovered block; `ParagraphFrontMenu` subscribes and (after a
+ * 0 ms timeout) shows + renders the menu. Resolving once the first
+ * `.turn-into-item` is visible proves the menu rendered its submenu.
+ */
+async function openFrontMenu(page: Page, selector = editor.paragraph): Promise<void> {
+    const para = page.locator(selector).first();
+    const box = await para.boundingBox();
+    if (!box)
+        throw new Error('paragraph has no bounding box');
+
+    await page.mouse.move(box.x + 10, box.y + box.height / 2);
+    await page.waitForTimeout(50);
+    await page.mouse.move(box.x + 12, box.y + box.height / 2);
+
+    const wrapper = page.locator(floats.paragraphFrontButton);
+    await expect.poll(async () => wrapper.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        return r.width > 0
+            && r.height > 0
+            && Number.parseFloat((el as HTMLElement).style.opacity || '0') > 0;
+    }), { timeout: 3_000 }).toBe(true);
+
+    await page.locator(floats.paragraphFrontButtonInner).click();
+
+    await expect(
+        page.locator(`${floats.paragraphFrontMenu} .turn-into-item`).first(),
+    ).toBeVisible({ timeout: 3_000 });
+}
+
+test.describe('paragraph front button + menu', () => {
+    test('front-menu float root mounts after editor init', async ({ page }) => {
+        // The front menu is a registered baseFloat plugin. Its container is
+        // appended to the DOM at construction; we just assert it exists.
+        await expect(page.locator(floats.paragraphFrontMenu)).toHaveCount(1);
+    });
+
+    test('front-button wrapper is mounted by the plugin', async ({ page }) => {
+        // ParagraphFrontButton.init() appends a `.mu-front-button-wrapper` div
+        // to document.body at construction. Whether or not it's positioned
+        // over a paragraph depends on hover state — but the wrapper itself
+        // must exist as soon as muya.init() completes.
+        await expect(page.locator(floats.paragraphFrontButton)).toHaveCount(1);
+    });
+
+    test('hovering a paragraph positions the front button over it', async ({ page }) => {
+        await page.evaluate(() => window.muya!.setContent('a paragraph'));
+        const para = page.locator(editor.paragraph).first();
+        const wrapper = page.locator(floats.paragraphFrontButton);
+
+        await para.hover();
+        // After hover, the plugin assigns a non-zero size to the wrapper
+        // (init() sets width/height from the inner container via
+        // ResizeObserver). A zero-sized wrapper means the plugin never picked
+        // up the paragraph.
+        await expect.poll(async () => {
+            return wrapper.evaluate((el) => {
+                const r = el.getBoundingClientRect();
+                return r.width > 0 && r.height > 0;
+            });
+        }, { timeout: 3_000 }).toBe(true);
+    });
+});
+
+test.describe('paragraph front menu — Turn Into', () => {
+    for (const [label, expected, prefixLength] of [
+        ['atx-heading[class~="1"]', '# title ###\n', 2],
+        ['atx-heading[class~="2"]', '## title ###\n', 3],
+        ['paragraph', 'title\n', 0],
+    ] as const) {
+        for (const end of [7, 8]) {
+            test(`Turn Into ${label} preserves the heading body selection 7–${end}`, async ({ page }) => {
+                await page.evaluate((focus) => {
+                    window.muya!.setContent('### title ###\n');
+                    window.muya!.editor.scrollPage!.firstContentInDescendant()!.setCursor(7, focus, true);
+                }, end);
+                await openFrontMenu(page, editor.atxHeading);
+                await page.locator(`${floats.paragraphFrontMenu} .turn-into-item.${label}`).click();
+                await expect.poll(() => getMarkdown(page)).toBe(expected);
+                expect(await page.evaluate(() => window.muya!.getCursorOffset())).toEqual({
+                    anchor: { line: 0, ch: prefixLength + 3 }, focus: { line: 0, ch: prefixLength + end - 4 },
+                });
+                await page.evaluate(() => window.muya!.undo());
+                await expect.poll(() => getMarkdown(page)).toBe('### title ###\n');
+                expect(await page.evaluate(() => window.muya!.getCursorOffset())).toEqual({
+                    anchor: { line: 0, ch: 7 }, focus: { line: 0, ch: end },
+                });
+                await page.evaluate(() => window.muya!.redo());
+                await expect.poll(() => getMarkdown(page)).toBe(expected);
+                await page.keyboard.type('X');
+                await expect.poll(() => getMarkdown(page)).toBe(expected.replace('title', end === 7 ? 'titXle' : 'titXe'));
+            });
+        }
+    }
+
+    test('Turn Into heading preserves a paragraph caret inside its text', async ({ page }) => {
+        await page.evaluate(() => {
+            window.muya!.setContent('title\n');
+            window.muya!.editor.scrollPage!.firstContentInDescendant()!.setCursor(3, 3, true);
+        });
+        await openFrontMenu(page);
+        await page.locator(`${floats.paragraphFrontMenu} .turn-into-item.atx-heading[class~="2"]`).click();
+        await expect.poll(() => getMarkdown(page)).toBe('## title\n');
+        expect(await page.evaluate(() => window.muya!.getCursorOffset())).toEqual({
+            anchor: { line: 0, ch: 6 }, focus: { line: 0, ch: 6 },
+        });
+    });
+
+    test('Turn Into a different block does not reuse an unrelated caret', async ({ page }) => {
+        await page.evaluate(() => {
+            window.muya!.setContent('before\n\n### title ###\n');
+            window.muya!.editor.scrollPage!.firstContentInDescendant()!.setCursor(2, 2, true);
+        });
+        await openFrontMenu(page, editor.atxHeading);
+        await page.locator(`${floats.paragraphFrontMenu} .turn-into-item.paragraph`).click();
+        await expect.poll(() => getMarkdown(page)).toBe('before\n\ntitle\n');
+        expect(await page.evaluate(() => window.muya!.getCursorOffset())).toEqual({
+            anchor: { line: 2, ch: 5 }, focus: { line: 2, ch: 5 },
+        });
+    });
+
+    test('Turn Into → Code Block converts an empty paragraph and round-trips', async ({ page }) => {
+        // `canTurnIntoMenu` only offers code-block / diagram targets when the
+        // paragraph is EMPTY (a non-empty paragraph is limited to
+        // heading/quote/list — covered by the gating test below). Start from a
+        // single empty paragraph so the Code Block entry is present.
+        await page.evaluate(() => window.muya!.setContent([{ name: 'paragraph', text: '' }]));
+        await openFrontMenu(page);
+
+        // Submenu item selector is `div.turn-into-item.<label>` (label
+        // `code-block`).
+        await page
+            .locator(`${floats.paragraphFrontMenu} .turn-into-item.code-block`)
+            .click();
+
+        // The paragraph is replaced in place by a fenced code block
+        // (`mu-code-block` — block/commonMark/codeBlock sets this classList),
+        // wrapping the `.mu-codeblock-content` editor surface. NB: this engine
+        // does not emit `.mu-fence-code` (editor.fenceCode is a legacy alias).
+        await expect(page.locator(editor.codeBlock).first()).toBeVisible({ timeout: 3_000 });
+        await expect(
+            page.locator(`${editor.codeBlock} ${editor.codeContent}`).first(),
+        ).toBeVisible();
+        // replaceBlockByLabel swaps the block out, so no paragraph survives.
+        await expect(page.locator(editor.paragraph)).toHaveCount(0);
+
+        // Empty fenced code block round-trips to a bare ``` fence pair.
+        await expect.poll(() => getMarkdown(page)).toBe('```\n\n```\n');
+    });
+
+    test('Turn Into → Mermaid converts an empty paragraph to a diagram block and round-trips', async ({ page }) => {
+        await page.evaluate(() => window.muya!.setContent([{ name: 'paragraph', text: '' }]));
+        await openFrontMenu(page);
+
+        // Label is `diagram mermaid`; the space becomes two classes
+        // (`turn-into-item diagram mermaid`).
+        await page
+            .locator(`${floats.paragraphFrontMenu} .turn-into-item.diagram.mermaid`)
+            .click();
+
+        // Diagram block mounts its container + preview surface
+        // (block/extra/diagram sets `mu-diagram-block`).
+        await expect(page.locator(editor.diagramBlock).first()).toBeVisible({ timeout: 3_000 });
+        await expect(page.locator(editor.diagramContainer).first()).toBeVisible();
+        await expect(page.locator(editor.diagramPreview).first()).toBeVisible();
+        await expect(page.locator(editor.paragraph)).toHaveCount(0);
+
+        // Empty mermaid diagram round-trips to a ```mermaid fence.
+        await expect.poll(() => getMarkdown(page)).toBe('```mermaid\n\n```\n');
+    });
+
+    test('Turn Into menu gates code-block/diagram to EMPTY paragraphs only', async ({ page }) => {
+        // A non-empty paragraph's Turn-Into submenu is restricted by
+        // `canTurnIntoMenu`'s PARAGRAPH_TURN_INTO_REG to
+        // paragraph/heading/quote/lists — code-block and diagram entries are
+        // absent. This is the gating contract that justifies starting the two
+        // conversion tests above from an empty paragraph.
+        await page.evaluate(() => window.muya!.setContent('hello world'));
+        await openFrontMenu(page);
+
+        const menu = floats.paragraphFrontMenu;
+        await expect(page.locator(`${menu} .turn-into-item.code-block`)).toHaveCount(0);
+        await expect(page.locator(`${menu} .turn-into-item.diagram.mermaid`)).toHaveCount(0);
+        // Block-quote IS an allowed target for a non-empty paragraph.
+        await expect(page.locator(`${menu} .turn-into-item.block-quote`)).toHaveCount(1);
+    });
+
+    test('Copy as submenu stays inside a narrow viewport', async ({ page }) => {
+        // An empty paragraph offers every Turn Into icon; they must wrap
+        // instead of widening the menu past room for the submenu.
+        await page.setViewportSize({ width: 480, height: 720 });
+        await page.evaluate(() => window.muya!.setContent(''));
+        await openFrontMenu(page);
+
+        await page.locator(`${floats.paragraphFrontMenu} li.copy-as`).hover();
+        const formats = page.locator(`${floats.paragraphFrontMenu} .copy-as-menu li.item`);
+        await expect(formats).toHaveCount(3);
+        for (const format of await formats.all()) {
+            await expect(format).toBeInViewport({ ratio: 1 });
+        }
+    });
+});

@@ -1,0 +1,530 @@
+import { applyReadingMenu } from './readingMode'
+import path from 'path'
+import { app, Menu, ipcMain, BrowserWindow } from 'electron'
+import log from 'electron-log'
+import { isOsx, isWindows } from '../config'
+import { updateSidebarMenu, updateRightTocMenu } from '../menu/actions/edit'
+
+import { updateFormatMenu } from '../menu/actions/format'
+import { updateSelectionMenus, type SelectionState } from '../menu/actions/paragraph'
+import { onInternalChannel } from '../utils/internalIpc'
+import { viewLayoutChanged } from '../menu/actions/view'
+import configureMenu, { configSettingMenu } from '../menu/templates'
+import { setLanguage } from '../i18n.js'
+import type Preference from '../preferences'
+import type Keybindings from '../keyboard/shortcutHandler'
+import type { UserPreferencesPatch } from '@shared/types/preferences'
+import { RecentDocumentsStore, type RecentDocument } from './recentDocuments'
+import type { ResourceMove } from 'common/filesystem/resourceMove'
+
+const RECENTLY_USED_DOCUMENTS_FILE_NAME = 'recently-used-documents.json'
+
+export const MenuType = {
+  DEFAULT: 0,
+  EDITOR: 1,
+  SETTINGS: 2
+} as const
+
+export type MenuTypeValue = (typeof MenuType)[keyof typeof MenuType]
+
+interface WindowMenuEntry {
+  menu: Menu | null
+  type: MenuTypeValue
+}
+
+interface EditorMenuEntry extends WindowMenuEntry {
+  menu: Menu
+  type: typeof MenuType.EDITOR
+}
+
+interface AddEditorMenuOptions {
+  sourceCodeModeEnabled?: boolean
+}
+
+interface ThemeMenuChange {
+  theme?: string
+  followSystemTheme?: boolean
+}
+
+class AppMenu {
+  private _documentModes = new Map<number, boolean>()
+  private _documentPresence = new Map<number, boolean>()
+
+  private _applyDocumentMode(windowId: number, update?: (menu: Menu) => void): void {
+    const menu = this.windowMenus.get(windowId)?.menu
+    if (!menu) return
+    if (update) {
+      // Updates must see the underlying availability, not the reading-mode override.
+      applyReadingMenu(menu, false)
+      update(menu)
+    }
+    applyReadingMenu(
+      menu,
+      this._documentModes.get(windowId) ?? false,
+      this._documentPresence.get(windowId) ?? true
+    )
+  }
+
+  private readonly _preferences: Preference
+  private readonly _keybindings: Keybindings
+  private readonly _recentDocuments: RecentDocumentsStore
+  public readonly RECENTS_PATH: string
+  public readonly isOsxOrWindows: boolean
+  public activeWindowId: number
+  public windowMenus: Map<number, WindowMenuEntry>
+
+  constructor(preferences: Preference, keybindings: Keybindings, userDataPath: string) {
+    this._preferences = preferences
+    this._keybindings = keybindings
+
+    this.RECENTS_PATH = path.join(userDataPath, RECENTLY_USED_DOCUMENTS_FILE_NAME)
+    this._recentDocuments = new RecentDocumentsStore(this.RECENTS_PATH)
+    this.isOsxOrWindows = isOsx || isWindows
+    this.activeWindowId = -1
+    this.windowMenus = new Map()
+
+    this._initializeLanguage()
+
+    this._listenForIpcMain()
+  }
+
+  addRecentlyUsedDocument(filePath: string): void {
+    if (this.isOsxOrWindows) app.addRecentDocument(filePath)
+
+    const documents = this._recentDocuments.add(filePath)
+    this.updateAppMenu(documents.map((document) => document.pathname))
+  }
+
+  relocateRecentlyUsedDocuments(move: ResourceMove): void {
+    const documents = this._recentDocuments.relocate(move)
+    this.updateAppMenu(documents.map(document => document.pathname))
+  }
+
+  removeRecentlyUsedDocument(filePath: string): void {
+    const documents = this._recentDocuments.remove(filePath)
+    this.updateAppMenu(documents.map((document) => document.pathname))
+  }
+
+  getRecentDocuments(): RecentDocument[] {
+    return this._recentDocuments.read()
+  }
+
+  getRecentlyUsedDocuments(): string[] {
+    return this.getRecentDocuments().map((document) => document.pathname)
+  }
+
+  clearRecentlyUsedDocuments(): void {
+    if (this.isOsxOrWindows) app.clearRecentDocuments()
+
+    this._recentDocuments.clear()
+    this.updateAppMenu([])
+  }
+
+  addDefaultMenu(windowId: number): void {
+    const { windowMenus } = this
+    const menu = this._buildSettingMenu() // Setting menu is also the fallback menu.
+    windowMenus.set(windowId, menu)
+  }
+
+  addSettingMenu(window: BrowserWindow): void {
+    const { windowMenus } = this
+    const menu = this._buildSettingMenu()
+    windowMenus.set(window.id, menu)
+    this._applyWindowMenu(window.id, menu.menu)
+  }
+
+  addEditorMenu(window: BrowserWindow, options: AddEditorMenuOptions = {}): void {
+    const isSourceMode = !!options.sourceCodeModeEnabled
+    const { windowMenus } = this
+    const entry = this._buildEditorMenu()
+    windowMenus.set(window.id, entry)
+    const { menu } = entry
+
+    const sourceCodeModeMenuItem = menu.getMenuItemById('sourceCodeModeMenuItem')
+    if (sourceCodeModeMenuItem) {
+      sourceCodeModeMenuItem.checked = isSourceMode
+    }
+
+    if (isSourceMode) {
+      const typewriterModeMenuItem = menu.getMenuItemById('typewriterModeMenuItem')
+      const focusModeMenuItem = menu.getMenuItemById('focusModeMenuItem')
+      if (typewriterModeMenuItem) typewriterModeMenuItem.enabled = false
+      if (focusModeMenuItem) focusModeMenuItem.enabled = false
+    }
+
+    this._applyWindowMenu(window.id, menu)
+
+    const { _keybindings } = this
+    _keybindings.registerEditorKeyHandlers(window)
+
+    if (isWindows) {
+      // WORKAROUND: Window close event isn't triggered on Windows if `setIgnoreMenuShortcuts(true)` is used (Electron#32674).
+      // NB: Remove this immediately if upstream is fixed because the event may be emitted twice.
+      _keybindings.registerAccelerator(window, 'Alt+F4', (win: BrowserWindow | null) => {
+        if (win && !win.isDestroyed()) {
+          win.close()
+        }
+      })
+    }
+  }
+
+  removeWindowMenu(windowId: number): void {
+    this._documentModes.delete(windowId)
+    this._documentPresence.delete(windowId)
+    // NOTE: Shortcut handler is automatically unregistered when window is closed.
+    const { activeWindowId } = this
+    this.windowMenus.delete(windowId)
+    if (activeWindowId === windowId) {
+      this.activeWindowId = -1
+    }
+  }
+
+  getWindowMenuById(windowId: number): Menu | null {
+    const menu = this.windowMenus.get(windowId)
+    if (!menu) {
+      log.error(`getWindowMenuById: Cannot find window menu for window id ${windowId}.`)
+      throw new Error(`Cannot find window menu for id ${windowId}.`)
+    }
+    return menu.menu
+  }
+
+  has(windowId: number): boolean {
+    return this.windowMenus.has(windowId)
+  }
+
+  setActiveWindow(windowId: number): void {
+    this._applyDocumentMode(windowId)
+    if (this.activeWindowId !== windowId) {
+      // Off macOS the application menu is every window's menu bar, so a window
+      // without a menu of its own must not be pushed there — it would strip the
+      // menu bar off the editor windows behind it (#2245).
+      const menu = this.getWindowMenuById(windowId)
+      if (menu) {
+        this._setApplicationMenu(menu)
+      } else {
+        this._applyWindowMenus()
+      }
+      this.activeWindowId = windowId
+    }
+  }
+
+  updateAppMenu(recentUsedDocuments?: string[]): void {
+    if (!recentUsedDocuments) {
+      recentUsedDocuments = this.getRecentlyUsedDocuments()
+    }
+
+    // Electron does not support mutating menu objects after setMenu; rebuild them instead.
+
+    this.windowMenus.forEach((value) => {
+      const { menu: oldMenu, type } = value
+      if (type !== MenuType.EDITOR || !oldMenu) return
+
+      const { menu: newMenu } = this._buildEditorMenu(recentUsedDocuments)
+      if (!newMenu) return
+
+      updateMenuItem(oldMenu, newMenu, 'sourceCodeModeMenuItem')
+      updateMenuItem(oldMenu, newMenu, 'sideBySideModeMenuItem')
+      updateMenuItem(oldMenu, newMenu, 'typewriterModeMenuItem')
+      updateMenuItem(oldMenu, newMenu, 'focusModeMenuItem')
+      updateMenuItem(oldMenu, newMenu, 'sideBarMenuItem')
+      updateMenuItem(oldMenu, newMenu, 'tabBarMenuItem')
+
+      value.menu = newMenu
+    })
+
+    this._reapplyMenus()
+  }
+
+  /** Rebuild menus so accelerator changes appear in every window and the macOS application menu. */
+  updateKeybindings(): void {
+    const recentUsedDocuments = this.getRecentlyUsedDocuments()
+    this.windowMenus.forEach((value) => {
+      const { menu: oldMenu, type } = value
+
+      let newMenu: Menu | null
+      if (type === MenuType.EDITOR) {
+        if (!oldMenu) return
+        const { menu: rebuilt } = this._buildEditorMenu(recentUsedDocuments)
+        if (!rebuilt) return
+
+        updateMenuItem(oldMenu, rebuilt, 'sourceCodeModeMenuItem')
+        updateMenuItem(oldMenu, rebuilt, 'typewriterModeMenuItem')
+        updateMenuItem(oldMenu, rebuilt, 'focusModeMenuItem')
+        updateMenuItem(oldMenu, rebuilt, 'sideBarMenuItem')
+        updateMenuItem(oldMenu, rebuilt, 'tabBarMenuItem')
+        newMenu = rebuilt
+      } else if (type === MenuType.SETTINGS) {
+        newMenu = this._buildSettingMenu().menu
+        if (!newMenu) return
+      } else {
+        return
+      }
+
+      value.menu = newMenu
+    })
+
+    this._reapplyMenus()
+  }
+
+  updateLineEndingMenu(windowId: number, lineEnding: string): void {
+    const menus = this.getWindowMenuById(windowId)
+    if (!menus) return
+    const crlfMenu = menus.getMenuItemById('crlfLineEndingMenuEntry')
+    const lfMenu = menus.getMenuItemById('lfLineEndingMenuEntry')
+    if (lineEnding === 'crlf') {
+      if (crlfMenu) crlfMenu.checked = true
+    } else {
+      if (lfMenu) lfMenu.checked = true
+    }
+  }
+
+  updateAlwaysOnTopMenu(windowId: number, flag: boolean): void {
+    const menus = this.getWindowMenuById(windowId)
+    if (!menus) return
+    const menu = menus.getMenuItemById('alwaysOnTopMenuItem')
+    if (menu) menu.checked = flag
+  }
+
+  updateThemeMenu = ({ theme, followSystemTheme }: ThemeMenuChange = {}): void => {
+    this.windowMenus.forEach((value) => {
+      const { menu, type } = value
+      if (type !== MenuType.EDITOR || !menu) {
+        return
+      }
+
+      const themeMenus = menu.getMenuItemById('themeMenu')
+      if (!themeMenus || !themeMenus.submenu) {
+        return
+      }
+
+      themeMenus.submenu.items.forEach((item) => {
+        if (item.type === 'radio' && typeof followSystemTheme !== 'undefined') {
+          item.enabled = !followSystemTheme
+        }
+
+        if (item.id === 'follow-system-theme' && typeof followSystemTheme !== 'undefined') {
+          item.checked = followSystemTheme
+        }
+
+        if (item.type === 'radio' && typeof theme !== 'undefined') {
+          item.checked = item.id === theme
+        } else if (item.id && item.id === theme) {
+          item.checked = true
+        }
+      })
+    })
+  }
+
+  updateAutoSaveMenu = (autoSave: boolean): void => {
+    this.windowMenus.forEach((value) => {
+      const { menu, type } = value
+      if (type !== MenuType.EDITOR || !menu) {
+        return
+      }
+
+      const autoSaveMenu = menu.getMenuItemById('autoSaveMenuItem')
+      if (!autoSaveMenu) {
+        return
+      }
+      autoSaveMenu.checked = autoSave
+    })
+  }
+
+  _buildEditorMenu(recentUsedDocuments: string[] | null = null): EditorMenuEntry {
+    if (!recentUsedDocuments) {
+      recentUsedDocuments = this.getRecentlyUsedDocuments()
+    }
+
+    const menuTemplate = configureMenu(this._keybindings, this._preferences, recentUsedDocuments)
+    const menu = Menu.buildFromTemplate(menuTemplate)
+    return { menu, type: MenuType.EDITOR }
+  }
+
+  _buildSettingMenu(): WindowMenuEntry {
+    if (isOsx) {
+      const menuTemplate = configSettingMenu(this._keybindings)
+      const menu = Menu.buildFromTemplate(menuTemplate)
+      return { menu, type: MenuType.SETTINGS }
+    }
+    return { menu: null, type: MenuType.SETTINGS }
+  }
+
+  _setApplicationMenu(menu: Menu): void {
+    Menu.setApplicationMenu(menu)
+    this._applyWindowMenus()
+  }
+
+  _reapplyMenus(): void {
+    for (const id of this.windowMenus.keys()) this._applyDocumentMode(id)
+    const active = this.windowMenus.get(this.activeWindowId)
+    if (active?.menu && active.menu !== Menu.getApplicationMenu()) {
+      this._setApplicationMenu(active.menu)
+    } else {
+      this._applyWindowMenus()
+    }
+  }
+
+  /**
+   * Off macOS `Menu.setApplicationMenu` is `getAllWindows().map(w =>
+   * w.setMenu(menu))`, and a window created afterwards inherits the application
+   * menu as well, so windows that must differ have to be set back by hand.
+   */
+  _applyWindowMenus(): void {
+    if (isOsx) return
+
+    const applicationMenu = Menu.getApplicationMenu()
+    this.windowMenus.forEach(({ menu }, windowId) => {
+      if (menu === applicationMenu) return
+      this._applyWindowMenu(windowId, menu)
+    })
+  }
+
+  _applyWindowMenu(windowId: number, menu: Menu | null): void {
+    if (isOsx) return
+
+    const window = BrowserWindow.fromId(windowId)
+    if (!window || window.isDestroyed()) return
+
+    if (menu) {
+      window.setMenu(menu)
+    } else {
+      window.removeMenu()
+    }
+  }
+
+  async _initializeLanguage(): Promise<void> {
+    try {
+      const currentLanguage = this._preferences.getItem<string>('language')
+      if (currentLanguage) {
+        setLanguage(currentLanguage)
+        log.info(`Main process language initialized to: ${currentLanguage}`)
+      }
+    } catch (error) {
+      log.error('Failed to initialize main process language:', error)
+    }
+  }
+
+  _listenForIpcMain(): void {
+    ipcMain.on('mt::update-document-mode', (event, readOnly: boolean, hasDocument = true) => {
+      const win = BrowserWindow.fromWebContents(event.sender)
+      if (!win) return
+      this._documentModes.set(win.id, readOnly)
+      this._documentPresence.set(win.id, hasDocument)
+      this._applyDocumentMode(win.id)
+    })
+    ipcMain.on('mt::add-recently-used-document', (_e, pathname: string) => {
+      this.addRecentlyUsedDocument(pathname)
+    })
+    ipcMain.handle('mt::get-recently-used-documents', () => this.getRecentDocuments())
+    ipcMain.on('mt::remove-recently-used-document', (_e, pathname: string) => {
+      this.removeRecentlyUsedDocument(pathname)
+    })
+    ipcMain.on('mt::update-line-ending-menu', (_e, windowId: number, lineEnding: string) => {
+      if (!this.has(windowId)) return
+      this._applyDocumentMode(windowId, () => this.updateLineEndingMenu(windowId, lineEnding))
+    })
+    ipcMain.on(
+      'mt::update-format-menu',
+      (_e, windowId: number, formats: Record<string, boolean>) => {
+        if (!this.has(windowId)) {
+          log.error(`UpdateApplicationMenu: Cannot find window menu for window id ${windowId}.`)
+          return
+        }
+        this._applyDocumentMode(windowId, (menu) => updateFormatMenu(menu, formats))
+      }
+    )
+    ipcMain.on('mt::update-sidebar-menu', (_e, windowId: number, value: unknown) => {
+      log.info(`[main/menu] mt::update-sidebar-menu windowId=${windowId} value=${value}`)
+      if (!this.has(windowId)) {
+        log.error(`UpdateApplicationMenu: Cannot find window menu for window id ${windowId}.`)
+        return
+      }
+      const menu = this.getWindowMenuById(windowId)
+      if (menu) updateSidebarMenu(menu, value)
+    })
+    ipcMain.on('mt::update-right-toc-menu', (_e, windowId: number, value: unknown) => {
+      log.info(`[main/menu] mt::update-right-toc-menu windowId=${windowId} value=${value}`)
+      if (!this.has(windowId)) {
+        log.error(`UpdateApplicationMenu: Cannot find window menu for window id ${windowId}.`)
+        return
+      }
+      updateRightTocMenu(this.getWindowMenuById(windowId), value)
+    })
+    ipcMain.on(
+      'mt::view-layout-changed',
+      (_e, windowId: number, viewSettings: Record<string, unknown>) => {
+        log.info(`[main/menu] mt::view-layout-changed windowId=${windowId}`, viewSettings)
+        if (!this.has(windowId)) {
+          log.error(`UpdateApplicationMenu: Cannot find window menu for window id ${windowId}.`)
+          return
+        }
+        this._applyDocumentMode(windowId, (menu) => viewLayoutChanged(menu, viewSettings))
+      }
+    )
+    ipcMain.on('mt::editor-selection-changed', (_e, windowId: number, changes: SelectionState) => {
+      if (!this.has(windowId)) {
+        log.error(`UpdateApplicationMenu: Cannot find window menu for window id ${windowId}.`)
+        return
+      }
+      this._applyDocumentMode(windowId, (menu) => updateSelectionMenus(menu, changes))
+    })
+
+    // In source-code mode the Paragraph and Format commands act on the hidden
+    // WYSIWYG engine, so grey them out; on return to WYSIWYG they are re-enabled
+    // and the next selection change refines them (#3531).
+    ipcMain.on('mt::set-editor-format-menus-enabled', (_e, windowId: number, enabled: boolean) => {
+      if (!this.has(windowId)) return
+      this._applyDocumentMode(windowId, (menu) => {
+        for (const id of ['paragraphMenuEntry', 'formatMenuItem']) {
+          const entry = menu.getMenuItemById(id)
+          entry?.submenu?.items.forEach((item) => (item.enabled = enabled))
+        }
+      })
+    })
+
+    onInternalChannel('menu-add-recently-used', (pathname: string) => {
+      this.addRecentlyUsedDocument(pathname)
+    })
+    ipcMain.on('menu-clear-recently-used', () => {
+      this.clearRecentlyUsedDocuments()
+    })
+
+    onInternalChannel('broadcast-preferences-changed', async(prefs: UserPreferencesPatch) => {
+      if (prefs.theme !== undefined || prefs.followSystemTheme !== undefined) {
+        this.updateAppMenu()
+      }
+      if (prefs.autoSave !== undefined) {
+        this.updateAutoSaveMenu(prefs.autoSave)
+      }
+      if (prefs.texMathDollars !== undefined || prefs.githubAlerts !== undefined) {
+        this.updateAppMenu()
+      }
+      if (prefs.showPandocConvert !== undefined) {
+        this.updateAppMenu()
+      }
+      if (prefs.language) {
+        setLanguage(prefs.language)
+        this.updateAppMenu()
+      }
+    })
+  }
+}
+
+const updateMenuItem = (oldMenus: Menu, newMenus: Menu, id: string): void => {
+  const oldItem = oldMenus.getMenuItemById(id)
+  const newItem = newMenus.getMenuItemById(id)
+  if (oldItem && newItem) {
+    newItem.checked = oldItem.checked
+  }
+}
+
+
+// Each window owns a menu; switch the application menu when the active window changes.
+
+export const getMenuItemById = (menuId: string): Electron.MenuItem | null => {
+  const menus = Menu.getApplicationMenu()
+  if (!menus) return null
+  return menus.getMenuItemById(menuId)
+}
+
+export default AppMenu

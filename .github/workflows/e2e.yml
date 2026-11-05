@@ -3,6 +3,10 @@ name: E2E Test
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    # This is the desktop electron Playwright suite. packages/muya has its
+    # own e2e under packages/muya/e2e/ wired via muya-e2e.yml.
+    paths-ignore:
+      - 'packages/muya/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,7 +16,7 @@ jobs:
   e2e:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install System Dependencies
         run: |

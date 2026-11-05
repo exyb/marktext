@@ -1,8 +1,10 @@
 node_modules
+packages/*/node_modules
 dist
 out
+packages/*/out
+packages/*/dist
 .DS_Store
-.prettierignore
 .eslintcache
 *.log*
 .trae/
@@ -13,9 +15,11 @@ temp/
 logs/
 test-results/
 playwright-report/
+.playwright-mcp/
 *.min.json
 .claude/settings.local.json
 .claude/
+.codex/
 .agents/
 .agent/
 *_*.md

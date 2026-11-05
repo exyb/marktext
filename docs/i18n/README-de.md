@@ -1,4 +1,4 @@
-<p align="center"><img src="../../static/logo-small.png" alt="MarkText" width="100" height="100"></p>
+<p align="center"><img src="../assets/logo-small.png" alt="MarkText" width="100" height="100"></p>
 
 <h1 align="center">MarkText</h1>
 
@@ -26,7 +26,7 @@
   </a>
   <!-- Downloads latest release -->
   <a href="https://github.com/marktext/marktext/releases/latest">
-    <img src="https://img.shields.io/github/downloads/marktext/marktext/v0.17.1/total.svg" alt="latest download">
+    <img src="https://img.shields.io/github/downloads/marktext/marktext/latest/total.svg" alt="latest download">
   </a>
   <!-- sponsors -->
   <a href="https://opencollective.com/marktext">
@@ -36,7 +36,7 @@
 
 <div align="center">
   <h3>
-    <a href="https://github.com/marktext/marktext">
+    <a href="https://marktext.me">
       Website
     </a>
     <span> | </span>
@@ -90,6 +90,9 @@
   <a href="README-ar.md#readme">
     <span>:saudi_arabia:</span>
   </a>
+  <a href="README-bn.md#readme">
+    <span>:bangladesh:</span>
+  </a>
 </div>
 
 <div align="center">
@@ -108,8 +111,12 @@ MarkText ist ein Open-Source-Markdown-Editor, der von seiner Community unterstü
 
 **Besonderer Sponsor**
 
-| [<img src="https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/sponsors/serpapi.png" width="150">](https://serpapi.com/?utm_source=marktext) | [Extrahieren Sie Daten von Google und anderen Suchmaschinen über unsere schnelle, einfache und vollständige API.](https://serpapi.com/?utm_source=marktext) |
-| ------------- |:-------------|
+<table>
+<tr>
+<td width="182"><a href="https://serpapi.com/?utm_source=marktext"><img src="../assets/sponsors/serpapi.png" width="150"></a></td>
+<td align="left"><a href="https://serpapi.com/?utm_source=marktext">Extrahieren Sie Daten von Google und anderen Suchmaschinen über unsere schnelle, einfache und vollständige API.</a></td>
+</tr>
+</table>
 
 ## Screenshot
 
@@ -122,23 +129,23 @@ MarkText ist ein Open-Source-Markdown-Editor, der von seiner Community unterstü
 - Markdown-Erweiterungen wie mathematische Ausdrücke (KaTeX), Front Matter und Emojis.
 - Unterstützung für Absatz- und Inline-Stil-Kurzbefehle zur Verbesserung der Schreibeffizienz.
 - Ausgabe von **HTML**- und **PDF**-Dateien.
-- Verschiedene [Themes](../end-user/THEMES.md): **Cadmium Light**, **Material Dark** usw.
+- Verschiedene [Themes](https://marktext.me/docs/themes): **Cadmium Light**, **Material Dark** usw.
 - Verschiedene Bearbeitungsmodi: **Quellcode-Modus**, **Schreibmaschinen-Modus**, **Fokus-Modus**.
 - Bilder direkt aus der Zwischenablage einfügen.
 
 ## Download und Installation
 
-![Plattform](https://img.shields.io/static/v1.svg?label=Platform&message=Linux-64%20|%20macOS-64%20|%20Win-32%20|%20Win-64&style=for-the-badge)
+![Plattform](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%2Farm64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-| ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)                                                                                                  | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)                                                                                                          | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)                                                                                                                        |
-|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x64.dmg.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x64.dmg) | [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-setup.exe.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-setup.exe) | [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x86_64.AppImage.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x86_64.AppImage) |
+|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |              ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)              |
+| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
-Möchtest du die neuen Funktionen der neuesten Version sehen? Bitte sieh dir das [CHANGELOG](../CHANGELOG.md) an.
+Möchtest du die neuen Funktionen der neuesten Version sehen? Bitte sieh dir das [CHANGELOG](https://marktext.me/docs/changelog) an.
 
 #### macOS
 
-Du kannst entweder die neueste `marktext-%version%.dmg` von der [Release-Seite](https://github.com/marktext/marktext/releases/latest) herunterladen oder MarkText über [**homebrew cask**](https://github.com/caskroom/homebrew-cask) installieren. Für Homebrew-Cask muss [Homebrew](https://brew.sh/) installiert sein.
+Du kannst entweder die neueste `marktext-mac-(arm64|x64)-%version%.dmg` von der [Release-Seite](https://github.com/marktext/marktext/releases/latest) herunterladen oder MarkText über [**homebrew cask**](https://github.com/caskroom/homebrew-cask) installieren. Für Homebrew-Cask muss [Homebrew](https://brew.sh/) installiert sein.
 
 ```bash
 brew install --cask mark-text
@@ -146,7 +153,7 @@ brew install --cask mark-text
 
 #### Windows
 
-Lade MarkText einfach über den Setup-Assistenten (`marktext-setup-%version%.exe`) herunter und installiere es, wähle dabei zwischen Benutzer- oder systemweiter Installation. Alternativ kann MarkText über einen Paketmanager wie [Chocolatey](https://chocolatey.org/) oder [Winget](https://docs.microsoft.com/en-us/windows/package-manager/winget/) installiert werden.
+Lade MarkText einfach über den Setup-Assistenten (`marktext-win-(x64|arm64)-%version%-setup.exe`) herunter und installiere es, wähle dabei zwischen Benutzer- oder systemweiter Installation. Alternativ kann MarkText über einen Paketmanager wie [Chocolatey](https://chocolatey.org/) oder [Winget](https://docs.microsoft.com/en-us/windows/package-manager/winget/) installiert werden.
 
 Für Chocolatey muss [Chocolatey](https://chocolatey.org/install) installiert sein:
 
@@ -162,7 +169,7 @@ winget install marktext
 
 #### Linux
 
-Bitte folge den [Linux-Installationsanweisungen](../end-user/LINUX.md).
+Bitte folge den [Linux-Installationsanweisungen](https://marktext.me/docs/installation).
 
 #### Andere
 
@@ -170,17 +177,16 @@ Alle Binärdateien für Linux, macOS und Windows können von der [Release-Seite]
 
 ## Entwicklung
 
-Wenn du MarkText selbst erstellen möchtest, sieh dir bitte unsere [Build-Anleitung](../dev/BUILD.md) an.
+Wenn du MarkText selbst erstellen möchtest, sieh dir bitte unsere [Build-Anleitung](https://marktext.me/docs/dev/build) an.
 
-- [Benutzerdokumentation](../README.md)
-- [Entwicklerdokumentation](../dev/README.md)
+- [Benutzerdokumentation](https://marktext.me/docs/introduction)
+- [Entwicklerdokumentation](https://marktext.me/docs/dev/overview)
 
 Bei Fragen zu MarkText kannst du gerne ein Issue erstellen. Bitte verwende dabei das Standardformat. Natürlich ist auch ein direkter PR sehr willkommen.
 
 ## Beitrag
 
 MarkText befindet sich in der Entwicklung. Bitte lies den [Beitragsleitfaden](../../.github/CONTRIBUTING.md) vor dem Erstellen eines Pull Requests. Möchtest du Funktionen zu MarkText hinzufügen? Sieh dir unsere [Roadmap](https://github.com/marktext/marktext/projects) und offene Issues an.
-
 
 ## Mitwirkende
 

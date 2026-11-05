@@ -3,6 +3,7 @@ name: Test
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    # Desktop export tests consume Muya's HTML, so Muya-only changes must run them too.
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -10,9 +11,14 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Run Unit Tests

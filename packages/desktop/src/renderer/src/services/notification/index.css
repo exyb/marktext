@@ -1,0 +1,101 @@
+.el-notification.mt-notification {
+  --el-notification-width: 350px;
+  --el-notification-radius: 5px;
+  --el-notification-title-font-size: 14px;
+  --el-notification-content-font-size: 14px;
+  --el-notification-group-margin-right: 0;
+  width: min(350px, calc(100vw - 32px));
+  min-width: 280px;
+  border: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.el-notification.mt-notification .el-notification__title,
+.el-notification.mt-notification .el-notification__content {
+  color: inherit;
+}
+
+.el-notification.mt-notification .el-notification__title {
+  font-weight: 600;
+}
+
+.el-notification.mt-notification .el-notification__icon {
+  padding: 4px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+}
+
+.el-notification.mt-notification .el-notification__closeBtn {
+  color: inherit;
+  opacity: 0.8;
+}
+
+.el-notification.mt-notification .el-notification__closeBtn:hover {
+  color: inherit;
+  opacity: 1;
+}
+
+.mt-notification__body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mt-notification__text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.el-notification.mt-notification .mt-notification__confirm {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  /* The close icon sits 15px from the root edge; the content ends at the 26px
+     right padding, so pull the action out to match its right edge. */
+  margin-right: -11px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+}
+
+.el-notification.mt-notification .mt-notification__confirm:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* The toast is filled with the notification colour, which the text colour is
+   chosen to contrast with. */
+.el-notification.mt-notification .mt-notification__confirm:focus-visible {
+  outline-color: currentColor;
+}
+
+.el-notification.mt-notification.mt-primary {
+  background-color: var(--notificationPrimaryBg);
+  color: var(--notificationPrimaryColor);
+}
+
+.el-notification.mt-notification.mt-info {
+  background-color: var(--notificationInfoBg);
+  color: var(--notificationInfoColor);
+}
+
+.el-notification.mt-notification.mt-warn {
+  background-color: var(--notificationWarningBg);
+  color: var(--notificationWarningColor);
+}
+
+.el-notification.mt-notification.mt-error {
+  background-color: var(--notificationErrorBg);
+  color: var(--notificationErrorColor);
+}
+
+.mt-notification__action {
+  display: block;
+  margin-top: 8px;
+  color: var(--themeColor);
+  text-decoration: underline;
+  font: inherit;
+  text-align: left;
+}

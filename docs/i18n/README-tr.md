@@ -1,4 +1,4 @@
-<p align="center"><img src="../../static/logo-small.png" alt="MarkText" width="100" height="100"></p>
+<p align="center"><img src="../assets/logo-small.png" alt="MarkText" width="100" height="100"></p>
 
 <h1 align="center">MarkText</h1>
 
@@ -26,7 +26,7 @@
   </a>
   <!-- Downloads latest release -->
   <a href="https://github.com/marktext/marktext/releases/latest">
-    <img src="https://img.shields.io/github/downloads/marktext/marktext/v0.17.1/total.svg" alt="latest download">
+    <img src="https://img.shields.io/github/downloads/marktext/marktext/latest/total.svg" alt="latest download">
   </a>
   <!-- sponsors -->
   <a href="https://opencollective.com/marktext">
@@ -36,7 +36,7 @@
 
 <div align="center">
   <h3>
-    <a href="https://github.com/marktext/marktext">
+    <a href="https://marktext.me">
       Website
     </a>
     <span> | </span>
@@ -90,6 +90,9 @@
   <a href="README-ar.md#readme">
     <span>:saudi_arabia:</span>
   </a>
+  <a href="README-bn.md#readme">
+    <span>:bangladesh:</span>
+  </a>
 </div>
 
 <div align="center">
@@ -109,8 +112,12 @@ MarkText, topluluğunun desteğiyle hayata geçirilmiş açık kaynaklı bir Mar
 
 **Özel Destekçi**
 
-| [<img src="https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/sponsors/serpapi.png" width="150">](https://serpapi.com/?utm_source=marktext) | [Hızlı, kolay ve kapsamlı API'miz ile Google ve diğer arama motorlarından veri çekin.](https://serpapi.com/?utm_source=marktext) |
-| ------------- |:-------------|
+<table>
+<tr>
+<td width="182"><a href="https://serpapi.com/?utm_source=marktext"><img src="../assets/sponsors/serpapi.png" width="150"></a></td>
+<td align="left"><a href="https://serpapi.com/?utm_source=marktext">Hızlı, kolay ve kapsamlı API'miz ile Google ve diğer arama motorlarından veri çekin.</a></td>
+</tr>
+</table>
 
 ## Ekran Görüntüsü
 
@@ -123,23 +130,23 @@ MarkText, topluluğunun desteğiyle hayata geçirilmiş açık kaynaklı bir Mar
 - Matematiksel ifadeler (KaTeX), front matter ve emoji gibi Markdown uzantıları.
 - Yazma verimliliğinizi artırmak için paragraf ve satır içi stil kısayolları.
 - **HTML** ve **PDF** dosyası çıktısı.
-- Çeşitli [temalar](../end-user/THEMES.md): **Cadmium Light**, **Material Dark** vb.
+- Çeşitli [temalar](https://marktext.me/docs/themes): **Cadmium Light**, **Material Dark** vb.
 - Çeşitli düzenleme modları: **Kaynak Kodu modu**, **Daktilo modu**, **Odak modu**.
 - Görüntüleri doğrudan panodan yapıştırın.
 
 ## İndirme ve Kurulum
 
-![Platform](https://img.shields.io/static/v1.svg?label=Platform&message=Linux-64%20|%20macOS-64%20|%20Win-32%20|%20Win-64&style=for-the-badge)
+![Platform](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%2Farm64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-| ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)                                                                                                  | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)                                                                                                          | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)                                                                                                                        |
-|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x64.dmg.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x64.dmg) | [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-setup.exe.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-setup.exe) | [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x86_64.AppImage.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x86_64.AppImage) |
+|               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)               |               ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)               |              ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)              |
+| :-----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
-En son sürümün yeni özelliklerini görmek ister misiniz? Lütfen [CHANGELOG](../CHANGELOG.md)'a bakın.
+En son sürümün yeni özelliklerini görmek ister misiniz? Lütfen [CHANGELOG](https://marktext.me/docs/changelog)'a bakın.
 
 #### macOS
 
-[Sürümler sayfasından](https://github.com/marktext/marktext/releases/latest) en son `marktext-%version%.dmg`'yi indirebilir veya [**homebrew cask**](https://github.com/caskroom/homebrew-cask) kullanarak MarkText'i kurabilirsiniz. Homebrew-Cask kullanmak için [Homebrew](https://brew.sh/)'ün yüklü olması gerekir.
+[Sürümler sayfasından](https://github.com/marktext/marktext/releases/latest) en son `marktext-mac-(arm64|x64)-%version%.dmg`'yi indirebilir veya [**homebrew cask**](https://github.com/caskroom/homebrew-cask) kullanarak MarkText'i kurabilirsiniz. Homebrew-Cask kullanmak için [Homebrew](https://brew.sh/)'ün yüklü olması gerekir.
 
 ```bash
 brew install --cask mark-text
@@ -147,7 +154,7 @@ brew install --cask mark-text
 
 #### Windows
 
-MarkText'i kurulum sihirbazı (`marktext-setup-%version%.exe`) aracılığıyla indirip kurun ve kullanıcı başına mı yoksa sistem genelinde mi kurulacağını seçin. Alternatif olarak [Chocolatey](https://chocolatey.org/) veya [Winget](https://docs.microsoft.com/en-us/windows/package-manager/winget/) gibi bir paket yöneticisi kullanabilirsiniz.
+MarkText'i kurulum sihirbazı (`marktext-win-(x64|arm64)-%version%-setup.exe`) aracılığıyla indirip kurun ve kullanıcı başına mı yoksa sistem genelinde mi kurulacağını seçin. Alternatif olarak [Chocolatey](https://chocolatey.org/) veya [Winget](https://docs.microsoft.com/en-us/windows/package-manager/winget/) gibi bir paket yöneticisi kullanabilirsiniz.
 
 Chocolatey kullanmak için [Chocolatey](https://chocolatey.org/install)'nin yüklü olması gerekir:
 
@@ -163,7 +170,7 @@ winget install marktext
 
 #### Linux
 
-Lütfen [Linux kurulum talimatlarını](../end-user/LINUX.md) takip edin.
+Lütfen [Linux kurulum talimatlarını](https://marktext.me/docs/installation) takip edin.
 
 #### Diğer
 
@@ -171,17 +178,16 @@ Linux, macOS ve Windows için tüm ikili dosyalar [sürümler sayfasından](http
 
 ## Geliştirme
 
-MarkText'i kendiniz derlemek istiyorsanız lütfen [derleme talimatlarımıza](../dev/BUILD.md) bakın.
+MarkText'i kendiniz derlemek istiyorsanız lütfen [derleme talimatlarımıza](https://marktext.me/docs/dev/build) bakın.
 
-- [Kullanıcı belgeleri](../README.md)
-- [Geliştirici belgeleri](../dev/README.md)
+- [Kullanıcı belgeleri](https://marktext.me/docs/introduction)
+- [Geliştirici belgeleri](https://marktext.me/docs/dev/overview)
 
 MarkText hakkında sorularınız varsa bir issue yazabilirsiniz. Bunu yaparken issue açarken görünen varsayılan formatı kullanın. Elbette doğrudan bir PR gönderirseniz çok memnun oluruz.
 
 ## Katkı
 
 MarkText geliştirme aşamasındadır. Bir pull request oluşturmadan önce [Katkı Kılavuzunu](../../.github/CONTRIBUTING.md) okuduğunuzdan emin olun. MarkText'e özellik eklemek ister misiniz? [Yol haritamıza](https://github.com/marktext/marktext/projects) ve açık issue'lara bakın.
-
 
 ## Katkıda Bulunanlar
 

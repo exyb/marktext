@@ -1,0 +1,45 @@
+name: Muya E2E
+
+# Chromium covers the host page in packages/muya/e2e/host/.
+# Firefox/WebKit have local exclusions described in packages/muya/e2e/README.md.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'packages/muya/src/**'
+      - 'packages/muya/e2e/**'
+      - 'packages/muya/examples/**'
+      - 'packages/muya/package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/muya-e2e.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - name: Install Playwright browser (${{ matrix.project }})
+        run: pnpm -C packages/muya/e2e exec playwright install --with-deps ${{ matrix.project }}
+
+      - name: Run Playwright (${{ matrix.project }})
+        run: pnpm -C packages/muya/e2e exec playwright test --project=${{ matrix.project }}
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: muya-e2e-report-${{ matrix.project }}
+          path: packages/muya/e2e/playwright-report/
+          retention-days: 7

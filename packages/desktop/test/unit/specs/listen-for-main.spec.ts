@@ -1,0 +1,125 @@
+import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+
+// `listenForMain` pulls in the layout store, which transitively imports the
+// preferences store and `@/config` (the latter reads `window.path.sep` at
+// module load). Stub the contextBridge surfaces before the hoisted imports run
+// so the store graph can load.
+vi.hoisted(() => {
+  const w = globalThis as unknown as { window?: { path?: { sep: string } } }
+  w.window ??= {}
+  w.window.path ??= { sep: '/' }
+})
+
+import { useListenForMainStore } from '@/store/listenForMain'
+import { useLayoutStore } from '@/store/layout'
+import bus from '@/bus'
+
+// `EDITOR_EDIT_ACTION('findInFolder')` routes through `layoutStore.SET_LAYOUT`,
+// which (because `showSideBar` is defined) reads `window.marktext.env`,
+// fires `window.electron.ipcRenderer.send`, and persists the sidebar
+// visibility preference (another `ipcRenderer.send`). The renderer i18n module
+// (pulled in via the preferences store) also reads `window.electron.ipcRenderer`
+// at import time. Provide spies for all of it.
+const win = window as unknown as {
+  electron?: { ipcRenderer: { on: Mock; send: Mock; invoke: Mock } }
+  marktext?: { env: { windowId: number } }
+}
+
+describe('listenForMain store EDITOR_EDIT_ACTION', () => {
+  beforeEach(() => {
+    win.electron = {
+      ipcRenderer: {
+        on: vi.fn(),
+        send: vi.fn(),
+        invoke: vi.fn(() => Promise.resolve(false))
+      }
+    }
+    win.marktext = { env: { windowId: 1 } }
+    setActivePinia(createPinia())
+  })
+
+  afterEach(() => {
+    delete win.electron
+    delete win.marktext
+    vi.clearAllMocks()
+  })
+
+  it('registers edit commands once across repeated setup and cleans up both sources', () => {
+    const listeners = new Set<(event: unknown, type: string) => void>()
+    const ipc = win.electron?.ipcRenderer
+    if (!ipc) throw new Error('Missing IPC mock')
+    ipc.on.mockImplementation((_channel, listener) => {
+      listeners.add(listener)
+      return () => listeners.delete(listener)
+    })
+    const store = useListenForMainStore()
+    const findNext = vi.fn()
+    bus.on('findNext', findNext)
+    const stopFirst = store.LISTEN_FOR_EDIT()
+    const stopSecond = store.LISTEN_FOR_EDIT()
+    stopFirst()
+    expect(listeners.size).toBe(1)
+    for (const listener of listeners) listener({}, 'findNext')
+    expect(findNext).toHaveBeenCalledTimes(1)
+    bus.emit('mt::editor-edit-action', 'findNext')
+    expect(findNext).toHaveBeenCalledTimes(2)
+    stopSecond()
+    expect(listeners.size).toBe(0)
+    bus.emit('mt::editor-edit-action', 'findNext')
+    expect(findNext).toHaveBeenCalledTimes(2)
+    bus.off('findNext', findNext)
+  })
+
+  it("opens the search side panel for 'findInFolder'", () => {
+    const layoutStore = useLayoutStore()
+    expect(layoutStore.rightColumn).toBe('files')
+    expect(layoutStore.showSideBar).toBe(false)
+
+    useListenForMainStore().EDITOR_EDIT_ACTION('findInFolder')
+
+    expect(layoutStore.rightColumn).toBe('search')
+    expect(layoutStore.showSideBar).toBe(true)
+  })
+
+  it('does not mutate the layout for a non-findInFolder action', () => {
+    const layoutStore = useLayoutStore()
+    layoutStore.$patch({ rightColumn: 'files', showSideBar: false })
+
+    useListenForMainStore().EDITOR_EDIT_ACTION('insertParagraph')
+
+    expect(layoutStore.rightColumn).toBe('files')
+    expect(layoutStore.showSideBar).toBe(false)
+  })
+
+  it.each(['', 'toc', 'unknown'])('normalizes unsupported sidebar page %j as files', (rightColumn) => {
+    const layoutStore = useLayoutStore()
+    layoutStore.SET_LAYOUT({
+      rightColumn,
+      showSideBar: true,
+      showTabBar: true,
+      sideBarWidth: 320
+    })
+    expect(layoutStore.rightColumn).toBe('files')
+    expect(layoutStore.effectiveSideBarWidth).toBe(320)
+    layoutStore.TOGGLE_LAYOUT_ENTRY('showSideBar')
+    expect(layoutStore.effectiveSideBarWidth).toBe(0)
+    layoutStore.TOGGLE_LAYOUT_ENTRY('showSideBar')
+    expect(layoutStore.effectiveSideBarWidth).toBe(320)
+  })
+
+  it('repeated search layout requests keep the search page expanded', () => {
+    const layoutStore = useLayoutStore()
+    layoutStore.LISTEN_FOR_LAYOUT()
+    const listener = win.electron?.ipcRenderer.on.mock.calls.find(
+      ([channel]) => channel === 'mt::set-view-layout'
+    )?.[1]
+    if (!listener) throw new Error('Layout listener was not registered')
+    listener({}, { rightColumn: 'search' })
+    listener({}, { rightColumn: 'search' })
+    expect(layoutStore.rightColumn).toBe('search')
+    expect(layoutStore.showSideBar).toBe(true)
+    expect(layoutStore.effectiveSideBarWidth).toBeGreaterThanOrEqual(220)
+  })
+
+})

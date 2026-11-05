@@ -1,0 +1,22 @@
+import { encodeDirnameForUrl, localPathToFileUrl } from './fileUrl'
+
+// Resolve an <a>'s href for export / static print (#1688): a relative local
+// path is resolved to an absolute `file://` URL against the current document
+// directory so a link to a local file still works after the exported HTML / PDF
+// is moved out of the source folder. In-page fragments, any URL scheme, and
+// already-absolute paths are left untouched.
+export function resolveLocalLinkHref(href: string): string {
+  if (!href) return href
+  if (href.startsWith('#')) return href
+  // Windows drive-absolute path (C:\… / C:/…) → file://. Checked before the
+  // scheme test, since `C:` otherwise reads as a URL scheme.
+  if (/^[a-z]:[\\/]/i.test(href)) return `file://${href}`
+  if (/^(?:\/|\\\\)/.test(href)) return `file://${href}`
+  if (/^[a-z][a-z\d+.-]*:/i.test(href)) return href
+  // Relative local path — resolve against the document directory. `join`, not
+  // `resolve`: pathe's `resolve` turns a UNC `//host/share` root into `/host/share`.
+  if (window.DIRNAME) {
+    return localPathToFileUrl(window.path.join(encodeDirnameForUrl(window.DIRNAME), href))
+  }
+  return href
+}

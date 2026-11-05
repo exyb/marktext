@@ -1,0 +1,1150 @@
+# Markdown Syntax
+
+This guide introduces Markdown syntax supported by MarkText and the optional extensions controlled by Preferences → Markdown.
+
+**Contents**
+
+- [CommonMark](#commonmark)
+  - [Headings](#headings)
+  - [Paragraphs](#paragraphs)
+  - [Breaks](#breaks)
+  - [Horizontal Rule](#horizontal-rule)
+  - [Emphasis](#emphasis)
+  - [Links](#links)
+  - [Images](#images)
+  - [Blockquotes](#blockquotes)
+  - [Lists](#lists)
+  - [Fancy lists](#fancy-lists)
+  - [Code](#code)
+  - [Raw HTML](#raw-html)
+  - [Escaping with backslashes](#escaping-with-backslashes)
+- [GitHub Flavored Markdown](#github-flavored-markdown)
+  - [Strikethrough](#strikethrough)
+  - [Todo List](#todo-list)
+  - [Tables](#tables)
+  - [Extended autolinks](#extended-autolinks)
+- [Pandoc Extension](#pandoc-extension)
+  - [Footnotes](#footnotes)
+  - [Superscript and subscript](#superscript-and-subscript)
+  - [Math Formulas](#math-formulas)
+- [Others](#others)
+  - [GitHub Alerts](#github-alerts)
+  - [Highlight](#highlight)
+  - [Inline diff](#inline-diff)
+  - [Multiline blockquote](#multiline-blockquote)
+  - [Keyboard Keys](#keyboard-keys)
+  - [Emojis](#emojis)
+  - [Front Matter](#front-matter)
+  - [Named Anchors](#named-anchors)
+  - [Syntax highlighting](#syntax-highlighting)
+  - [Diagrams](#diagrams)
+- [Credits](#credits)
+
+## CommonMark
+
+The base syntax below is defined by [CommonMark](https://spec.commonmark.org/0.31.2/).
+
+### Headings
+
+ATX headings use one to six `#` characters followed by a space:
+
+```markdown
+# Heading 1
+
+## Heading 2
+
+### Heading 3
+
+#### Heading 4
+
+##### Heading 5
+
+###### Heading 6
+```
+
+Setext headings use an underline: `=` for level 1 or `-` for level 2.
+
+<!-- prettier-ignore -->
+```markdown
+Heading 1
+=========
+
+Heading 2
+---------
+```
+
+### Paragraphs
+
+Just write normal text:
+
+```markdown
+Lorem ipsum dolor sit amet, graecis denique ei vel, at duo primis mandamus. Et legere ocurreret pri, animal tacimates complectitur ad cum. Cu eum inermis inimicus efficiendi. Labore officiis his ex, soluta officiis concludaturque ei qui, vide sensibus vim ad.
+```
+
+<br>
+
+### Breaks
+
+A blank line separates paragraphs. Multiple blank lines do not guarantee extra visual spacing.
+
+Two trailing spaces or a backslash at the end of a line create a hard line break:
+
+<!-- prettier-ignore -->
+```markdown
+First line with a backslash.\
+Second line.
+```
+
+A single newline within a paragraph is a soft line break. MarkText's `softNewlineAsSpace` preference controls whether it displays as a space or a line break.
+
+### Horizontal Rule
+
+The HTML `<hr>` element is for creating a "thematic break" between paragraph-level elements. In markdown, you can use of the following for this purpose:
+
+- `___`: three consecutive underscores
+- `---`: three consecutive dashes
+- `***`: three consecutive asterisks
+
+Renders to:
+
+---
+
+---
+
+---
+
+<br>
+
+### Emphasis
+
+#### Bold
+
+For emphasizing a snippet of text with a heavier font-weight.
+
+The following snippet of text is **rendered as bold text**.
+
+```markdown
+**rendered as bold text**
+```
+
+renders to:
+
+**rendered as bold text**
+
+#### Italics
+
+For emphasizing a snippet of text with italics.
+
+The following snippet of text is _rendered as italicized text_.
+
+```markdown
+_rendered as italicized text_
+```
+
+renders to:
+
+_rendered as italicized text_
+
+#### CJK emphasis compatibility
+
+**Preferences → Markdown → Compatibility → CJK emphasis compatibility**
+(`cjkEmphasis`) is enabled by default. It relaxes emphasis boundaries for
+Chinese, Japanese and Korean text, allowing `中文**"加粗"**中文`,
+`中文__加粗__中文` and bold labels such as `**来源：**2013年`.
+
+This is a syntax extension beyond CommonMark. Disable it to use CommonMark's
+emphasis boundaries in the editor, outline, HTML export and rich-text copying.
+The setting does not rewrite Markdown source. Standard mixed-script emphasis
+such as `a**中文**b` works in either mode.
+
+### Links
+
+#### Autolinks
+
+Autolinks are absolute URIs and email addresses inside `<` and `>`. They are parsed as links, where the URI or email address itself is used as the link's label.
+
+```markdown
+<http://foo.bar.baz>
+```
+
+Renders to:
+
+<http://foo.bar.baz>
+
+These angle-bracket autolinks belong to CommonMark. GFM also recognizes some bare URLs and email addresses; see [Extended autolinks](#extended-autolinks).
+
+#### Inline links
+
+```markdown
+[Assemble](http://assemble.io)
+```
+
+Renders to (hover over the link, there is no tooltip):
+
+[Assemble](http://assemble.io)
+
+#### Link titles
+
+```markdown
+[Upstage](https://github.com/upstage/ 'Visit Upstage!')
+```
+
+Renders to (hover over the link, there should be a tooltip):
+
+[Upstage](https://github.com/upstage/ 'Visit Upstage!')
+
+### Images
+
+Images have a similar syntax to links but include a preceding exclamation point.
+
+```markdown
+![MarkText](https://raw.githubusercontent.com/marktext/marktext/develop/packages/desktop/static/icon.png)
+```
+
+![MarkText](https://raw.githubusercontent.com/marktext/marktext/develop/packages/desktop/static/icon.png)
+
+or
+
+```markdown
+![Alt text](https://raw.githubusercontent.com/marktext/marktext/develop/packages/desktop/static/icon.png 'MarkText logo')
+```
+
+![Alt text](https://raw.githubusercontent.com/marktext/marktext/develop/packages/desktop/static/icon.png 'MarkText logo')
+
+Like links, images also have a reference-style syntax
+
+```markdown
+![Alt text][id]
+```
+
+![Alt text][id]
+
+With a reference later in the document defining the URL location:
+
+[id]: https://raw.githubusercontent.com/marktext/marktext/develop/packages/desktop/static/icon.png 'MarkText logo'
+
+```markdown
+[id]: https://raw.githubusercontent.com/marktext/marktext/develop/packages/desktop/static/icon.png 'MarkText logo'
+```
+
+<br>
+
+### Blockquotes
+
+Used for defining a section of quoting text from another source, within your document.
+
+To create a blockquote, use `>` before any text you want to quote.
+
+```markdown
+> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante
+```
+
+Renders to:
+
+> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.
+
+Blockquotes can also be nested:
+
+```markdown
+> Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
+> Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+>
+> > Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor
+> > odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
+> >
+> > > Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
+> > > Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+```
+
+Renders to:
+
+> Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
+> Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+>
+> > Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor
+> > odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
+> >
+> > > Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
+> > > Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+
+### Lists
+
+#### Unordered
+
+A list of items in which the order of the items does not explicitly matter.
+
+You may use any of the following symbols to denote bullets for each list item:
+
+```markdown
+- valid bullet
+
+* valid bullet
+
+- valid bullet
+```
+
+For example
+
+```markdown
+- Lorem ipsum dolor sit amet
+- Consectetur adipiscing elit
+- Integer molestie lorem at massa
+- Facilisis in pretium nisl aliquet
+- Nulla volutpat aliquam velit
+  - Phasellus iaculis neque
+  - Purus sodales ultricies
+  - Vestibulum laoreet porttitor sem
+  - Ac tristique libero volutpat at
+- Faucibus porta lacus fringilla vel
+- Aenean sit amet erat nunc
+- Eget porttitor lorem
+```
+
+Renders to:
+
+- Lorem ipsum dolor sit amet
+- Consectetur adipiscing elit
+- Integer molestie lorem at massa
+- Facilisis in pretium nisl aliquet
+- Nulla volutpat aliquam velit
+  - Phasellus iaculis neque
+  - Purus sodales ultricies
+  - Vestibulum laoreet porttitor sem
+  - Ac tristique libero volutpat at
+- Faucibus porta lacus fringilla vel
+- Aenean sit amet erat nunc
+- Eget porttitor lorem
+
+#### Ordered
+
+A list of items in which the order of items does explicitly matter.
+
+```markdown
+1. Lorem ipsum dolor sit amet
+2. Consectetur adipiscing elit
+3. Integer molestie lorem at massa
+4. Facilisis in pretium nisl aliquet
+5. Nulla volutpat aliquam velit
+6. Faucibus porta lacus fringilla vel
+7. Aenean sit amet erat nunc
+8. Eget porttitor lorem
+```
+
+Renders to:
+
+1. Lorem ipsum dolor sit amet
+2. Consectetur adipiscing elit
+3. Integer molestie lorem at massa
+4. Facilisis in pretium nisl aliquet
+5. Nulla volutpat aliquam velit
+6. Faucibus porta lacus fringilla vel
+7. Aenean sit amet erat nunc
+8. Eget porttitor lorem
+
+#### Time-saving Tip
+
+Sometimes lists change, and when they do it's a pain to re-order all of the numbers. Markdown solves this problem by allowing you to simply use `1.` before each item in the list.
+
+For example:
+
+```markdown
+1. Lorem ipsum dolor sit amet
+1. Consectetur adipiscing elit
+1. Integer molestie lorem at massa
+1. Facilisis in pretium nisl aliquet
+1. Nulla volutpat aliquam velit
+1. Faucibus porta lacus fringilla vel
+1. Aenean sit amet erat nunc
+1. Eget porttitor lorem
+```
+
+Automatically re-numbers the items and renders to:
+
+1. Lorem ipsum dolor sit amet
+2. Consectetur adipiscing elit
+3. Integer molestie lorem at massa
+4. Facilisis in pretium nisl aliquet
+5. Nulla volutpat aliquam velit
+6. Faucibus porta lacus fringilla vel
+7. Aenean sit amet erat nunc
+8. Eget porttitor lorem
+
+### Fancy lists
+
+Pandoc's `fancy_lists` extension numbers ordered lists with letters and Roman
+numerals as well as digits. MarkText reads these lists when **Preferences →
+Markdown → Letter and Roman numeral lists** is enabled. With the setting off,
+the markers stay paragraph text.
+
+```markdown
+a. Lower-case letters
+b. continue the list
+
+IV) Upper-case Roman numerals with a parenthesis
+V) continue the list
+
+(1) Digits in parentheses
+(2) continue the list
+
+#. A hash numbers the item
+#. without writing the number
+```
+
+A list keeps the marker style and delimiter of its first item. A top-level
+list starts at the value of its first marker, so `C.` starts at three. Pandoc
+reads a list nested in an item only when it starts at one, so MarkText numbers
+new sublists from `1.`, `a.`, or `i.`. A `#`
+list shows digits, and MarkText keeps writing `#.`, `#)`, or `(#)` when you
+save it. MarkText writes two spaces after a capital letter followed by a
+period, as in `B.  Russell`, because pandoc reads `B. Russell` with one space
+as a paragraph.
+
+#### Outlines
+
+An outline is a list that starts at `I.`. To start one, type `I.` and two
+spaces at the start of a paragraph. In an outline, <kbd>Tab</kbd> at the start of
+an item moves it one level deeper and <kbd>Shift</kbd>+<kbd>Tab</kbd> moves it back.
+Each level has its own marker:
+
+`I.` → `A.` → `1.` → `a.` → `i.` → `(1)` → `(a)`
+
+<!-- prettier-ignore -->
+```markdown
+I.  Introduction
+    A.  Background
+        1. Early work
+            a. Sources
+II. Method
+```
+
+When two lists in the same style follow each other, MarkText ends the first one
+with an empty HTML comment, `<!-- -->`, so pandoc reads them back as two lists.
+
+<br>
+
+### Code
+
+#### Inline code
+
+Wrap inline snippets of code with a single backtick: <code>`</code>.
+
+For example, to show `<div></div>` inline with other text, just wrap it in backticks.
+
+```markdown
+For example, to show `<div></div>` inline with other text, just wrap it in backticks.
+```
+
+#### "Fenced" code block
+
+Three consecutive backticks, referred to as "code fences", are used to denote multiple lines of code: <code>```</code>.
+
+For example, this:
+
+<pre>
+```html
+Example text here...
+```
+</pre>
+
+Appears like this when viewed in a browser:
+
+```markdown
+Example text here...
+```
+
+#### Indented code
+
+You may also indent several lines of code by at least four spaces, but this is not recommended as it is harder to read, harder to maintain, and doesn't support syntax highlighting.
+
+Example:
+
+```markdown
+    // Some comments
+    line 1 of code
+    line 2 of code
+    line 3 of code
+```
+
+    // Some comments
+    line 1 of code
+    line 2 of code
+    line 3 of code
+
+### Raw HTML
+
+In the editor, `isHtmlEnabled` in Markdown preferences controls HTML rendering. Exported HTML is sanitized as well, so unsafe markup is not passed through unchanged.
+
+Example:
+
+```markdown
+**Visit <a href="https://github.com">GitHub</a>.**
+```
+
+Renders to:
+
+**Visit <a href="https://github.com">GitHub</a>.**
+
+### Escaping with backslashes
+
+Any ASCII punctuation character may be escaped using a single backslash.
+
+Example:
+
+```markdown
+\*this is not italic\*
+```
+
+Renders to:
+
+\*this is not italic\*
+
+<br>
+
+## GitHub Flavored Markdown
+
+[GFM](https://github.github.com/gfm/) extends CommonMark. The features below cover its table, task-list, strikethrough and extended-autolink syntax.
+
+### Strikethrough
+
+In GFM you can do strikethrough by wrapping the text with double tildes.
+
+```markdown
+~~Strike through this text.~~
+```
+
+Which renders to:
+
+~~Strike through this text.~~
+
+### Todo List
+
+```markdown
+- [ ] Lorem ipsum dolor sit amet
+- [ ] Consectetur adipiscing elit
+- [ ] Integer molestie lorem at massa
+```
+
+Renders to:
+
+- [ ] Lorem ipsum dolor sit amet
+- [ ] Consectetur adipiscing elit
+- [ ] Integer molestie lorem at massa
+
+**Links in todo lists**
+
+```markdown
+- [ ] [Headings](#headings)
+- [ ] [Links](#links)
+- [ ] [Images](#images)
+```
+
+Renders to:
+
+- [ ] [Headings](#headings)
+- [ ] [Links](#links)
+- [ ] [Images](#images)
+
+<br>
+
+### Tables
+
+Tables are created by adding pipes as dividers between each cell, and by adding a line of dashes (also separated by bars) beneath the header _(this line of dashes is required)_.
+
+- pipes do not need to be vertically aligned.
+- pipes on the left and right sides of the table are sometimes optional
+- use three or more dashes in each separator cell for readability
+
+Example:
+
+```markdown
+| Option | Description                                                               |
+| ------ | ------------------------------------------------------------------------- |
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default.    |
+| ext    | extension to be used for dest files.                                      |
+```
+
+Renders to:
+
+| Option | Description                                                               |
+| ------ | ------------------------------------------------------------------------- |
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default.    |
+| ext    | extension to be used for dest files.                                      |
+
+#### Aligning cells
+
+**Center text in a column**
+
+To center the text in a column, add a colon to the left and right of the dashes in the row beneath the header.
+
+```markdown
+| Option |                                Description                                |
+| :----: | :-----------------------------------------------------------------------: |
+|  data  | path to data files to supply the data that will be passed into templates. |
+| engine |  engine to be used for processing templates. Handlebars is the default.   |
+|  ext   |                   extension to be used for dest files.                    |
+```
+
+| Option |                                Description                                |
+| :----: | :-----------------------------------------------------------------------: |
+|  data  | path to data files to supply the data that will be passed into templates. |
+| engine |  engine to be used for processing templates. Handlebars is the default.   |
+|  ext   |                   extension to be used for dest files.                    |
+
+**Right-align the text in a column**
+
+To right-align the text in a column, add a colon to the right of the dashes in the row beneath the header.
+
+```markdown
+| Option |                                                               Description |
+| -----: | ------------------------------------------------------------------------: |
+|   data | path to data files to supply the data that will be passed into templates. |
+| engine |    engine to be used for processing templates. Handlebars is the default. |
+|    ext |                                      extension to be used for dest files. |
+```
+
+Renders to:
+
+| Option |                                                               Description |
+| -----: | ------------------------------------------------------------------------: |
+|   data | path to data files to supply the data that will be passed into templates. |
+| engine |    engine to be used for processing templates. Handlebars is the default. |
+|    ext |                                      extension to be used for dest files. |
+
+<br>
+
+### Extended autolinks
+
+GFM recognizes supported bare URLs and email addresses without the angle brackets used by CommonMark autolinks:
+
+```markdown
+https://example.com
+www.example.com
+reader@example.com
+```
+
+## Pandoc Extension
+
+The options below expose the supported Pandoc-style [footnote](https://pandoc.org/MANUAL.html#footnotes), [superscript/subscript](https://pandoc.org/MANUAL.html#superscripts-and-subscripts) and [math](https://pandoc.org/MANUAL.html#math) extensions. Each switch is configured in Preferences → Markdown.
+
+### Footnotes
+
+Enable **Footnote** in Preferences → Markdown (`footnote`, off by default). A reference uses `[^label]`, with its definition elsewhere in the document:
+
+```markdown
+A sentence with a note.[^note]
+
+[^note]: The note text.
+```
+
+### Superscript and subscript
+
+Enable **Superscript/subscript** in Preferences → Markdown (`superSubScript`, off by default). Wrap superscript text in `^` and subscript text in a single `~`:
+
+```markdown
+Water H~2~O and the value x^2^.
+```
+
+### Math Formulas
+
+MarkText exposes math parsing through these Pandoc-style extension switches in Preferences → Markdown:
+
+| Preference               | Default | Syntax                                                           |
+| ------------------------ | ------- | ---------------------------------------------------------------- |
+| `texMathDollars`         | `true`  | `$…$` inline and `$$…$$` display math                            |
+| `texMathGfm`             | `false` | GitHub-compatible ``$`…`$`` inline math and fenced `math` blocks |
+| `texMathSingleBackslash` | `false` | `\(…\)` inline and `\[…\]` display math                          |
+| `texMathDoubleBackslash` | `false` | `\\(…\\)` inline and `\\[…\\]` display math                      |
+
+#### Inline Math Formulas
+
+Wrap one line LaTeX with a single dollar sign: <code>$</code>.
+
+```markdown
+For example, to show $\alpha \beta \gamma$ inline with other text, just wrap it in dollar signs.
+```
+
+#### Block Math Formulas
+
+Two consecutive dollar signs are used to denote multiple lines of math formulas: <code>$$</code>.
+
+For example, this:
+
+```markdown
+$$
+R_x=\begin{pmatrix}
+1 & 0 & 0 & 0\\
+0 & cos(a) & -sin(a) & 0\\
+0 & sin(a) & cos(a) & 0\\
+0 & 0 & 0 & 1
+\end{pmatrix}
+$$
+
+or
+
+$$
+m=\frac{b_y-a_y}{b_x-a_x}
+$$
+```
+
+#### TeX Delimiters
+
+Documents written for Pandoc, MathJax or KaTeX auto-render often delimit their
+formulas with backslashes instead of dollar signs. MarkText reads both
+spellings, each behind its own switch under **Preferences → Markdown →
+Extensions**:
+
+| Preference               | Inline    | Display   |
+| ------------------------ | --------- | --------- |
+| `texMathSingleBackslash` | `\(…\)`   | `\[…\]`   |
+| `texMathDoubleBackslash` | `\\(…\\)` | `\\[…\\]` |
+
+Both are **off by default** in MarkText. Turning the first one on
+costs you the ability to escape `(` and `[`, so a line such as `- \[TODO\]`
+starts reading as a formula rather than as literal brackets — which is why you
+have to ask for it.
+
+A formula written this way is saved the way you wrote it: MarkText does not
+rewrite `\[…\]` into `$$…$$`, and the spacing inside the delimiters is left
+alone.
+
+<br>
+
+## Others
+
+Additional supported conventions and editor rendering features are grouped here. GitHub Alerts and emoji shortcodes are separate from the formal GFM extensions listed above; inline diff and multiline blockquotes follow GitLab conventions.
+
+### GitHub Alerts
+
+Since 0.22.0, MarkText supports GitHub-style alert blocks when **GitHub Alerts** is enabled in Preferences → Markdown (`githubAlerts`, off by default).
+
+```markdown
+> [!NOTE]
+> Information that is useful when reading the document.
+
+> [!TIP]
+> Advice that helps complete a task.
+
+> [!IMPORTANT]
+> Information needed to succeed.
+
+> [!WARNING]
+> A potential problem to watch for.
+
+> [!CAUTION]
+> A consequence that needs particular care.
+```
+
+With the setting enabled, use the Paragraph menu's GitHub Alerts submenu or the quick-insert and paragraph conversion menus to create or convert an alert. The alert marker is preserved in Markdown, and HTML/PDF exports render the alert styling. When disabled, the block is handled as an ordinary blockquote.
+
+### Highlight
+
+Some editors write highlighted text as `==text==`. MarkText reads this
+non-standard syntax when **Preferences → Markdown → Highlight (==text==)** is
+enabled; it stays literal text otherwise, so documents are unaffected until you
+opt in. Both the editor and the HTML/PDF export render it as `<mark>`, the same
+as an explicit `<mark>text</mark>` tag.
+
+```markdown
+==Highlight this text.==
+```
+
+Renders to:
+
+<mark>Highlight this text.</mark>
+
+### Inline diff
+
+GitLab writes tracked additions and deletions with inline diff tags. MarkText
+reads this non-standard syntax when **Preferences → Markdown → Inline diff
+({+ … +})** is enabled; it stays literal text otherwise, so documents are
+unaffected until you opt in. As in GitLab, additions get a green wash and
+deletions a red one, in the editor and in the HTML/PDF exports.
+
+```markdown
+- {+ addition 1 +}
+- [+ addition 2 +]
+- {- deletion 3 -}
+- [- deletion 4 -]
+```
+
+Renders to:
+
+- <ins> addition 1 </ins>
+- <ins> addition 2 </ins>
+- <del> deletion 3 </del>
+- <del> deletion 4 </del>
+
+The wrapping tags can be either curly braces or square brackets, but the opener
+and closer must match: `{+ … +]` is not recognized. The tagged text is rendered
+literally, so nested markdown and code spans inside the tags are not parsed. An
+empty or whitespace-only body (`{++}`) stays literal, as it does for `**`.
+
+<br>
+
+### Multiline blockquote
+
+GitLab fences a multi-line quote with `>>>` on its own line at both ends, so you
+do not have to prepend `>` to every line. MarkText reads this non-standard
+syntax when **Preferences → Markdown → Multiline blockquote (>>>)** is enabled;
+with the setting off the fence stays literal text, so a document keeps its `>>>`
+lines until you opt in. The quote renders like any other blockquote, and the
+`>>>` fence is kept verbatim when the document is saved or exported to markdown.
+
+<!-- prettier-ignore -->
+```markdown
+>>>
+If you paste a message from somewhere else
+
+that spans multiple lines,
+>>>
+```
+
+<br>
+
+### Keyboard Keys
+
+Use the HTML `<kbd>` element to label keyboard keys. This is HTML markup rather than a separate GFM syntax extension.
+
+For example, this:
+
+```markdown
+To copy, please press <kbd>CmdOrCtrl</kbd>+<kbd>C</kbd>
+
+To paste, please press <kbd>CmdOrCtrl</kbd>+<kbd>V</kbd>
+```
+
+Which renders to:
+
+To copy, please press <kbd>CmdOrCtrl</kbd>+<kbd>C</kbd>
+
+To paste, please press <kbd>CmdOrCtrl</kbd>+<kbd>V</kbd>
+
+<br>
+
+### Emojis
+
+MarkText supports emoji shortcodes and an emoji picker. :heart_eyes: :smile: :joy:
+
+To add an emojis, just surround the emoji name with colons, like this:
+
+```markdown
+:heart: :zap: :cow: :dollar: :star: :tada:
+```
+
+Which renders to:
+
+:heart: :zap: :cow: :dollar: :star: :tada:
+
+**NOTE:** MarkText provides an emoji picker with search functionality.
+
+<br>
+
+### Front Matter
+
+Front matter allows you to insert metadata to your markdown document. The front matter block must be written in the first line before everything else, like in the examples below.
+
+#### YAML
+
+YAML front matter blocks are identified by an opening and closing `---` line.
+
+```markdown
+---
+title: YAML front matter example
+key: value
+---
+
+Lorem ipsum dolor sit amet, graecis denique ei vel, at duo primis mandamus.
+```
+
+#### TOML
+
+TOML front matter blocks are identified by an opening and closing `+++` line.
+
+```markdown
++++
+title = "TOML front matter example"
+key = "value"
++++
+
+Lorem ipsum dolor sit amet, graecis denique ei vel, at duo primis mandamus.
+```
+
+#### JSON
+
+JSON front matter blocks are identified by an opening and closing `;;;` line or `{` and `}`.
+
+```markdown
+{
+"title": "JSON front matter example",
+"key": {
+"subkey1": "value 1",
+"subkey2": "value 2"
+}
+}
+
+Lorem ipsum dolor sit amet, graecis denique ei vel, at duo primis mandamus.
+```
+
+<br>
+
+### Named Anchors
+
+Named anchors enable you to jump to the specified anchor point on the same page. For example, each of these chapters:
+
+```markdown
+# Table of Contents
+
+- [Chapter 1](#chapter-1)
+- [Chapter 2](#chapter-2)
+- [Chapter 3](#chapter-3)
+```
+
+will jump to these sections:
+
+```markdown
+## Chapter 1
+
+Content for chapter one.
+
+## Chapter 2
+
+Content for chapter one.
+
+## Chapter 3 <a name="chapter-3"></a>
+
+Content for chapter one.
+```
+
+**Anchor placement**
+
+Note that placement of achors is arbitrary, you can put them anywhere you want, not just in headings. This makes adding cross-references easy when writing markdown.
+
+<br>
+
+### Syntax highlighting
+
+To activate the correct styling for the language inside the code block, simply add the file extension of the language you want to use directly after the first code "fence": <code>```js</code>, and syntax highlighting will automatically be applied in the rendered HTML (if supported by the parser). For example, to apply syntax highlighting to JavaScript code:
+
+<pre>
+```js
+grunt.initConfig({
+  assemble: {
+    options: {
+      assets: 'docs/assets',
+      data: 'src/data/*.{json,yml}',
+      helpers: 'src/custom-helpers.js',
+      partials: ['src/partials/**/*.{hbs,md}']
+    },
+    pages: {
+      options: {
+        layout: 'default.hbs'
+      },
+      files: {
+        './': ['src/templates/pages/index.hbs']
+      }
+    }
+  }
+});
+```
+</pre>
+
+Which renders to:
+
+```js
+grunt.initConfig({
+  assemble: {
+    options: {
+      assets: 'docs/assets',
+      data: 'src/data/*.{json,yml}',
+      helpers: 'src/custom-helpers.js',
+      partials: ['src/partials/**/*.{hbs,md}']
+    },
+    pages: {
+      options: {
+        layout: 'default.hbs'
+      },
+      files: {
+        './': ['src/templates/pages/index.hbs']
+      }
+    }
+  }
+})
+```
+
+<br>
+
+### Diagrams
+
+MarkText recognizes the diagram fence languages `mermaid`, `plantuml`, `vega-lite`, `flowchart` and `sequence`. Mermaid supports diagram types such as flowcharts, Gantt charts, sequence diagrams and class diagrams. [Code](#code) blocks with special language identifiers are used for diagrams.
+
+Hover a rendered diagram to get its toolbar. The magnifier opens the diagram
+full-screen, scaled to fit the window so a large one arrives readable. From
+there you can zoom with the scroll wheel, the `+` / `-` keys or the toolbar
+buttons, drag (or use the arrow keys) to pan, fit it back to the window with
+`0`, and return to its original size with `1`. `Tab` moves between the
+controls and `Esc` closes it.
+
+From that view a diagram can also be saved as SVG, saved as PNG, or copied to
+the clipboard as an image — handy for pasting a diagram into a chat or a slide
+without exporting the whole document. For locally rendered diagrams, PNG export uses the editor's background. The exporter inlines diagram styles and re-renders Mermaid labels without HTML labels; PlantUML SVG/PNG data is fetched from the configured server.
+
+#### Vega-Lite
+
+Please see [introduction to Vega-Lite](https://vega.github.io/vega-lite/tutorials/getting_started.html) for details.
+
+```vega-lite
+{
+  "data": {
+    "values": [
+      {"a": "C", "b": 2}, {"a": "C", "b": 7}, {"a": "C", "b": 4},
+      {"a": "D", "b": 1}, {"a": "D", "b": 2}, {"a": "D", "b": 6},
+      {"a": "E", "b": 8}, {"a": "E", "b": 4}, {"a": "E", "b": 7}
+    ]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {"field": "a", "type": "nominal"},
+    "y": {"field": "b", "type": "quantitative"}
+  }
+}
+```
+
+#### Flowchart.js
+
+```flowchart
+st=>start: Start|past
+e=>end: End|future
+op1=>operation: My Operation|past
+op2=>operation: Stuff|current
+sub1=>subroutine: My Subroutine|invalid
+cond=>condition: Yes
+or No?|approved:>http://www.google.com
+c2=>condition: Good idea|rejected
+io=>inputoutput: catch something...|future
+
+st->op1(right)->cond
+cond(yes, right)->c2
+cond(no)->sub1(left)->op1
+c2(yes)->io->e
+c2(no)->op2->e
+```
+
+#### Sequence diagrams
+
+```sequence
+Title: Here is a title
+A->B: Normal line
+B-->C: Dashed line
+C->>D: Open arrow
+D-->>A: Dashed open arrow
+```
+
+#### Mermaid themes
+
+Mermaid diagrams use the light and dark Mermaid themes selected in Preferences →
+Markdown (`mermaidLightTheme` and `mermaidDarkTheme`, initially `default` and
+`dark`). A single diagram can pick another theme with a
+frontmatter block at the start of its fence. The themes bundled with Mermaid are
+`default`, `forest`, `neutral`, `base`, `dark`, `neo`, `neo-dark`, `redux`,
+`redux-dark`, `redux-color` and `redux-dark-color`.
+
+```mermaid
+---
+config:
+  theme: forest
+---
+flowchart LR
+    A[Start] --> B{Decision}
+    B -->|Yes| C[Success]
+    B -->|No| D[Retry]
+```
+
+The block only affects that diagram; diagrams without one keep following the
+MarkText theme. The equivalent directive form, `%%{init: {"theme": "forest"}}%%`,
+also works, and `themeVariables` in the same `config` object tunes individual
+colors — see [Mermaid's theming documentation](https://mermaid.js.org/config/theming.html).
+
+`dark` is designed for dark backgrounds, so on a light MarkText theme its pale
+text is hard to read.
+
+#### Mermaid flowchart
+
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
+
+#### Mermaid sequence diagram
+
+```mermaid
+sequenceDiagram
+    participant Alice
+    participant Bob
+    Alice->>John: Hello John, how are you?
+    loop Healthcheck
+        John->>John: Fight against hypochondria
+    end
+    Note right of John: Some note
+    John-->>Alice: Great!
+    John->>Bob: How about you?
+    Bob-->>John: Jolly good!
+```
+
+#### Mermaid Gantt diagram
+
+```mermaid
+gantt
+dateFormat  YYYY-MM-DD
+title Adding GANTT diagram to mermaid
+excludes weekdays 2014-01-10
+
+section A section
+Completed task            :done,    des1, 2014-01-06,2014-01-08
+Active task               :active,  des2, 2014-01-09, 3d
+Future task               :         des3, after des2, 5d
+Future task2               :         des4, after des3, 5d
+```
+
+#### Mermaid class diagram
+
+```mermaid
+classDiagram
+Class01 <|-- AveryLongClass : Cool
+Class03 *-- Class04
+Class05 o-- Class06
+Class07 .. Class08
+Class09 --> C2 : Where am i?
+Class09 --* C3
+Class09 --|> Class07
+Class07 : equals()
+Class07 : Object[] elementData
+Class01 : size()
+Class01 : int chimp
+Class01 : int gorilla
+Class08 <--> C2: Cool label
+```
+
+#### PlantUML
+
+Please visit [PlantUML website](https://plantuml.com/) for more details.
+
+```plantuml
+@startuml
+Alice -> Bob: Authentication Request
+Bob --> Alice: Authentication Response
+
+Alice -> Bob: Another authentication Request
+Alice <-- Bob: Another authentication Response
+@enduml
+```
+
+<br>
+
+## Credits
+
+This markdown cheatsheet was created by [@jonschlinkert](https://twitter.com/jonschlinkert) and modified. The source can be found [here](https://gist.github.com/jonschlinkert/5854601).

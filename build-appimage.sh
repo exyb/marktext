@@ -21,9 +21,9 @@ if ! command -v pnpm &> /dev/null; then
     echo "⚠️  未找到 pnpm，正在安装..."
     if command -v corepack &> /dev/null; then
         corepack enable
-        corepack prepare pnpm@9 --activate
+        corepack prepare pnpm@10 --activate
     else
-        npm install -g pnpm@9
+        npm install -g pnpm@10
     fi
 fi
 
@@ -31,7 +31,7 @@ echo "✅ pnpm 版本: $(pnpm --version)"
 echo ""
 
 echo "🧹 清理之前的构建..."
-rm -rf out/
+rm -rf packages/desktop/out/
 rm -rf dist/
 find . -maxdepth 1 -type l ! -exec test -e {} \; -delete 2>/dev/null || true
 echo "✅ 清理完成"
@@ -48,7 +48,7 @@ echo "✅ 翻译文件压缩完成"
 echo ""
 
 echo "🔨 重新编译原生模块..."
-npx electron-rebuild -f
+pnpm --filter marktext exec electron-rebuild -f
 echo "✅ 原生模块编译完成"
 echo ""
 
@@ -58,7 +58,7 @@ echo "✅ 应用构建完成"
 echo ""
 
 echo "📦 打包为 AppImage..."
-npx electron-builder --linux AppImage --publish never
+pnpm --filter marktext exec electron-builder --linux AppImage --publish never
 echo "✅ AppImage 打包完成"
 echo ""
 

@@ -1,0 +1,1064 @@
+{
+  "menu": {
+    "counter": {
+      "words": "Woorden",
+      "characters": "Tekens",
+      "charactersNoSpaces": "Tekens (zonder spaties)",
+      "charactersWithSpaces": "Tekens (met spaties)",
+      "paragraphs": "Alinea's",
+      "allCharacters": "Alle tekens",
+      "document": "Document",
+      "documentSelection": "Document / Selectie"
+    },
+    "file": {
+      "file": "Bestand",
+      "newTab": "Nieuw tabblad",
+      "newWindow": "Nieuw venster",
+      "openFile": "Bestand openen...",
+      "openFolder": "Map openen...",
+      "openRecent": "Recent geopend",
+      "openRecentMore": "Recente items doorzoeken...",
+      "clearRecentlyUsed": "Recent gewist",
+      "save": "Opslaan",
+      "saveAs": "Opslaan als...",
+      "autoSave": "Automatisch opslaan",
+      "moveTo": "Verplaatsen naar",
+      "rename": "Hernoemen",
+      "export": "Exporteren",
+      "exportHtml": "Exporteren als HTML",
+      "exportPdf": "Exporteren als PDF",
+      "convertWithPandoc": "Converteren met Pandoc",
+      "import": "Importeren",
+      "print": "Afdrukken",
+      "closeTab": "Tabblad sluiten",
+      "closeWindow": "Venster sluiten",
+      "quit": "Afsluiten",
+      "preferences": "Voorkeuren",
+      "addFolder": "Add Folder…"
+    },
+    "edit": {
+      "edit": "Bewerken",
+      "undo": "Ongedaan maken",
+      "redo": "Opnieuw",
+      "cut": "Knippen",
+      "copy": "Kopiëren",
+      "paste": "Plakken",
+      "copyAsRich": "Kopiëren als opgemaakte tekst",
+      "copyAsHtml": "Kopiëren als HTML",
+      "pasteAsPlainText": "Plakken als platte tekst",
+      "selectAll": "Alles selecteren",
+      "duplicate": "Dupliceren",
+      "createParagraph": "Alinea aanmaken",
+      "deleteParagraph": "Alinea verwijderen",
+      "find": "Zoeken",
+      "replace": "Vervangen",
+      "findNext": "Volgende zoeken",
+      "findPrevious": "Vorige zoeken",
+      "findInFolder": "Zoeken in map",
+      "screenshot": "Schermafbeelding",
+      "lineEnding": "Regeleinde",
+      "lineEndingCrlf": "CRLF (Windows)",
+      "lineEndingLf": "LF (Linux/Mac)"
+    },
+    "paragraph": {
+      "title": "Alinea",
+      "paragraph": "Alinea",
+      "heading1": "Kop 1",
+      "heading2": "Kop 2",
+      "heading3": "Kop 3",
+      "heading4": "Kop 4",
+      "heading5": "Kop 5",
+      "heading6": "Kop 6",
+      "promoteHeading": "Kop promoveren",
+      "demoteHeading": "Kop degraderen",
+      "table": "Tabel",
+      "codeFences": "Codeblok",
+      "quoteBlock": "Citaatblok",
+      "githubAlerts": "GitHub-meldingen",
+      "mathBlock": "Wiskundeblok",
+      "htmlBlock": "HTML-blok",
+      "orderedList": "Genummerde lijst",
+      "bulletList": "Opsommingslijst",
+      "taskList": "Takenlijst",
+      "looseListItem": "Los lijstitem",
+      "horizontalRule": "Horizontale lijn",
+      "frontMatter": "Front Matter"
+    },
+    "window": {
+      "title": "Venster",
+      "minimize": "Minimaliseren",
+      "zoomIn": "Inzoomen",
+      "zoomOut": "Uitzoomen",
+      "resetZoom": "Zoom herstellen",
+      "fullScreen": "Volledig scherm",
+      "bringAllToFront": "Alles naar voren",
+      "alwaysOnTop": "Altijd bovenaan"
+    },
+    "help": {
+      "help": "Help",
+      "markdownReference": "Markdown-referentie",
+      "changelog": "Wijzigingslog",
+      "askQuestion": "Vraag stellen",
+      "reportBug": "Bug melden",
+      "viewSource": "Broncode bekijken",
+      "followUs": "Volg ons",
+      "support": "Steun MarkText",
+      "license": "Licentie",
+      "about": "Over",
+      "checkUpdates": "Controleer op updates"
+    },
+    "marktext": {
+      "title": "MarkText",
+      "about": "Over MarkText",
+      "checkUpdates": "Controleer op updates...",
+      "preferences": "Voorkeuren",
+      "services": "Diensten",
+      "hide": "Verberg MarkText",
+      "hideOthers": "Verberg overige",
+      "showAll": "Toon alles",
+      "quit": "MarkText afsluiten"
+    },
+    "view": {
+      "view": "Weergave",
+      "toggleSidebar": "Zijbalk in-/uitschakelen",
+      "toggleTabbar": "Tabbalk in-/uitschakelen",
+      "commandPalette": "Opdrachtpalet",
+      "sourceCodeMode": "Broncodeweergave",
+      "typewriterMode": "Typemachinestand",
+      "focusMode": "Focusstand",
+      "toggleTableOfContents": "Inhoudsopgave tonen",
+      "reloadImages": "Afbeeldingen herladen",
+      "showDeveloperTools": "Ontwikkelaarshulpmiddelen tonen",
+      "reloadWindow": "Venster herladen"
+    },
+    "format": {
+      "format": "Opmaak",
+      "bold": "Vet",
+      "italic": "Cursief",
+      "underline": "Onderstreept",
+      "strikethrough": "Doorgestreept",
+      "image": "Afbeelding",
+      "superscript": "Superscript",
+      "subscript": "Subscript",
+      "highlight": "Markering",
+      "inlineCode": "Inline code",
+      "inlineMath": "Inline wiskunde",
+      "hyperlink": "Hyperlink",
+      "clearFormat": "Opmaak wissen"
+    },
+    "theme": {
+      "theme": "&Thema",
+      "dark": "Donker",
+      "followThemDisabled": "Themaselectie uitgeschakeld bij het volgen van systeemthema",
+      "lightThemes": "Lichte thema's",
+      "darkThemes": "Donkere thema's",
+      "ayuDark": "Ayu Dark",
+      "ayuLight": "Ayu Light",
+      "ayuMirage": "Ayu Mirage",
+      "cadmiumDark": "Cadmium Dark",
+      "cadmiumLight": "Cadmium Light",
+      "catppuccinLatte": "Catppuccin Latte",
+      "catppuccinMocha": "Catppuccin Mocha",
+      "cyberdream": "cyberdream",
+      "dracula": "Dracula",
+      "everforestDark": "Everforest Dark",
+      "everforestLight": "Everforest Light",
+      "graphiteLight": "Graphite Light",
+      "gruvboxDark": "Gruvbox Dark",
+      "gruvboxLight": "Gruvbox Light",
+      "horizonDark": "Horizon Dark",
+      "kanagawa": "Kanagawa",
+      "materialDark": "Material Dark",
+      "monokaiPro": "Monokai Pro",
+      "nightfox": "Nightfox",
+      "nord": "Nord",
+      "oneDark": "One Dark",
+      "oxocarbonDark": "Oxocarbon Dark",
+      "palenight": "Palenight",
+      "rosePine": "Rosé Pine",
+      "rosePineDawn": "Rosé Pine Dawn",
+      "rosePineMoon": "Rosé Pine Moon",
+      "solarizedDark": "Solarized Dark",
+      "solarizedLight": "Solarized Light",
+      "synthwave84": "Synthwave '84",
+      "tokyoNight": "Tokyo Night",
+      "tokyoNightLight": "Tokyo Night Light",
+      "tokyoNightStorm": "Tokyo Night Storm",
+      "ulyssesLight": "Ulysses Light"
+    }
+  },
+  "contextMenu": {
+    "cut": "Knippen",
+    "copy": "Kopiëren",
+    "paste": "Plakken",
+    "copyAsRich": "Kopiëren als opgemaakte tekst",
+    "copyAsHtml": "Kopiëren als HTML",
+    "pasteAsPlainText": "Plakken als platte tekst",
+    "lookUp": "\"{selection}\" opzoeken",
+    "insertParagraphBefore": "Alinea invoegen vóór",
+    "insertParagraphAfter": "Alinea invoegen na",
+    "spelling": "Spelling...",
+    "changeLanguage": "Taal wijzigen...",
+    "addToDictionary": "Toevoegen aan woordenboek",
+    "editDictionary": "Woordenboek bewerken...",
+    "sideBar": {
+      "newFile": "Nieuw bestand",
+      "newDirectory": "Nieuwe map",
+      "copy": "Kopiëren",
+      "cut": "Knippen",
+      "paste": "Plakken",
+      "rename": "Hernoemen",
+      "moveToTrash": "Naar prullenbak",
+      "copyPath": "Pad kopiëren",
+      "showInFolder": "Tonen in map"
+    },
+    "tabs": {
+      "close": "Sluiten",
+      "closeOthers": "Andere sluiten",
+      "closeSavedTabs": "Opgeslagen tabbladen sluiten",
+      "closeAllTabs": "Alle tabbladen sluiten",
+      "rename": "Hernoemen",
+      "copyPath": "Pad kopiëren",
+      "showInFolder": "Tonen in map",
+      "showInSideBar": "Tonen in zijbalk"
+    }
+  },
+  "search": {
+    "searchPlaceholder": "Zoeken",
+    "caseSensitive": "Hoofdlettergevoelig",
+    "wholeWord": "Heel woord selecteren",
+    "useRegex": "Gebruik als reguliere expressie",
+    "replacementPlaceholder": "Vervanging",
+    "replaceAll": "Alles vervangen",
+    "replaceSingle": "Enkele vervanging",
+    "invalidRegex": "Ongeldige reguliere expressie \"{pattern}\"",
+    "regexMatchEmpty": "Reguliere expressie matcht lege tekenreeks \"{pattern}\"",
+    "searchResultInfo": "{matchCount} resultaten in {fileCount} bestanden",
+    "searchLimited": "Zoeken beperkt tot eerste {count} resultaten"
+  },
+  "sideBar": {
+    "search": {
+      "backToFiles": "Terug naar bestanden",
+      "searchInFolder": "Zoeken in map...",
+      "noFolderOpen": "Geen map geopend",
+      "noResultsFound": "Geen resultaten gevonden.",
+      "cancel": "Annuleren",
+      "openFolder": "Add Folder…",
+      "showMoreMatches": "Meer resultaten tonen",
+      "searchInFolders": "Zoeken in map",
+      "partialSearch": "Some folders could not be searched.",
+      "noSearchableFolders": "No available folders to search."
+    },
+    "tree": {
+      "openedFiles": "Geopende bestanden",
+      "saveAll": "Alles opslaan",
+      "closeAll": "Alles sluiten",
+      "emptyProject": "Leeg project",
+      "createFile": "Bestand aanmaken",
+      "openFolder": "Map openen",
+      "noFolders": "No folders added",
+      "removeFolder": "Remove from Sidebar",
+      "retryFolder": "Retry",
+      "loadingFolder": "Loading folder…",
+      "unavailableFolder": "Folder unavailable",
+      "overlappingFolder": "This folder overlaps an existing folder. Remove the existing item first.",
+      "folderAlreadyAdded": "This folder has already been added.",
+      "fileOutsideFolders": "This file is not in an added folder.",
+      "sessionSaveFailed": "Unable to save session",
+      "resizeOpenedFiles": "Lijst met geopende bestanden aanpassen"
+    },
+    "toc": {
+      "expand": "Inhoudsopgave uitklappen",
+      "collapse": "Inhoudsopgave inklappen",
+      "empty": "Geen koppen",
+      "resize": "Breedte van inhoudsopgave aanpassen",
+      "title": "Inhoudsopgave",
+      "expandAll": "Alles uitklappen",
+      "collapseAll": "Alles inklappen"
+    },
+    "icons": {
+      "files": "Bestanden",
+      "search": "Zoeken",
+      "settings": "Instellingen"
+    },
+    "move": {
+      "title": "Move file or folder",
+      "confirm": "Move",
+      "question": "Move \"{name}\"?",
+      "detail": "From: {source}\nTo: {destination}\n\nThis changes the actual file location. Relative links and image paths may be affected.",
+      "directoryContents": "The folder and all its contents will be moved.",
+      "completed": "Moved successfully.",
+      "invalidTarget": "Choose another folder within the same open root. Linked paths and moving a folder into itself are not supported.",
+      "crossDevice": "Moving between volumes is not supported here. Use your system file manager.",
+      "conflict": "The destination already contains an item with this name. Rename it before trying again.",
+      "missing": "The source or destination no longer exists. Refresh the folder and try again.",
+      "permission": "The item could not be moved. Check folder permissions and whether another application is using it.",
+      "openElsewhere": "Close this file and any documents inside this folder in other MarkText windows before moving it.",
+      "destinationOpen": "A document is already open at the destination path. Close it before trying again."
+    }
+  },
+  "titleBar": {
+    "applicationMenu": "Toepassingsmenu",
+    "minimize": "Minimaliseren",
+    "maximize": "Maximaliseren",
+    "restore": "Vorig formaat",
+    "close": "Sluiten",
+    "documentStatistics": {
+      "title": "Documentstatistieken",
+      "fileInformation": "Bestandsinformatie",
+      "created": "Aangemaakt",
+      "lastModified": "Gewijzigd",
+      "unavailable": "—",
+      "open": "Documentstatistieken openen"
+    }
+  },
+  "commandPalette": {
+    "placeholder": "Typ een opdracht om uit te voeren",
+    "placeholders": {
+      "selectOption": "Selecteer een optie",
+      "searchFileToOpen": "Zoek bestand om te openen",
+      "selectLanguage": "Selecteer een taal om naar te wisselen",
+      "searchRecentFilesAndFolders": "Recente bestanden en mappen doorzoeken"
+    },
+    "recentlyOpened": "recent geopend",
+    "fileResults": "bestandsresultaten",
+    "folders": "mappen",
+    "files": "bestanden",
+    "removeFromRecent": "Verwijderen uit recent geopend",
+    "noResults": "Geen overeenkomende resultaten",
+    "noRecentFiles": "Geen recente bestanden of mappen"
+  },
+  "exportSettings": {
+    "autoNumberingHeadings": "Automatisch nummeren van koppen",
+    "title": "Exportopties",
+    "page": {
+      "label": "Pagina",
+      "pageTitle": "Paginatitel",
+      "pageSize": "Paginaformaat:",
+      "landscapeOrientation": "Liggende oriëntatie:",
+      "pageMargin": "Paginamarge in mm:",
+      "topBottom": "Boven/Onder:",
+      "leftRight": "Links/Rechts:",
+      "widthHeight": "Breedte/Hoogte in mm:"
+    },
+    "showFrontMatter": "Front Matter tonen",
+    "style": {
+      "label": "Stijl",
+      "overwriteThemeFont": "Thema-lettertype overschrijven",
+      "fontFamily": "Lettertypefamilie:",
+      "fontSize": "Lettergrootte",
+      "lineHeight": "Regelhoogte"
+    },
+    "theme": {
+      "label": "Thema",
+      "description": "Je kunt het uiterlijk van het document aanpassen door een thema te kiezen of een eigen thema te maken.",
+      "theme": "Thema"
+    },
+    "headerFooter": {
+      "allowStyled": "Opgemaakte tekst toestaan",
+      "customizeStyle": "Stijl aanpassen",
+      "fontSize": "Lettergrootte",
+      "footerType": "Voetteksttype",
+      "headerType": "Kopteksttype",
+      "label": "Kop- & voettekst",
+      "leftFooterText": "Linker voettekst",
+      "leftHeaderText": "Linker koptekst",
+      "mainFooterText": "Hoofdvoettekst",
+      "mainHeaderText": "Hoofdkoptekst",
+      "rightFooterText": "Rechter voettekst",
+      "rightHeaderText": "Rechter koptekst",
+      "description": "De tekst verschijnt op alle pagina's als kop- en/of voettekst is gedefinieerd."
+    },
+    "toc": {
+      "description": "Typ [TOC] op een aparte regel in de hoofdtekst om een inhoudsopgave in het geëxporteerde document te tonen. De inhoudsopgave verschijnt op die positie.",
+      "includeTopHeading": "Koppen van niveau 1 opnemen",
+      "includeTopHeadingDetail": "Alle koppen van niveau 1 (H1) opnemen in de inhoudsopgave.",
+      "label": "Inhoudsopgave",
+      "title": "Inhoudsopgave"
+    },
+    "export": "Exporteren",
+    "options": {
+      "pageSizes": {
+        "a3": "A3 (297mm x 420mm)",
+        "a4": "A4 (210mm x 297mm)",
+        "a5": "A5 (148mm x 210mm)",
+        "legal": "US Legal (8,5\" x 13\")",
+        "letter": "US Letter (8,5\" x 11\")",
+        "tabloid": "Tabloid (17\" x 11\")",
+        "custom": "Aangepast"
+      },
+      "headerFooterTypes": {
+        "none": "Geen",
+        "singleCell": "Enkele cel",
+        "threeCells": "Drie cellen"
+      },
+      "headerFooterStyles": {
+        "default": "Standaard",
+        "simple": "Eenvoudig",
+        "styled": "Opgemaakt"
+      },
+      "themes": {
+        "academic": "Academisch",
+        "default": "GitHub (Standaard)",
+        "liber": "Liber"
+      }
+    }
+  },
+  "recent": {
+    "noTabsOpen": "Je hebt geen tabbladen open.",
+    "newFile": "Nieuw bestand"
+  },
+  "import": {
+    "title": "Importeren of openen",
+    "description": "Sleep hier om je bestanden in MarkText te openen"
+  },
+  "preferences": {
+    "title": "Voorkeuren",
+    "learnMore": "Meer informatie over {name}",
+    "search": {
+      "placeholder": "Voorkeuren zoeken..."
+    },
+    "categories": {
+      "general": "Algemeen",
+      "appearance": "Uiterlijk",
+      "editor": "Bewerken",
+      "files": "Bestanden en opslaan",
+      "markdown": "Markdown",
+      "images": "Afbeeldingen en export",
+      "keybindings": "Sneltoetsen"
+    },
+    "general": {
+      "title": "Algemeen",
+      "autoSave": {
+        "title": "Automatisch opslaan",
+        "description": "Automatisch opslaan",
+        "delayDescription": "Vertraging automatisch opslaan"
+      },
+      "window": {
+        "title": "Venster",
+        "titleBarStyle": {
+          "title": "Titelbalkstijl",
+          "custom": "Aangepast",
+          "native": "Systeem"
+        },
+        "requiresRestart": "Herstart vereist",
+        "hideScrollbars": "Schuifbalken verbergen",
+        "openFilesInNewWindow": "Bestanden in nieuw venster openen",
+        "openFoldersInNewWindow": "Mappen in nieuw venster openen",
+        "zoom": "Zoom",
+        "openFilesInNewWindowNote": "Indien ingeschakeld, openen bestanden in een nieuw venster. Anders openen ze in tabbladen in het huidige venster.",
+        "openFoldersInNewWindowNote": "Indien ingeschakeld, openen mappen in een nieuw venster. Anders vervangen ze de map in het huidige venster."
+      },
+      "startup": {
+        "title": "Opstarten en herstellen",
+        "openDefaultDirectory": "Geselecteerde map openen",
+        "openLastFolder": "Laatste werkruimte openen",
+        "restoreAll": "Alle vensters herstellen",
+        "selectFolder": "Map selecteren",
+        "openBlankPage": "Nieuw leeg document",
+        "action": "Bij opstarten",
+        "restoreLastWindow": "Het laatst actieve venster herstellen",
+        "restoreLayoutState": "Vensterindeling herstellen",
+        "restoreLayoutStateNote": "Herstel bij het opnieuw starten de venstergrootte, positie en indeling, zoals de zijbalk.",
+        "restoreEditors": "Geopende bestanden herstellen",
+        "restoreEditorsNote": "Open bij het opnieuw starten de vorige bestandstabbladen opnieuw.",
+        "restoreViewState": "Leesposities en selecties herstellen",
+        "restoreViewStateNote": "Herstel de vorige leespositie en selectie bij het herstellen van een bestand.",
+        "failure": "De instellingen konden niet worden opgeslagen. De vorige instellingen blijven in gebruik."
+      },
+      "pandoc": {
+        "title": "Pandoc-conversie",
+        "description": "Pandoc-conversie inschakelen",
+        "detailedDescription": "Toont conversieopdrachten in het menu. Pandoc moet geïnstalleerd zijn.",
+        "found": "Gevonden: {path}",
+        "notFound": "Niet gevonden"
+      },
+      "sidebar": {
+        "title": "Zijbalk en inhoudsopgave",
+        "wrapTextInToc": "Tekstterugloop in inhoudsopgave",
+        "tocPosition": "Positie van de inhoudsopgave",
+        "tocLeft": "Links",
+        "tocRight": "Rechts",
+        "showOpenedFiles": "Geopende bestanden tonen",
+        "autoReveal": "Actief bestand tonen in de zijbalk",
+        "openFilesInPreviewMode": "Bestanden in de zijbalk openen in voorbeeldtabbladen. Bewerken of dubbelklikken houdt het tabblad open.",
+        "excludePatterns": "Uitsluitregels voor de bestandsboom",
+        "excludePatternsNotes": "Paden die overeenkomen met een glob-regel worden uitgesloten van de bestandsboom. Druk op Enter om een regel toe te voegen en klik op × om deze te verwijderen; komma’s binnen een regel blijven behouden. Open de map opnieuw om alle wijzigingen toe te passen.",
+        "removePattern": "Verwijderen",
+        "newPattern": "Nieuwe uitsluitregel",
+        "patternExample": "Bijvoorbeeld: **/drafts/** of *.tmp",
+        "patternSaveError": "De uitsluitregels konden niet worden opgeslagen. De opgeslagen regels zijn behouden. Probeer het opnieuw.",
+        "patternHelp": "Syntaxis van glob-patronen",
+        "fileSortBy": {
+          "title": "Bestanden sorteren op",
+          "creationTime": "Aanmaaktijd",
+          "modificationTime": "Wijzigingstijd",
+          "filename": "Bestandsnaam"
+        },
+        "fileSortOrder": {
+          "title": "Sorteervolgorde",
+          "aToZ": "A → Z",
+          "zToA": "Z → A",
+          "oldestFirst": "Oudste eerst",
+          "newestFirst": "Nieuwste eerst"
+        }
+      },
+      "language": {
+        "title": "Taal",
+        "english": "English",
+        "chinese": "简体中文",
+        "traditionalChinese": "繁體中文",
+        "spanish": "Español",
+        "french": "Français",
+        "german": "Deutsch",
+        "japanese": "日本語",
+        "korean": "한국어",
+        "dutch": "Nederlands",
+        "portuguese": "Português",
+        "turkish": "Türkçe",
+        "russian": "Русский",
+        "italian": "Italiano",
+        "label": "Interfacetaal"
+      },
+      "openingMode": "Openingsmodus"
+    },
+    "editor": {
+      "title": "Editor",
+      "textEditor": {
+        "title": "Teksteditor",
+        "fontSize": "Lettergrootte",
+        "lineHeight": "Regelhoogte",
+        "fontFamily": "Lettertypefamilie",
+        "maxWidth": "Maximale breedte van de editorinhoud",
+        "maxWidthNotes": "Maximale breedte van editorinhoud. Voer een getal in gevolgd door px, ch (tekens) of %, bijvoorbeeld 800px, 80ch of 60%. Laat leeg om de standaardbreedte te gebruiken.",
+        "maxWidthInvalid": "Voer een getal in gevolgd door px, ch of %, bijvoorbeeld 800px.",
+        "codeFontFamily": "Lettertype voor code",
+        "codeFontFamilyNotes": "Van toepassing op inlinecode en codeblokken."
+      },
+      "codeBlock": {
+        "title": "Codeblok",
+        "fontSize": "Lettergrootte van codeblokken",
+        "showLineNumbers": "Regelnummers tonen",
+        "removeEmptyLines": "Lege regels verwijderen"
+      },
+      "writingBehavior": {
+        "title": "Schrijfvoorkeuren",
+        "autoCloseBrackets": "Haakjes automatisch sluiten",
+        "autoCompleteMarkdown": "Markdown-markeringen als paar aanvullen",
+        "autoCloseQuotes": "Aanhalingstekens automatisch sluiten"
+      },
+      "fileRepresentation": {
+        "title": "Bestandsweergave",
+        "tabWidth": "Invoer met de Tab-toets",
+        "tabInputNotes": "Choose spaces or a real tab character. Existing tabs use four-column tab stops. In lists and tables, Tab adjusts nesting or moves between cells.",
+        "lineSeparator": "Standaard regeleinde voor bestanden",
+        "defaultEncoding": "Standaardcodering",
+        "autoDetectEncoding": "Codering automatisch detecteren",
+        "trailingNewlines": {
+          "title": "Afsluitende lege regels",
+          "doNothing": "Niets doen",
+          "ensureOne": "Eén garanderen",
+          "preserve": "Behouden",
+          "trimAll": "Alles verwijderen"
+        },
+        "endOfLine": {
+          "default": "Standaard",
+          "crlf": "CRLF (Windows)",
+          "lf": "LF (Linux/Mac)"
+        }
+      },
+      "misc": {
+        "title": "Diversen",
+        "textDirection": {
+          "title": "Tekstrichting",
+          "ltr": "Links naar rechts",
+          "rtl": "Rechts naar links"
+        },
+        "hideQuickInsertHint": "Hint snel invoegen verbergen",
+        "hideLinkPopup": "Link-popup verbergen",
+        "autoCheck": "Bovenliggende taken en subtaken koppelen",
+        "autoNormalizeLineEndings": "Regeleindes automatisch normaliseren naar LF bij openen",
+        "wrapCodeBlocks": "Codeblokken terugloopbaar",
+        "sourceCodeLineNumbers": "Regelnummers tonen in broncodeweergave"
+      }
+    },
+    "image": {
+      "title": "Afbeelding",
+      "actions": {
+        "upload": "Uploaden naar cloud",
+        "folder": "Kopiëren naar map",
+        "path": "Absoluut pad gebruiken"
+      },
+      "folderSetting": {
+        "title": "Mapinstelling",
+        "globalFolder": "Globale afbeeldingsmap",
+        "open": "Map kiezen…",
+        "showInFolder": "Tonen in map",
+        "preferRelative": "Relatieve map prefereren",
+        "relativeCopyLocation": "Afbeelding kopiëren relatief aan",
+        "copyRelativeToFile": "Relatief aan bestand",
+        "copyRelativeToFolder": "Relatief aan map",
+        "relativeFolderName": "Relatieve mapnaam",
+        "filenameNote": "De bestandsnaam wordt automatisch gegenereerd."
+      },
+      "uploader": {
+        "title": "Afbeeldings-uploader",
+        "picgoNotInstalled": "PicGo-Core is niet geïnstalleerd",
+        "picgoInstalled": "PicGo-Core is geïnstalleerd",
+        "picgoDetectionFailed": "PicGo-Core-detectie mislukt",
+        "debugInfo": "Foutopsporingsinformatie",
+        "npmInstallCommand": "npm install picgo -g",
+        "yarnInstallCommand": "yarn global add picgo",
+        "pnpmInstallCommand": "pnpm add -g picgo",
+        "chooseInstallMethod": "Kies installatiemethode:",
+        "lastDetectionTime": "Laatste detectietijd",
+        "usageGuide": {
+          "title": "PicGo-Core basisgebruikshandleiding",
+          "step1": "Uploader configureren",
+          "step1Description": "Gebruik de volgende opdracht om PicGo-Core-uploader te configureren:",
+          "step2": "Afbeeldingen uploaden",
+          "step2Description": "Gebruik de volgende opdracht om afbeeldingen te uploaden:",
+          "step3": "Configuratie bekijken",
+          "step3Description": "Gebruik de volgende opdracht om de huidige configuratie te bekijken:",
+          "documentation": "Volledige documentatie bekijken"
+        },
+        "lastSuccessTime": "Laatste succestijd",
+        "scriptDescription": "Scriptbeschrijving",
+        "scriptLocation": "Scriptlocatie",
+        "services": {
+          "picgo": "PicGo-Core",
+          "cliScript": "CLI-script"
+        },
+        "pleaseInstall": "Installeer a.u.b.",
+        "scriptPath": "Scriptpad",
+        "invalidScript": "Voer het pad naar een bestaand uitvoerbaar script in."
+      },
+      "defaultBehavior": "Het standaardgedrag na plakken of slepen van een afbeelding naar MarkText"
+    },
+    "markdown": {
+      "title": "Markdown",
+      "extensions": {
+        "title": "Extensies",
+        "superSubScript": "Super-/subscript",
+        "footnote": "Voetnoot",
+        "texMathDollars": "TeX-wiskunde met $ en $$",
+        "texMathGfm": "GitHub TeX-wiskunde ($`…`$ en ```math)",
+        "texMathSingleBackslash": "TeX-wiskunde met enkele backslash",
+        "texMathDoubleBackslash": "TeX-wiskunde met dubbele backslash",
+        "fancyLists": "Lijsten met letters en Romeinse cijfers",
+        "highlightSyntax": "Markeren (==tekst==)",
+        "inlineDiff": "Inline diff ({+ … +})",
+        "multilineBlockquote": "Meerregelig citaat (>>>)",
+        "githubAlerts": "GitHub-meldingen inschakelen",
+        "frontmatterType": {
+          "jsonBrace": "JSON met accolades",
+          "jsonSemicolon": "JSON met puntkomma",
+          "title": "Front Matter-type"
+        }
+      },
+      "diagrams": {
+        "title": "Diagrammen",
+        "sequenceTheme": {
+          "title": "Sequentiethema",
+          "handDrawn": "Handgetekend",
+          "simple": "Eenvoudig"
+        },
+        "mermaidLightTheme": {
+          "title": "Mermaid-thema voor lichte MarkText-thema's"
+        },
+        "mermaidDarkTheme": {
+          "title": "Mermaid-thema voor donkere MarkText-thema's"
+        },
+        "plantumlServer": {
+          "title": "PlantUML server"
+        }
+      },
+      "misc": {
+        "preferHeadingStyle": {
+          "title": "Voorkeursstijl koppen",
+          "atx": "ATX-stijl",
+          "setext": "Setext-stijl"
+        },
+        "title": "Diversen"
+      },
+      "compatibility": {
+        "cjkEmphasis": "CJK-nadrukcompatibiliteit",
+        "cjkEmphasisNote": "Versoepelt nadrukgrenzen voor Chinese, Japanse en Koreaanse tekst en ondersteunt vetgedrukte labels die eindigen op ：. Dit is een uitbreiding van de CommonMark-syntaxis.",
+        "enableHtml": "HTML-ondersteuning inschakelen",
+        "softNewlineAsSpace": "Zachte regeleinden als spaties behandelen",
+        "title": "Compatibiliteit"
+      },
+      "lists": {
+        "bulletListMarker": "Opsommingsteken",
+        "listIndentation": {
+          "title": "Lijstinspringing",
+          "dfm": "DFM-stijl",
+          "fourSpaces": "Vier spaties",
+          "oneSpace": "Eén spatie",
+          "tab": "Tab",
+          "threeSpaces": "Drie spaties",
+          "twoSpaces": "Twee spaties"
+        },
+        "orderListDelimiter": "Scheidingsteken genummerde lijst",
+        "preferLooseListItem": "Losse lijstitems prefereren",
+        "title": "Lijsten"
+      }
+    },
+    "theme": {
+      "title": "Thema",
+      "followSystemTheme": "Systeemweergave volgen",
+      "followSystemNote": "Kies hieronder afzonderlijke thema’s voor de donkere en lichte modus.",
+      "modeThemes": "Themaselectie",
+      "lightModeTheme": "Thema lichte modus",
+      "darkModeTheme": "Thema donkere modus",
+      "customCss": "Aangepaste CSS",
+      "chooseTheme": "Thema kiezen",
+      "chooseFor": "{name} kiezen",
+      "searchThemes": "Thema’s zoeken",
+      "filterLabel": "Thematype",
+      "filter": {
+        "all": "Alle",
+        "light": "Licht",
+        "dark": "Donker"
+      },
+      "noResults": "Geen overeenkomende thema’s."
+    },
+    "keybindings": {
+      "title": "Sneltoetsen",
+      "description": "Selecteer de toetsencombinatie en druk op de nieuwe combinatie om een sneltoets te wijzigen",
+      "restoreDefaults": "Standaardwaarden herstellen",
+      "debugOptions": "Foutopsporingsopties",
+      "dumpKeyboardInfo": "Toetsenbordinformatie exporteren",
+      "failedToSave": "Opslaan van sneltoetsen mislukt",
+      "online": "Documentatie over sneltoetsen",
+      "saveError": "Fout bij opslaan sneltoetsen",
+      "shortcutInUse": "Sneltoets in gebruik",
+      "shortcutInUseMessage": "{accelerator} is al toegewezen aan {commands}.",
+      "windowAndNavigation": "Vensters en navigatie",
+      "loadError": "Sneltoetsen konden niet worden geladen.",
+      "reload": "Opnieuw laden",
+      "viewConflict": "{name} bekijken",
+      "editShortcut": "Sneltoets voor {name} bewerken",
+      "unbound": "Niet toegewezen",
+      "recorder": {
+        "placeholder": "Druk op de toetsencombinatie",
+        "invalidKeybinding": "Ongeldige toetscombinatie"
+      }
+    },
+    "fontStack": {
+      "noMatches": "Geen overeenkomende lettertypen"
+    },
+    "selectFont": "Lettertype selecteren",
+    "spellchecker": {
+      "autoDetectDescription": "Documenttaal automatisch detecteren",
+      "autoDetectLanguage": "Taal automatisch detecteren",
+      "customDictionary": {
+        "delete": "Verwijderen",
+        "description": "Voeg aangepaste woorden toe aan je persoonlijk woordenboek",
+        "noWordsAvailable": "Geen woorden beschikbaar",
+        "options": "Opties",
+        "title": "Aangepast woordenboek",
+        "word": "Woord"
+      },
+      "defaultLanguage": "Standaardtaal",
+      "enableSpellChecking": "Spellingcontrole inschakelen",
+      "hideMarksForErrors": "Markering voor spelfouten verbergen",
+      "title": "Spellingcontrole"
+    },
+    "explanations": {
+      "taskCascade": "Een bovenliggende taak aanvinken werkt subtaken bij; gewijzigde subtaken werken hun bovenliggende taak bij.",
+      "markdownPairs": "Vult tijdens het typen paren Markdown-markeringen aan, zoals sterretjes, underscores en backticks.",
+      "lineEndings": "Voor nieuwe bestanden en gemengde of niet-herkende regeleinden. LF- en CRLF-bestanden behouden hun gedetecteerde formaat."
+    },
+    "commandDetection": {
+      "checking": "Controleren…",
+      "recheck": "Opnieuw controleren",
+      "failed": "Detectie mislukt. Controleer opnieuw."
+    }
+  },
+  "about": {
+    "copyright": "Copyright © Luo Ran 2017-{year}",
+    "copyrightContributors": "Gemaakt met <3 door GitHub-bijdragers"
+  },
+  "commands": {
+    "mt": {
+      "hide": "MarkText verbergen",
+      "hideOthers": "Overige verbergen"
+    },
+    "file": {
+      "newWindow": "Nieuw venster",
+      "newTab": "Nieuw tabblad",
+      "openFile": "Bestand openen",
+      "openFolder": "Map openen",
+      "save": "Opslaan",
+      "saveAs": "Opslaan als",
+      "moveFile": "Bestand verplaatsen",
+      "renameFile": "Bestand hernoemen",
+      "quickOpen": "Snel openen",
+      "quickOpenRecent": "Recent snel openen",
+      "changeEncoding": "Codering wijzigen",
+      "changeLineEnding": "Regeleinde wijzigen",
+      "trailingNewline": "Afsluitende lege regel",
+      "print": "Afdrukken",
+      "preferences": "Voorkeuren",
+      "closeTab": "Tabblad sluiten",
+      "closeWindow": "Venster sluiten",
+      "quit": "Afsluiten",
+      "toggleAutoSave": "Automatisch opslaan in-/uitschakelen",
+      "importFile": "Bestand importeren",
+      "revealInSideBar": "Tonen in zijbalk",
+      "exportFile": "Bestand exporteren",
+      "exportFilePdf": "Exporteren als PDF",
+      "zoom": "Zoom",
+      "checkUpdate": "Controleer op updates",
+      "addFolder": "Add Folder…"
+    },
+    "edit": {
+      "undo": "Ongedaan maken",
+      "redo": "Opnieuw",
+      "cut": "Knippen",
+      "copy": "Kopiëren",
+      "paste": "Plakken",
+      "copyAsRich": "Kopiëren als opgemaakte tekst",
+      "copyAsHtml": "Kopiëren als HTML",
+      "pasteAsPlaintext": "Plakken als platte tekst",
+      "selectAll": "Alles selecteren",
+      "duplicate": "Dupliceren",
+      "createParagraph": "Alinea aanmaken",
+      "deleteParagraph": "Alinea verwijderen",
+      "find": "Zoeken",
+      "findNext": "Volgende zoeken",
+      "findPrevious": "Vorige zoeken",
+      "replace": "Vervangen",
+      "findInFolder": "Zoeken in map",
+      "screenshot": "Schermafbeelding"
+    },
+    "paragraph": {
+      "heading1": "Kop 1",
+      "heading2": "Kop 2",
+      "heading3": "Kop 3",
+      "heading4": "Kop 4",
+      "heading5": "Kop 5",
+      "heading6": "Kop 6",
+      "upgradeHeading": "Kop promoveren",
+      "degradeHeading": "Kop degraderen",
+      "table": "Tabel",
+      "codeFence": "Codeblok",
+      "quoteBlock": "Citaatblok",
+      "mathFormula": "Wiskundeformule",
+      "htmlBlock": "HTML-blok",
+      "orderList": "Genummerde lijst",
+      "bulletList": "Opsommingslijst",
+      "taskList": "Takenlijst",
+      "looseListItem": "Los lijstitem",
+      "paragraph": "Alinea",
+      "horizontalLine": "Horizontale lijn",
+      "frontMatter": "Front Matter",
+      "resetParagraph": "Alinea herstellen",
+      "mathBlock": "Wiskundeblok",
+      "horizontalRule": "Horizontale lijn"
+    },
+    "format": {
+      "strong": "Vet",
+      "emphasis": "Cursief",
+      "underline": "Onderstreept",
+      "superscript": "Superscript",
+      "subscript": "Subscript",
+      "highlight": "Markering",
+      "inlineCode": "Inline code",
+      "inlineMath": "Inline wiskunde",
+      "strike": "Doorgestreept",
+      "hyperlink": "Hyperlink",
+      "image": "Afbeelding",
+      "clearFormat": "Opmaak wissen"
+    },
+    "window": {
+      "minimize": "Minimaliseren",
+      "close": "Sluiten",
+      "toggleAlwaysOnTop": "Altijd bovenaan in-/uitschakelen",
+      "zoomIn": "Inzoomen",
+      "zoomOut": "Uitzoomen",
+      "toggleFullScreen": "Volledig scherm in-/uitschakelen",
+      "changeTheme": "Thema wijzigen"
+    },
+    "view": {
+      "commandPalette": "Opdrachtpalet",
+      "sourceCodeMode": "Broncodeweergave",
+      "typewriterMode": "Typemachinestand",
+      "focusMode": "Focusstand",
+      "toggleSourceCodeMode": "Broncodeweergave in-/uitschakelen",
+      "toggleTypewriterMode": "Typemachinestand in-/uitschakelen",
+      "toggleFocusMode": "Focusstand in-/uitschakelen",
+      "toggleSidebar": "Zijbalk in-/uitschakelen",
+      "outlineCollapseAll": "Inhoudsopgave: Alles inklappen",
+      "outlineExpandAll": "Inhoudsopgave: Alles uitklappen",
+      "toggleToc": "Inhoudsopgave in-/uitschakelen",
+      "toggleTabbar": "Tabbalk in-/uitschakelen",
+      "toggleDevTools": "Ontwikkelaarshulpmiddelen in-/uitschakelen",
+      "devReload": "Ontwikkelaar herladen",
+      "reloadImages": "Afbeeldingen herladen",
+      "textDirection": "Tekstrichting",
+      "actualSize": "Werkelijke grootte",
+      "devToggleDeveloperTools": "Ontwikkelaarshulpmiddelen in-/uitschakelen"
+    },
+    "tabs": {
+      "cycleForward": "Volgende tabblad",
+      "cycleBackward": "Vorige tabblad",
+      "switchToLeft": "Naar links wisselen",
+      "switchToRight": "Naar rechts wisselen",
+      "switchToFirst": "Naar eerste wisselen",
+      "switchToSecond": "Naar tweede wisselen",
+      "switchToThird": "Naar derde wisselen",
+      "switchToFourth": "Naar vierde wisselen",
+      "switchToFifth": "Naar vijfde wisselen",
+      "switchToSixth": "Naar zesde wisselen",
+      "switchToSeventh": "Naar zevende wisselen",
+      "switchToEighth": "Naar achtste wisselen",
+      "switchToNinth": "Naar negende wisselen",
+      "switchToTenth": "Naar tiende wisselen"
+    },
+    "docs": {
+      "userGuide": "Gebruikershandleiding",
+      "markdownSyntax": "Markdown-syntax"
+    },
+    "spellchecker": {
+      "switchLanguage": "Taal wisselen"
+    }
+  },
+  "common": {
+    "cancel": "Annuleren",
+    "ok": "OK"
+  },
+  "dialog": {
+    "moveToTrash": "Weet je zeker dat je \"{name}\" naar de prullenbak wilt verplaatsen?",
+    "cancel": "Annuleren",
+    "changesWillBeLost": "Wijzigingen gaan verloren",
+    "close": "Sluiten",
+    "dontSave": "Niet opslaan",
+    "file": "Bestand",
+    "fileExists": "Bestand bestaat al: {filename}",
+    "files": "Bestanden",
+    "importWarning": "Importwaarschuwing",
+    "installPandoc": "Pandoc is niet gevonden. Installeer het, of stel de omgevingsvariabele MARKTEXT_PANDOC in op het pad naar het pandoc-programma en herstart MarkText.",
+    "exportWarning": "Exportwaarschuwing",
+    "exportWarningMore": "…en nog {count}",
+    "keepOpen": "Open houden",
+    "replace": "Vervangen",
+    "save": "Opslaan",
+    "saveChanges": "Wijzigingen opslaan",
+    "saveFailure": "Opslaan mislukt",
+    "unsafeFileTitle": "Mogelijk onveilig bestand",
+    "unsafeFileMessage": "Deze link opent een bestand dat code kan uitvoeren",
+    "unsafeFileDetail": "\"{name}\" is een uitvoerbaar bestand of script. Het openen kan programma's op je computer uitvoeren. Ga alleen door als je dit document vertrouwt.",
+    "openAnyway": "Toch openen"
+  },
+  "error": {
+    "configSchemaViolation": "Configuratieschemaovertreding",
+    "copyError": "Kopieerfout",
+    "initializationFailed": "Initialisatie mislukt {hint}",
+    "otherInstanceDetected": "Er draait al een andere instantie van MarkText",
+    "report": "Melden",
+    "startupError": "Opstartfout",
+    "terminatedDueToError": "Beëindigd door fout",
+    "unexpectedErrorWithMessage": "Onverwachte fout: {message}",
+    "unexpectedMainProcess": "Onverwachte fout in hoofdproces",
+    "unexpectedRendererProcess": "Onverwachte fout in rendererproces"
+  },
+  "notifications": {
+    "defaultMessage": "Standaardbericht",
+    "defaultTitle": "Melding"
+  },
+  "store": {
+    "editor": {
+      "anchorLinkCopied": "Ankerlink gekopieerd",
+      "tabNotFound": "Tabblad niet gevonden",
+      "tocItemNotFound": "Inhoudsopgave-item {key} niet gevonden",
+      "errorLoadingTabTitle": "Fout bij laden tabblad",
+      "errorLoadingTabMessage": "Er is een fout opgetreden bij het laden van de bestandswijziging omdat het tabblad niet gevonden kan worden.",
+      "mixedLineEndingsNormalized": "\"{name}\" heeft gemengde regeleindes die automatisch genormaliseerd zijn naar {lineEnding}.",
+      "imageDeletionUrlTitle": "Verwijder-URL afbeelding",
+      "imageDeletionUrlMessage": "Klik om de verwijder-URL van de geüploade afbeelding naar het klembord te kopiëren {url}",
+      "errorWhileSaving": "Er is een fout opgetreden bij het opslaan: {msg}",
+      "exportSuccessTitle": "Succesvol geëxporteerd",
+      "exportSuccessMessage": "\"{name}\" is succesvol geëxporteerd!",
+      "exportLinkedMediaMessage": "\"{name}\" is geëxporteerd. Deze indeling verwijst naar afbeeldingen in plaats van ze in te sluiten — houd de afbeeldingen bij het bestand en deel de hele map.",
+      "fileRemovedOnDisk": "\"{name}\" is verwijderd van schijf.",
+      "fileChangedOnDisk": "\"{name}\" is gewijzigd op schijf. Wil je het opnieuw laden?"
+    }
+  },
+  "spellchecker": {
+    "failedToRemoveWord": "Woord verwijderen uit woordenboek mislukt",
+    "unexpectedError": "Onverwachte fout in spellingcontrole"
+  },
+  "editor": {
+    "imageDrop": {
+      "saveTitle": "Sla het document op om een relatieve afbeeldingenmap te gebruiken",
+      "saveMessage": "Als u het document opslaat, wordt de afbeelding in de ingestelde relatieve map opgeslagen. Als u annuleert, wordt de afbeelding in de algemene afbeeldingenmap opgeslagen.",
+      "failed": "De afbeelding kon niet worden ingevoegd"
+    },
+    "export": {
+      "error": "Exportfout",
+      "errorExporting": "Fout bij exporteren van {type}-bestand",
+      "failed": "{type}-export mislukt"
+    },
+    "insertTable": {
+      "title": "Tabel invoegen",
+      "rows": "Rijen",
+      "columns": "Kolommen"
+    },
+    "mediaViewer": {
+      "title": "Voorbeeld",
+      "close": "Sluiten",
+      "zoomIn": "Inzoomen",
+      "zoomOut": "Uitzoomen",
+      "fit": "Passend maken",
+      "actualSize": "Werkelijke grootte",
+      "saveTitle": "Diagram opslaan",
+      "saveSvg": "Opslaan als SVG",
+      "savePng": "Opslaan als PNG",
+      "copyImage": "Afbeelding kopiëren",
+      "copied": "Afbeelding naar het klembord gekopieerd",
+      "saveFailed": "Kan de afbeelding niet opslaan: {error}",
+      "copyFailed": "Kan de afbeelding niet kopiëren: {error}"
+    },
+    "notifications": {
+      "notificationNotFound": "Melding niet gevonden"
+    },
+    "print": {
+      "error": "Afdrukfout voor \"{title}\"",
+      "failed": "Afdrukken mislukt"
+    },
+    "sourceCode": {
+      "cursorNullComment": "Cursor null opmerking",
+      "imageStructureDeletedComment": "Afbeeldingsstructuur verwijderd opmerking"
+    },
+    "spellcheck": {
+      "disabledError": "Spellingcontrole uitgeschakeld fout",
+      "errorSwitchingLanguage": "Fout bij wisselen van spellingcontroletaal {languageCode}",
+      "languageMissing": "Spellingcontroletaal ontbreekt {languageCode}",
+      "switchError": "Spellingcontrole wisselfout voor {languageCode}, {error}",
+      "title": "Spellingcontrole"
+    },
+    "tabs": {
+      "close": "{name} sluiten",
+      "preview": "{name}, voorbeeldtabblad"
+    }
+  },
+  "readingMode": {
+    "title": "Leesmodus",
+    "edit": "Bewerkingsmodus",
+    "lock": "Leesmodus inschakelen",
+    "unlock": "Overschakelen naar bewerkingsmodus",
+    "defaultMode": "Standaardmodus bij het openen van bestanden",
+    "defaultNote": "Geldt voor bestaande bestanden die vanaf nu worden geopend. Nieuwe documenten blijven bewerkbaar.",
+    "unsaved": "De leesmodus is ingeschakeld. Niet-opgeslagen wijzigingen blijven behouden en automatisch opslaan is gepauzeerd.",
+    "failed": "De documentmodus kon niet worden gewijzigd",
+    "closeSave": "Overschakelen naar bewerkingsmodus en opslaan",
+    "exportSource": "Kies een andere exportbestemming dan het bronbestand.",
+    "unavailable": "Niet beschikbaar in leesmodus",
+    "skipped": "Alleen-lezen documenten met niet-opgeslagen wijzigingen zijn overgeslagen.",
+    "viewImage": "Afbeelding bekijken",
+    "copyLink": "Linkadres kopiëren",
+    "resumed": "De bewerkingsmodus is ingeschakeld. Automatisch opslaan is hervat."
+  }
+}

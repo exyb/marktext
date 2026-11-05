@@ -5,9 +5,9 @@
 const path = require('path')
 const fs = require('fs')
 const thirdPartyChecker = require('./thirdPartyChecker.js')
-const rootDir = path.resolve(__dirname, '..')
+const desktopRoot = path.resolve(__dirname, '..', 'packages/desktop')
 
-thirdPartyChecker.getLicenses(rootDir, (err, packages) => {
+thirdPartyChecker.getLicenses(desktopRoot, (err, packages) => {
   if (err) {
     console.log(`[ERROR] ${err}`)
     return
@@ -17,6 +17,12 @@ thirdPartyChecker.getLicenses(rootDir, (err, packages) => {
   let licenseList = ''
   let index = 1
   const addedKeys = {}
+
+  // Vendored sources are shipped without an entry in the dependency graph.
+  packages['@hfelix/electron-localshortcut@4.0.1 (vendored)'] = {
+    licenses: 'MIT',
+    licenseText: fs.readFileSync(path.join(desktopRoot, 'src/common/localShortcut/LICENSE'), 'utf8')
+  }
 
   Object.keys(packages).forEach((key) => {
     let packageName = key
@@ -58,6 +64,6 @@ ${summary}
 ${licenseList}
 `
 
-  fs.writeFileSync(path.resolve(rootDir, 'build', 'THIRD-PARTY-LICENSES.txt'), output)
+  fs.writeFileSync(path.resolve(desktopRoot, 'build', 'THIRD-PARTY-LICENSES.txt'), output)
   console.log('THIRD-PARTY-LICENSES.txt generated successfully.')
 })
