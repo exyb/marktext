@@ -6,6 +6,29 @@ import { beginRules } from '../rules'
 import renderInlines from './renderInlines'
 import renderBlock from './renderBlock'
 
+// --- Canvas marker helpers for mermaid diagram auto-sizing ---
+// Marker format: %%{canvas:WxH}  (e.g. %%{canvas:800x600}) as the first line.
+// This is a standard mermaid comment (%%) so it is ignored by the parser.
+const CANVAS_MARKER_RE = /^%%\{canvas:(\d+)x(\d+)\}\s*$/
+
+const parseCanvasMarker = (code) => {
+  if (!code) return { width: null, height: null, cleanCode: code }
+  const lines = code.split('\n')
+  const match = lines[0].trim().match(CANVAS_MARKER_RE)
+  if (match) {
+    return {
+      width: parseInt(match[1], 10),
+      height: parseInt(match[2], 10),
+      cleanCode: lines.slice(1).join('\n')
+    }
+  }
+  return { width: null, height: null, cleanCode: code }
+}
+
+const formatCanvasMarker = (width, height) => {
+  return `%%{canvas:${Math.round(width)}x${Math.round(height)}}`
+}
+
 class StateRender {
   constructor(muya) {
     this.muya = muya
@@ -112,12 +135,15 @@ class StateRender {
         startOnLoad: false
       })
       for (const [key, value] of this.mermaidCache.entries()) {
-        const { code } = value
+        const { code: rawCode } = value
         const target = document.querySelector(key)
         if (!target) {
           continue
         }
         try {
+          // 解析画布大小标记（首行 %%{canvas:WxH}），并剥离后交给 mermaid 渲染
+          const { width: markerWidth, height: markerHeight, cleanCode } = parseCanvasMarker(rawCode)
+
           // 保存当前的 transform 状态（从 container 的 dataset 中读取）
           let savedTransform = target.dataset.diagramTransform || null
 
@@ -131,8 +157,8 @@ class StateRender {
           }
 
           // Mermaid v11 使用异步 parse
-          await mermaid.parse(code)
-          target.innerHTML = sanitize(code, PREVIEW_DOMPURIFY_CONFIG, true)
+          await mermaid.parse(cleanCode)
+          target.innerHTML = sanitize(cleanCode, PREVIEW_DOMPURIFY_CONFIG, true)
 
           // 等待 DOM 更新完成后再渲染 Mermaid
           await new Promise((resolve) => window.requestAnimationFrame(resolve))
@@ -141,6 +167,15 @@ class StateRender {
           await mermaid.run({
             nodes: [target]
           })
+
+          // 自适应画布大小:优先使用标记尺寸,否则按渲染后的 SVG 自然尺寸自动测量
+          const autoSize = this.measureMermaidSvg(target)
+          let canvasWidth = markerWidth
+          let canvasHeight = markerHeight
+          if (canvasWidth == null || canvasHeight == null) {
+            canvasWidth = autoSize.width
+            canvasHeight = autoSize.height
+          }
 
           // 如果有保存的 transform，立即应用（在 addMermaidControls 之前）
           if (savedTransform) {
@@ -153,7 +188,18 @@ class StateRender {
           }
 
           // 添加缩放和拖拽功能，并传入保存的状态
+          // 注意: addDiagramControls 会设置 container.style(cssText),所以 applyCanvasSize 必须在其后调用
           this.addMermaidControls(target, savedTransform)
+
+          // 应用画布大小(在 addMermaidControls 之后,避免被 cssText 覆盖)
+          if (canvasWidth > 0 && canvasHeight > 0) {
+            this.applyCanvasSize(target, canvasWidth, canvasHeight)
+          }
+
+          // 如果没有标记,把计算出的画布大小回写到代码块首行,下次渲染直接使用
+          if (markerWidth == null || markerHeight == null) {
+            this.writeCanvasMarker(target, canvasWidth, canvasHeight)
+          }
         } catch (err) {
           console.error('Mermaid rendering error:', err)
           target.innerHTML = '< Invalid Mermaid Codes >'
@@ -162,6 +208,90 @@ class StateRender {
       }
 
       this.mermaidCache.clear()
+    }
+  }
+
+  /**
+   * 测量 mermaid 容器内 SVG 的自然尺寸(用于自动画布大小)
+   */
+  measureMermaidSvg(target) {
+    const svg = target.querySelector('svg')
+    if (!svg) return { width: 0, height: 0 }
+    // 优先使用 SVG 的 width/height 属性(mermaid 渲染时设置的自然尺寸)
+    const attrWidth = parseFloat(svg.getAttribute('width'))
+    const attrHeight = parseFloat(svg.getAttribute('height'))
+    if (attrWidth > 0 && attrHeight > 0) {
+      return { width: Math.round(attrWidth), height: Math.round(attrHeight) }
+    }
+    // 回退:使用 getBBox 获取渲染后的包围盒
+    try {
+      const bbox = svg.getBBox()
+      if (bbox.width > 0 && bbox.height > 0) {
+        return { width: Math.round(bbox.width), height: Math.round(bbox.height) }
+      }
+    } catch (e) {
+      // getBBox 在某些情况下会抛出异常
+    }
+    return { width: 0, height: 0 }
+  }
+
+  /**
+   * 应用画布大小到 mermaid 容器
+   * 容器使用 CSS `width: max-content` 自适应 SVG 自然尺寸,无需强制设置宽度。
+   * 这里仅记录 dataset 并在拖拽调整大小时使用 inline style 覆盖。
+   */
+  applyCanvasSize(target, width, height) {
+    // 仅当明确设置了尺寸(拖拽调整)时才写 inline style,否则让 CSS max-content 自适应
+    if (target.dataset.userResized === 'true') {
+      target.style.width = `${width}px`
+      target.style.height = `${height}px`
+    }
+    target.dataset.canvasWidth = width
+    target.dataset.canvasHeight = height
+  }
+
+  /**
+   * 将画布大小标记写回代码块首行
+   * 通过 contentState 找到对应的 mermaid 代码块,更新/插入首行标记
+   */
+  writeCanvasMarker(target, width, height) {
+    const { contentState } = this.muya
+    if (!contentState) return
+    // target.id 即预览 div 的 block key,其父级是 figure,figure.children[0] 是 pre,pre.children[0] 是 code
+    const previewBlock = contentState.getBlock(target.id)
+    if (!previewBlock) return
+    const figure = contentState.getParent(previewBlock)
+    if (!figure || figure.functionType !== 'mermaid') return
+    const codeBlock = figure.children[0].children[0]
+    if (!codeBlock) return
+    const marker = formatCanvasMarker(width, height)
+
+    if (codeBlock.children.length === 0) {
+      // 空代码块,直接插入标记行
+      const markerBlock = contentState.createBlock('span', {
+        text: marker,
+        lang: 'yaml',
+        functionType: 'codeContent'
+      })
+      contentState.appendChild(codeBlock, markerBlock)
+    } else {
+      const firstLine = codeBlock.children[0]
+      if (CANVAS_MARKER_RE.test(firstLine.text.trim())) {
+        // 首行已是标记,更新它
+        firstLine.text = marker
+      } else {
+        // 在首行之前插入标记行
+        const markerBlock = contentState.createBlock('span', {
+          text: marker,
+          lang: 'yaml',
+          functionType: 'codeContent'
+        })
+        markerBlock.parent = codeBlock.key
+        markerBlock.nextSibling = firstLine.key
+        markerBlock.preSibling = null
+        firstLine.preSibling = markerBlock.key
+        codeBlock.children.unshift(markerBlock)
+      }
     }
   }
 
@@ -196,10 +326,9 @@ class StateRender {
       return
     }
 
-    // 设置容器为可调整大小
+    // 设置容器为可调整大小(使用自定义拖拽手柄,CSS resize 会与画布大小标记冲突)
     container.style.cssText = `
       position: relative;
-      resize: both;
       overflow: hidden;
       min-width: 200px;
       min-height: 150px;
@@ -227,12 +356,24 @@ class StateRender {
     controls.style.zIndex = '100'
     container.appendChild(controls)
 
-    // 添加resize手柄指示器
-    const resizeHandle = document.createElement('div')
-    resizeHandle.className = 'mermaid-resize-handle'
-    resizeHandle.innerHTML = '⋮'
-    resizeHandle.style.zIndex = '100'
-    container.appendChild(resizeHandle)
+    // 添加四角拖拽调整画布大小的手柄
+    const resizeHandles = []
+    const cornerConfigs = [
+      { cls: 'resize-nw', cursor: 'nw-resize', h: -1, v: -1 },
+      { cls: 'resize-ne', cursor: 'ne-resize', h: 1, v: -1 },
+      { cls: 'resize-sw', cursor: 'sw-resize', h: -1, v: 1 },
+      { cls: 'resize-se', cursor: 'se-resize', h: 1, v: 1 }
+    ]
+    for (const cfg of cornerConfigs) {
+      const handle = document.createElement('div')
+      handle.className = `mermaid-resize-corner ${cfg.cls}`
+      handle.style.zIndex = '101'
+      handle.dataset.h = cfg.h
+      handle.dataset.v = cfg.v
+      handle.style.cursor = cfg.cursor
+      container.appendChild(handle)
+      resizeHandles.push(handle)
+    }
 
     // 从保存的 transform 状态中解析出 scale, translateX, translateY
     let scale = 1
@@ -401,13 +542,68 @@ class StateRender {
       e.stopPropagation()
     })
 
-    // 阻止 resize 手柄的 click 事件冒泡
-    resizeHandle.addEventListener('click', (e) => {
-      e.stopPropagation()
-    })
+    // 阻止 resize 手柄的 click 事件冒泡,并实现拖拽调整画布大小
+    let activeResizeMove = null
+    let activeResizeUp = null
+    for (const handle of resizeHandles) {
+      handle.addEventListener('click', (e) => {
+        e.stopPropagation()
+      })
+      handle.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return
+        e.preventDefault()
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+
+        // 移除旧的监听器
+        if (activeResizeMove) {
+          document.removeEventListener('mousemove', activeResizeMove)
+          document.removeEventListener('mouseup', activeResizeUp)
+        }
+
+        const h = parseInt(handle.dataset.h, 10) // 1: 右边, -1: 左边
+        const v = parseInt(handle.dataset.v, 10) // 1: 下边, -1: 上边
+        const startX = e.clientX
+        const startY = e.clientY
+        const startWidth = container.offsetWidth
+        const startHeight = container.offsetHeight
+
+        // 开始拖拽时标记为用户主动调整大小,启用 inline style 覆盖 CSS max-content
+        container.dataset.userResized = 'true'
+
+        activeResizeMove = (moveEvent) => {
+          const dx = moveEvent.clientX - startX
+          const dy = moveEvent.clientY - startY
+          const newWidth = Math.max(100, startWidth + dx * h)
+          const newHeight = Math.max(75, startHeight + dy * v)
+          container.style.width = `${newWidth}px`
+          container.style.height = `${newHeight}px`
+          container.dataset.canvasWidth = Math.round(newWidth)
+          container.dataset.canvasHeight = Math.round(newHeight)
+          moveEvent.preventDefault()
+          moveEvent.stopPropagation()
+        }
+
+        activeResizeUp = () => {
+          document.removeEventListener('mousemove', activeResizeMove)
+          document.removeEventListener('mouseup', activeResizeUp)
+          activeResizeMove = null
+          activeResizeUp = null
+          // 拖拽结束,将新画布大小回写到代码块标记
+          const w = parseInt(container.dataset.canvasWidth, 10)
+          const hVal = parseInt(container.dataset.canvasHeight, 10)
+          if (w > 0 && hVal > 0) {
+            this.writeCanvasMarker(container, w, hVal)
+          }
+        }
+
+        document.addEventListener('mousemove', activeResizeMove)
+        document.addEventListener('mouseup', activeResizeUp)
+      })
+    }
 
     // 双击画布时重置
-    wrapper.addEventListener('dblclick', (e) => {
+    wrapper.addEventListener('dblclick', () => {
       resetTransform()
     })
 

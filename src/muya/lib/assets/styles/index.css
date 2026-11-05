@@ -764,8 +764,9 @@ figure.ag-container-block div.ag-container-preview {
   text-align: center;
 }
 
+/* 仅对非 mermaid 的容器预览保持 SVG 100% 宽度;mermaid 容器由主题 CSS 控制为 max-content */
 figure.ag-container-block div.ag-container-preview > svg {
-  width: 100%;
+  max-width: 100%;
 }
 
 figure.ag-active.ag-container-block > div.ag-container-preview {

@@ -31,9 +31,16 @@ class ExportHtml {
     const codes = this.exportContainer.querySelectorAll('code.language-mermaid')
     for (const code of codes) {
       const preEle = code.parentNode
+      const rawCode = unescapeHTML(code.innerHTML)
+      // 剥离画布大小标记(首行 %%{canvas:WxH}),避免影响导出渲染
+      const lines = rawCode.split('\n')
+      if (/^%%\{canvas:\d+x\d+\}\s*$/.test(lines[0].trim())) {
+        lines.shift()
+      }
+      const cleanCode = lines.join('\n')
       const mermaidContainer = document.createElement('div')
       mermaidContainer.innerHTML = sanitize(
-        unescapeHTML(code.innerHTML),
+        cleanCode,
         EXPORT_DOMPURIFY_CONFIG,
         true
       )

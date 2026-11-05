@@ -721,10 +721,17 @@ figure[data-role] svg use[fill='#000000'] {
 
 /*
  * Mermaid 图表控制按钮样式
+ * 注意: 容器使用 inline-block + max-content 让宽度自适应 SVG 自然尺寸,
+ * 避免容器宽度撑满编辑器而导致四角拖拽手柄被遮挡.
+ * overflow 改为 visible 以显示四角手柄(手柄定位在容器边角).
  */
 .ag-container-preview.mermaid {
   position: relative;
-  overflow: hidden !important;
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
+  overflow: visible !important;
+  vertical-align: middle;
 }
 
 .mermaid-controls {
@@ -820,6 +827,52 @@ figure[data-role] svg use[fill='#000000'] {
 .mermaid-resize-handle:hover {
   color: var(--themeColor);
   opacity: 1;
+}
+
+/* 四角拖拽调整画布大小的手柄
+ * 注意: .ag-container-preview.mermaid 有 overflow: hidden !important,
+ * 因此手柄必须定位在容器内侧(0px),不能被裁剪 */
+.mermaid-resize-corner {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--floatBgColor, #fff);
+  border: 2px solid var(--themeColor, #409eff);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.ag-container-preview.mermaid:hover .mermaid-resize-corner,
+.ag-container-preview.mermaid.diagram-focused .mermaid-resize-corner {
+  opacity: 0.9;
+}
+
+.mermaid-resize-corner:hover {
+  opacity: 1;
+  background: var(--themeColor, #409eff);
+}
+
+.mermaid-resize-corner.resize-nw {
+  top: 0;
+  left: 0;
+}
+
+.mermaid-resize-corner.resize-ne {
+  top: 0;
+  right: 0;
+}
+
+.mermaid-resize-corner.resize-sw {
+  bottom: 0;
+  left: 0;
+}
+
+.mermaid-resize-corner.resize-se {
+  bottom: 0;
+  right: 0;
 }
 
 /* 自定义 resize 角样式增强 */
