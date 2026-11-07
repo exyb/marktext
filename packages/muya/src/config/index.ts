@@ -330,6 +330,9 @@ export const MUYA_DEFAULT_OPTIONS = {
     orderListDelimiter: '.',
     tabSize: 4,
     codeBlockLineNumbers: false,
+    // Fill the info string of untagged fenced code blocks with a detected
+    // language; off by default so library consumers keep lossless round trips.
+    codeBlockAutoDetectLanguage: false,
     wrapCodeBlocks: false,
     // bullet/list marker width + listIndentation, tab or Daring Fireball Markdown (4 spaces) --> list indentation
     listIndentation: 1,

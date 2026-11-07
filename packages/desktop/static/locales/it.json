@@ -58,7 +58,9 @@
       "screenshot": "Cattura schermata",
       "lineEnding": "Carattere di fine riga",
       "lineEndingCrlf": "CRLF (Windows)",
-      "lineEndingLf": "LF (Linux/Mac)"
+      "lineEndingLf": "LF (Linux/Mac)",
+      "renumberHeadings": "Renumber Headings",
+      "renumberLists": "Renumber Ordered Lists"
     },
     "paragraph": {
       "title": "Paragrafo",
@@ -831,7 +833,9 @@
       "findPrevious": "Trova precedente",
       "replace": "Sostituisci",
       "findInFolder": "Trova nella cartella",
-      "screenshot": "Cattura schermata"
+      "screenshot": "Cattura schermata",
+      "renumberHeadings": "Renumber headings",
+      "renumberLists": "Renumber ordered lists"
     },
     "paragraph": {
       "heading1": "Intestazione 1",

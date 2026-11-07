@@ -12,6 +12,7 @@ import type {
 } from './types';
 import { firstWordOfInfo, parseFenceLine } from '../utils';
 import { createDiagramState, diagramTypeOfLang } from '../utils/diagram/fence';
+import { detectLanguage } from '../utils/languageDetect';
 import { toListDelimiter } from '../utils/listMarker';
 import logger from '../utils/logger';
 import { lexBlock } from '../utils/marked';
@@ -25,6 +26,7 @@ interface IMarkdownToStateOptions {
     texMathSingleBackslash: boolean;
     texMathDoubleBackslash: boolean;
     trimUnnecessaryCodeBlockEmptyLines: boolean;
+    codeBlockAutoDetectLanguage: boolean;
     frontMatter: boolean;
     multilineBlockquote?: boolean;
     githubAlerts?: boolean;
@@ -38,6 +40,7 @@ const DEFAULT_OPTIONS = {
     texMathSingleBackslash: false,
     texMathDoubleBackslash: false,
     trimUnnecessaryCodeBlockEmptyLines: false,
+    codeBlockAutoDetectLanguage: false,
     frontMatter: true,
     multilineBlockquote: false,
 };
@@ -461,6 +464,16 @@ export class MarkdownToState {
         return tableState;
     }
 
+    // Untagged fenced blocks get a detected language so they highlight
+    // without manual tagging; the answer stays empty for unknown or ambiguous
+    // content, keeping the round trip lossless.
+    private _codeBlockLanguage(isFenced: boolean, info: string, value: string): string {
+        if (isFenced && !info && this._options.codeBlockAutoDetectLanguage && /\S/.test(value))
+            return detectLanguage(value) ?? '';
+
+        return info;
+    }
+
     private _buildCodeState(
         token: Extract<TBlockToken, { type: 'code' }>,
         trimUnnecessaryCodeBlockEmptyLines: boolean,
@@ -496,7 +509,7 @@ export class MarkdownToState {
             name: 'code-block' as const,
             meta: {
                 type: isFenced ? 'fenced' : 'indented',
-                lang: info,
+                lang: this._codeBlockLanguage(isFenced, info, value),
                 ...(isFenced && fenceLength && fenceLength > 3 ? { fenceLength } : {}),
                 ...(isFenced ? { fenceChar: fenceChar ?? '`' } : {}),
             },

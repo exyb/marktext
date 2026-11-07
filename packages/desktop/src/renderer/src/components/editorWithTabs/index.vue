@@ -322,4 +322,15 @@ onBeforeUnmount(() => {
   min-width: 0;
   max-width: 50%;
 }
+
+/* The two panes live inside .document-body (added upstream for the docked
+   outline), so the flex row must be applied here — the .container row only
+   lays out outline + body. */
+.container.side-by-side .document-body {
+  display: flex;
+  flex-direction: row;
+}
+.container.side-by-side.source-left .document-body {
+  flex-direction: row-reverse;
+}
 </style>

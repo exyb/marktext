@@ -32,6 +32,7 @@ import {
 } from './selection/offsetCursor';
 import { createTextSelectionState } from './selection/state';
 import { atxHeadingBody, atxHeadingBodyRange } from './state/headings';
+import { renumberHeadingStates, renumberOrderedListStates } from './state/renumber';
 import { isAnyListState, isAtxHeadingState, isCodeBlockState, isSetextHeadingState, markdownListMarker } from './state/types';
 import { ChangeSource } from './types';
 import { Ui } from './ui/ui';
@@ -124,6 +125,7 @@ const PARSE_AFFECTING_OPTIONS = new Set<keyof IMuyaOptions>([
     'footnote',
     'frontMatter',
     'trimUnnecessaryCodeBlockEmptyLines',
+    'codeBlockAutoDetectLanguage',
     'multilineBlockquote',
     'githubAlerts',
     'fancyLists',
@@ -303,6 +305,16 @@ export class Muya {
 
     getTOC(): ITocItem[] {
         return this.editor.jsonState.getTOC();
+    }
+
+    /** Section numbers from heading levels (1. / 1.1 / 1.1.1), replacing any authored numbers. */
+    renumberHeadings(): boolean {
+        return this.replaceContent(renumberHeadingStates(this.editor.jsonState.getState()));
+    }
+
+    /** Every ordered list restarts at 1 with sequential markers; bullets are untouched. */
+    renumberLists(): boolean {
+        return this.replaceContent(renumberOrderedListStates(this.editor.jsonState.getState()));
     }
 
     undo() {

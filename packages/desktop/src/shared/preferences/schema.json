@@ -133,6 +133,11 @@
     "type": "boolean",
     "default": true
   },
+  "codeBlockAutoDetectLanguage": {
+    "description": "Editor--Auto-detect the language of untagged code blocks",
+    "type": "boolean",
+    "default": true
+  },
   "sourceCodeLineNumbers": {
     "description": "Editor--Show line numbers in source code mode",
     "type": "boolean",

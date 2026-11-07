@@ -58,7 +58,9 @@
       "screenshot": "截图",
       "lineEnding": "行结束符",
       "lineEndingCrlf": "CRLF (Windows)",
-      "lineEndingLf": "LF (Unix/macOS)"
+      "lineEndingLf": "LF (Unix/macOS)",
+      "renumberHeadings": "标题章节编号",
+      "renumberLists": "重排有序列表编号"
     },
     "paragraph": {
       "title": "段落",
@@ -543,7 +545,8 @@
         "title": "代码块",
         "fontSize": "代码块字体大小",
         "showLineNumbers": "显示行号",
-        "removeEmptyLines": "删除空行"
+        "removeEmptyLines": "删除空行",
+        "autoDetectLanguage": "自动检测语言"
       },
       "writingBehavior": {
         "title": "写作偏好",
@@ -583,7 +586,9 @@
         "autoCheck": "联动勾选父子任务",
         "autoNormalizeLineEndings": "打开时自动将行尾规范化为 LF",
         "wrapCodeBlocks": "换行代码块",
-        "sourceCodeLineNumbers": "在源码模式中显示行号"
+        "sourceCodeLineNumbers": "在源码模式中显示行号",
+        "showMinimap": "显示文档缩略图",
+        "editorLineNumbers": "显示行号"
       }
     },
     "image": {
@@ -835,7 +840,9 @@
       "findPrevious": "查找上一个",
       "replace": "替换",
       "findInFolder": "在文件夹中查找",
-      "screenshot": "截图"
+      "screenshot": "截图",
+      "renumberHeadings": "标题章节编号",
+      "renumberLists": "重排有序列表编号"
     },
     "paragraph": {
       "heading1": "标题 1",

@@ -51,6 +51,11 @@ class LangInputContent extends Content {
 
     override inputHandler() {
         const textContent = this.domNode!.textContent ?? '';
+        if (textContent === '' && this.parent) {
+            // An emptied input is a deliberate removal; remember it so the
+            // code content's auto-detection does not refill the language.
+            this.parent.langManuallyCleared = true;
+        }
         // Keep info-string attributes when editing; highlighting derives the first word elsewhere.
         this._updateLanguage(textContent);
     }
@@ -101,6 +106,9 @@ class LangInputContent extends Content {
         if (start.offset === 1 && end.offset === 1 && text.length === 1) {
             event.preventDefault();
             const lang = '';
+            // This branch bypasses inputHandler, so mark the removal here.
+            if (this.parent)
+                this.parent.langManuallyCleared = true;
             this._updateLanguage(lang);
         }
         if (start.offset === 0 && end.offset === 0) {

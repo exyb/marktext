@@ -215,6 +215,7 @@ const {
   codeFontSize,
   codeFontFamily,
   codeBlockLineNumbers,
+  codeBlockAutoDetectLanguage,
   trimUnnecessaryCodeBlockEmptyLines,
   editorFontFamily,
   hideQuickInsertHint,
@@ -674,6 +675,15 @@ watch(codeFontSize, (value, oldValue) => {
 watch(codeBlockLineNumbers, (value, oldValue) => {
   if (value !== oldValue && editor.value) {
     editor.value.setOptions({ codeBlockLineNumbers: value }, true)
+  }
+})
+
+// The option is consumed at parse time, so the forceRender reparse applies
+// detection to the open document right away (no dirty flag, no undo entry —
+// the same silent-apply contract as load-time detection).
+watch(codeBlockAutoDetectLanguage, (value, oldValue) => {
+  if (value !== oldValue && editor.value) {
+    editor.value.setOptions({ codeBlockAutoDetectLanguage: value }, true)
   }
 })
 
@@ -1642,6 +1652,19 @@ const handleEditParagraph = (type: unknown) => {
   }
 }
 
+// Renumbering rewrites the muya state, which stays authoritative in source
+// mode too (the content sync mirrors CodeMirror edits back). A readOnly file
+// must never be rewritten, so the command is a no-op there.
+const handleRenumberHeadings = () => {
+  if (currentFile.value?.readOnly) return
+  editor.value?.renumberHeadings()
+}
+
+const handleRenumberLists = () => {
+  if (currentFile.value?.readOnly) return
+  editor.value?.renumberLists()
+}
+
 const handleParagraph = (type: unknown) => {
   if (sourceCode.value) {
     return
@@ -1976,6 +1999,7 @@ onMounted(() => {
     codeFontFamily: resolveCodeFont(codeFontFamily.value),
     wrapCodeBlocks: wrapCodeBlocks.value,
     codeBlockLineNumbers: codeBlockLineNumbers.value,
+    codeBlockAutoDetectLanguage: codeBlockAutoDetectLanguage.value,
     listIndentation: listIndentation.value,
     frontmatterType: frontmatterType.value,
     cjkEmphasis: cjkEmphasis.value,
@@ -2120,6 +2144,8 @@ onMounted(() => {
   bus.on('export', handleExport)
   bus.on('print-service-clearup', handlePrintServiceClearup)
   bus.on('paragraph', handleEditParagraph)
+  bus.on('document:renumber-headings', handleRenumberHeadings)
+  bus.on('document:renumber-lists', handleRenumberLists)
   bus.on('format', handleInlineFormat)
   bus.on('searchValue', handleSearch)
   bus.on('search-visibility', handleSearchVisibility)
@@ -2299,6 +2325,8 @@ onBeforeUnmount(() => {
   bus.off('export', handleExport)
   bus.off('print-service-clearup', handlePrintServiceClearup)
   bus.off('paragraph', handleEditParagraph)
+  bus.off('document:renumber-headings', handleRenumberHeadings)
+  bus.off('document:renumber-lists', handleRenumberLists)
   bus.off('format', handleInlineFormat)
   bus.off('searchValue', handleSearch)
   bus.off('search-visibility', handleSearchVisibility)

@@ -58,7 +58,9 @@
       "screenshot": "Ekran Görüntüsü",
       "lineEnding": "Satır Sonu",
       "lineEndingCrlf": "CRLF(Windows)",
-      "lineEndingLf": "LF(Linux/Mac)"
+      "lineEndingLf": "LF(Linux/Mac)",
+      "renumberHeadings": "Renumber Headings",
+      "renumberLists": "Renumber Ordered Lists"
     },
     "paragraph": {
       "title": "Paragraf",
@@ -831,7 +833,9 @@
       "findPrevious": "Öncekini Bul",
       "replace": "Değiştir",
       "findInFolder": "Klasörde Bul",
-      "screenshot": "Ekran Görüntüsü"
+      "screenshot": "Ekran Görüntüsü",
+      "renumberHeadings": "Renumber headings",
+      "renumberLists": "Renumber ordered lists"
     },
     "paragraph": {
       "heading1": "Başlık 1",

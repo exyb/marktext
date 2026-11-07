@@ -226,6 +226,7 @@ export interface IpcMainEventChannels extends StateIpcMainEvents {
   'mt::editor-ask-file-save-as': []
   'mt::editor-close-tab': [tabId?: string]
   'mt::editor-edit-action': [action: string]
+  'mt::editor-document-action': [payload: { type: 'renumber-headings' | 'renumber-lists' }]
   'mt::editor-format-action': [payload: { type: string }]
   'mt::editor-move-file': []
   'mt::editor-paragraph-action': [payload: { type: string }]

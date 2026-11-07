@@ -141,6 +141,23 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
         }
       },
       {
+        type: 'separator'
+      },
+      {
+        id: 'renumberHeadingsMenuItem',
+        label: t('menu.edit.renumberHeadings'),
+        click(_menuItem, browserWindow) {
+          actions.renumberHeadings(browserWindow as BrowserWindow | undefined)
+        }
+      },
+      {
+        id: 'renumberListsMenuItem',
+        label: t('menu.edit.renumberLists'),
+        click(_menuItem, browserWindow) {
+          actions.renumberLists(browserWindow as BrowserWindow | undefined)
+        }
+      },
+      {
         id: 'findNextMenuItem',
         label: t('menu.edit.findNext'),
         accelerator: keybindings.getAccelerator(COMMANDS.EDIT_FIND_NEXT) ?? undefined,

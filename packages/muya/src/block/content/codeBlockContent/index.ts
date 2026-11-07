@@ -6,6 +6,7 @@ import type {
     IDiagramState,
     IFrontmatterState,
 } from '../../../state/types';
+import type CodeBlock from '../../commonMark/codeBlock';
 import type Code from '../../commonMark/codeBlock/code';
 import type HTMLPreview from '../../commonMark/html/htmlPreview';
 import { CLASS_NAMES, HTML_TAGS, VOID_HTML_TAGS } from '../../../config';
@@ -13,6 +14,7 @@ import { ChangeSource } from '../../../types';
 import { adjustOffset, escapeHTML, firstGraphemeLength, firstWordOfInfo, lastGraphemeLength, lineBounds } from '../../../utils';
 import { computeLineCount, repositionLineNumberSpans, syncLineNumbersSpans } from '../../../utils/codeBlockLineNumbers';
 import { getHighlightHtml, MARKER_HASH } from '../../../utils/highlightHTML';
+import { detectLanguage } from '../../../utils/languageDetect';
 import prism, { loadedLanguages, transformAliasToOrigin, walkTokens } from '../../../utils/prism/index';
 import { tabText } from '../../../utils/tab';
 import Content from '../../base/content';
@@ -80,6 +82,10 @@ const LANG_HASH = {
     'math-block': 'latex',
 };
 
+// Delay after the last content change before an untagged block is judged, so
+// detection sees the finished paste/keystroke run rather than a fragment.
+const AUTO_DETECT_LANGUAGE_DELAY = 600;
+
 function hasStateMeta(
     state: CodeContentState,
 ): state is ICodeBlockState | IDiagramState | IFrontmatterState {
@@ -120,9 +126,15 @@ class CodeBlockContent extends Content {
     // Seeded at creation to avoid racing the preview’s initial async render.
     private _lastPreviewText: string;
 
+    private _autoDetectTimer: ReturnType<typeof setTimeout> | null = null;
+    // Seeded so the initial render pass never schedules a detection — blocks
+    // the parser could not identify are re-judged only on real edits.
+    private _autoDetectSeenText: string;
+
     constructor(muya: Muya, state: CodeContentState) {
         super(muya, state.text);
         this._lastPreviewText = state.text;
+        this._autoDetectSeenText = state.text;
         if (hasStateMeta(state))
             this._initialLang = state.meta.lang;
         else
@@ -194,6 +206,78 @@ class CodeBlockContent extends Content {
         // Re-render the math/diagram/html preview too; undo/redo reaches this
         // block only through update(), not inputHandler (#1632).
         this._updatePreviewIfHave(text);
+        this._maybeScheduleLanguageDetection(text);
+    }
+
+    // Judging runs 600ms after the last content change, so pasted code and
+    // quick keystroke runs settle before a language is chosen.
+    private _maybeScheduleLanguageDetection(text: string) {
+        if (text === this._autoDetectSeenText)
+            return;
+        this._autoDetectSeenText = text;
+
+        if (this._autoDetectTimer !== null) {
+            clearTimeout(this._autoDetectTimer);
+            this._autoDetectTimer = null;
+        }
+
+        if (!this._autoDetectTarget())
+            return;
+
+        this._autoDetectTimer = setTimeout(() => {
+            this._autoDetectTimer = null;
+            this._applyDetectedLanguage();
+        }, AUTO_DETECT_LANGUAGE_DELAY);
+    }
+
+    // The untagged fenced code block that auto-detection may fill, or null
+    // when ineligible. Frontmatter and diagram blocks reuse this content
+    // class and must stay untouched. Transient user state (focused language
+    // input, IME) is checked at fire time only, so it cannot silently drop
+    // the schedule.
+    private _autoDetectTarget(): { codeBlock: CodeBlock; langInput: Content } | null {
+        if (!this.muya.options.codeBlockAutoDetectLanguage)
+            return null;
+
+        const codeBlock = this._codeContainer as CodeBlock | null;
+        if (!codeBlock || codeBlock.blockName !== 'code-block')
+            return null;
+        if (codeBlock.meta.type !== 'fenced')
+            return null;
+        if (firstWordOfInfo(codeBlock.lang))
+            return null;
+        if (codeBlock.langManuallyCleared)
+            return null;
+        if (!this.muya.canMutate)
+            return null;
+
+        const langInput = codeBlock.firstContentInDescendant();
+        if (!langInput || langInput.blockName !== 'language-input')
+            return null;
+        // Never overwrite a language the user typed, fully or partially.
+        if (langInput.text !== '')
+            return null;
+
+        return { codeBlock, langInput };
+    }
+
+    private _applyDetectedLanguage() {
+        const target = this._autoDetectTarget();
+        if (!target || !this.muya.isBlockInDocument(target.codeBlock))
+            return;
+        if (this.muya.editor.isComposing || this.muya.editor.activeContentBlock === target.langInput)
+            return;
+
+        const detected = detectLanguage(this.text);
+        if (!detected)
+            return;
+
+        // Mirror the language selector's apply path: the input's text carries
+        // the OT edit on meta.lang, then the block re-renders its grammar. No
+        // content-change event — the picker must not surface on auto-fill.
+        target.langInput.text = detected;
+        target.langInput.update();
+        target.codeBlock.lang = detected;
     }
 
     private _lastLineCount = -1;

@@ -63,11 +63,20 @@ export const useListenForMainStore = defineStore('listenForMain', () => {
     })
   }
 
+  function LISTEN_FOR_DOCUMENT_ACTION(): void {
+    window.electron.ipcRenderer.on('mt::editor-document-action', (_e, { type }) => {
+      if (useEditorStore().currentFile?.readOnly)
+        return
+      bus.emit(type === 'renumber-headings' ? 'document:renumber-headings' : 'document:renumber-lists')
+    })
+  }
+
   return {
     EDITOR_EDIT_ACTION,
     LISTEN_FOR_EDIT,
     LISTEN_FOR_SHOW_DIALOG,
     LISTEN_FOR_PANDOC_EXPORT,
-    LISTEN_FOR_PARAGRAPH_INLINE_STYLE
+    LISTEN_FOR_PARAGRAPH_INLINE_STYLE,
+    LISTEN_FOR_DOCUMENT_ACTION
   }
 })

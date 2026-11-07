@@ -82,6 +82,9 @@ const COMMAND_KEY_MAP: Record<string, string> = {
   'paragraph.task-list': 'commands.paragraph.taskList',
   'paragraph.loose-list-item': 'commands.paragraph.looseListItem',
 
+  'edit.renumber-headings': 'commands.edit.renumberHeadings',
+  'edit.renumber-lists': 'commands.edit.renumberLists',
+
   'paragraph.paragraph': 'commands.paragraph.paragraph',
   'paragraph.reset-paragraph': 'commands.paragraph.resetParagraph',
 

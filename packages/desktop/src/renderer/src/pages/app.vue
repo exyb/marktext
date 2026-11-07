@@ -272,6 +272,7 @@ onMounted(async () => {
   listenForMainStore.LISTEN_FOR_SHOW_DIALOG()
   listenForMainStore.LISTEN_FOR_PANDOC_EXPORT()
   listenForMainStore.LISTEN_FOR_PARAGRAPH_INLINE_STYLE()
+  listenForMainStore.LISTEN_FOR_DOCUMENT_ACTION()
   projectStore.LISTEN_FOR_UPDATE_PROJECT()
   projectStore.LISTEN_FOR_LOAD_PROJECT()
   stopSidebarContextMenu = projectStore.LISTEN_FOR_SIDEBAR_CONTEXT_MENU()

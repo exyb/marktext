@@ -11,7 +11,11 @@ interface IStateLike {
 
 function generate(
     markdown: string,
-    options: Partial<{ footnote: boolean; trimUnnecessaryCodeBlockEmptyLines: boolean }> = {},
+    options: Partial<{
+        footnote: boolean;
+        trimUnnecessaryCodeBlockEmptyLines: boolean;
+        codeBlockAutoDetectLanguage: boolean;
+    }> = {},
 ): IStateLike[] {
     return new MarkdownToState({
         footnote: false,
@@ -446,5 +450,44 @@ describe('markdownToState — HTML block vs single-image paragraph', () => {
         expect(states.length).toBe(1);
         expect(states[0].name).toBe('html-block');
         expect(states[0].text).toBe('<div>x</div>');
+    });
+});
+
+// Auto-detection fills the info string of untagged fenced blocks at parse
+// time. It must stay off by default (conformance and round-trip suites rely
+// on untagged blocks serialising unchanged) and must only ever touch fenced
+// blocks whose info string is empty — anything else keeps its language.
+describe('markdownToState — codeBlockAutoDetectLanguage', () => {
+    const SHELL_FENCE = '```\nexport abc=aaa; echo $abc\n```\n';
+
+    it('fills the language of an untagged fenced block when enabled', () => {
+        const states = generate(SHELL_FENCE, { codeBlockAutoDetectLanguage: true });
+        expect(states[0].meta).toEqual({ type: 'fenced', lang: 'bash', fenceChar: '`' });
+    });
+
+    it('leaves the info string empty when the option is off', () => {
+        const states = generate(SHELL_FENCE);
+        expect(states[0].meta).toEqual({ type: 'fenced', lang: '', fenceChar: '`' });
+    });
+
+    it('keeps an unidentifiable block untagged instead of guessing', () => {
+        const states = generate('```\nconst x = 12345\n```\n', { codeBlockAutoDetectLanguage: true });
+        expect(states[0].meta).toEqual({ type: 'fenced', lang: '', fenceChar: '`' });
+    });
+
+    it('never touches a block that already carries a language', () => {
+        const states = generate('```js\nexport abc=aaa; echo $abc\n```\n', { codeBlockAutoDetectLanguage: true });
+        expect(states[0].meta).toEqual({ type: 'fenced', lang: 'js', fenceChar: '`' });
+    });
+
+    it('leaves indented code blocks alone', () => {
+        const states = generate('    export abc=aaa; echo $abc\n', { codeBlockAutoDetectLanguage: true });
+        expect(states[0].meta).toEqual({ type: 'indented', lang: '' });
+    });
+
+    it('serialises the detected language on the way back to markdown', () => {
+        const exporter = new ExportMarkdown({ listIndentation: 1 });
+        const states = generate(SHELL_FENCE, { codeBlockAutoDetectLanguage: true });
+        expect(exporter.generate(states as never).split('\n')[0]).toBe('```bash');
     });
 });

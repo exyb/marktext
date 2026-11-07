@@ -58,7 +58,9 @@
       "screenshot": "Capture d'écran",
       "lineEnding": "Fin de ligne",
       "lineEndingCrlf": "CRLF (Windows)",
-      "lineEndingLf": "LF (Linux/Mac)"
+      "lineEndingLf": "LF (Linux/Mac)",
+      "renumberHeadings": "Renumber Headings",
+      "renumberLists": "Renumber Ordered Lists"
     },
     "paragraph": {
       "title": "Paragraphe",
@@ -832,7 +834,9 @@
       "findPrevious": "Rechercher précédent",
       "replace": "Remplacer",
       "findInFolder": "Rechercher dans le dossier",
-      "screenshot": "Capture d'écran"
+      "screenshot": "Capture d'écran",
+      "renumberHeadings": "Renumber headings",
+      "renumberLists": "Renumber ordered lists"
     },
     "paragraph": {
       "heading1": "Titre 1",

@@ -58,7 +58,9 @@
       "screenshot": "螢幕截圖",
       "lineEnding": "行結束符",
       "lineEndingCrlf": "CRLF(Windows)",
-      "lineEndingLf": "LF(Linux/Mac)"
+      "lineEndingLf": "LF(Linux/Mac)",
+      "renumberHeadings": "標題章節編號",
+      "renumberLists": "重排有序清單編號"
     },
     "paragraph": {
       "title": "段落",
@@ -540,7 +542,8 @@
         "title": "程式碼區塊",
         "fontSize": "程式碼區塊字型大小",
         "showLineNumbers": "顯示行號",
-        "removeEmptyLines": "移除空行"
+        "removeEmptyLines": "移除空行",
+        "autoDetectLanguage": "自動偵測語言"
       },
       "writingBehavior": {
         "title": "寫作偏好",
@@ -580,7 +583,9 @@
         "autoCheck": "連動勾選父子任務",
         "autoNormalizeLineEndings": "開啟時自動將行尾標準化為 LF",
         "wrapCodeBlocks": "換行程式碼區塊",
-        "sourceCodeLineNumbers": "在原始碼模式中顯示行號"
+        "sourceCodeLineNumbers": "在原始碼模式中顯示行號",
+        "showMinimap": "顯示文件縮圖",
+        "editorLineNumbers": "顯示行號"
       }
     },
     "image": {
@@ -832,7 +837,9 @@
       "findPrevious": "尋找上一個",
       "replace": "取代",
       "findInFolder": "在資料夾中尋找",
-      "screenshot": "螢幕截圖"
+      "screenshot": "螢幕截圖",
+      "renumberHeadings": "標題章節編號",
+      "renumberLists": "重排有序清單編號"
     },
     "paragraph": {
       "heading1": "標題 1",

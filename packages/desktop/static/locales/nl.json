@@ -58,7 +58,9 @@
       "screenshot": "Schermafbeelding",
       "lineEnding": "Regeleinde",
       "lineEndingCrlf": "CRLF (Windows)",
-      "lineEndingLf": "LF (Linux/Mac)"
+      "lineEndingLf": "LF (Linux/Mac)",
+      "renumberHeadings": "Renumber Headings",
+      "renumberLists": "Renumber Ordered Lists"
     },
     "paragraph": {
       "title": "Alinea",
@@ -831,7 +833,9 @@
       "findPrevious": "Vorige zoeken",
       "replace": "Vervangen",
       "findInFolder": "Zoeken in map",
-      "screenshot": "Schermafbeelding"
+      "screenshot": "Schermafbeelding",
+      "renumberHeadings": "Renumber headings",
+      "renumberLists": "Renumber ordered lists"
     },
     "paragraph": {
       "heading1": "Kop 1",

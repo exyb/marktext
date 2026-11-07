@@ -213,6 +213,21 @@ const commands: CommandDescriptor[] = [
     }
   },
   {
+    // Document-wide renumbering runs on the muya state directly, so the
+    // editor must not be focused first — that would flip a source-mode user
+    // back to the WYSIWYG pane.
+    id: 'edit.renumber-headings',
+    execute: async() => {
+      bus.emit('document:renumber-headings')
+    }
+  },
+  {
+    id: 'edit.renumber-lists',
+    execute: async() => {
+      bus.emit('document:renumber-lists')
+    }
+  },
+  {
     id: 'edit.find',
     execute: async() => {
       await delay(150)

@@ -58,7 +58,9 @@
       "screenshot": "Снимок экрана",
       "lineEnding": "Конец строки",
       "lineEndingCrlf": "CRLF (Windows)",
-      "lineEndingLf": "LF (Linux/Mac)"
+      "lineEndingLf": "LF (Linux/Mac)",
+      "renumberHeadings": "Renumber Headings",
+      "renumberLists": "Renumber Ordered Lists"
     },
     "paragraph": {
       "title": "Абзац",
@@ -831,7 +833,9 @@
       "findPrevious": "Найти ранее",
       "replace": "Заменить",
       "findInFolder": "Найти в папке",
-      "screenshot": "Снимок экрана"
+      "screenshot": "Снимок экрана",
+      "renumberHeadings": "Renumber headings",
+      "renumberLists": "Renumber ordered lists"
     },
     "paragraph": {
       "heading1": "Заголовок 1",

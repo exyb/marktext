@@ -125,6 +125,18 @@ export const findInFolder = (win: Win): void => {
   edit(win, 'findInFolder')
 }
 
+export const renumberHeadings = (win: Win): void => {
+  if (win && win.webContents) {
+    win.webContents.send('mt::editor-document-action', { type: 'renumber-headings' })
+  }
+}
+
+export const renumberLists = (win: Win): void => {
+  if (win && win.webContents) {
+    win.webContents.send('mt::editor-document-action', { type: 'renumber-lists' })
+  }
+}
+
 export const edit = (win: Win, type: string): void => {
   if (win && win.webContents) {
     win.webContents.send('mt::editor-edit-action', type)

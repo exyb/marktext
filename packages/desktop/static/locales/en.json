@@ -58,7 +58,9 @@
       "screenshot": "Screenshot",
       "lineEnding": "Line Ending",
       "lineEndingCrlf": "CRLF(Windows)",
-      "lineEndingLf": "LF(Linux/Mac)"
+      "lineEndingLf": "LF(Linux/Mac)",
+      "renumberHeadings": "Renumber Headings",
+      "renumberLists": "Renumber Ordered Lists"
     },
     "paragraph": {
       "title": "Paragraph",
@@ -546,7 +548,8 @@
         "title": "Code Block",
         "fontSize": "Code block font size",
         "showLineNumbers": "Show line numbers",
-        "removeEmptyLines": "Remove empty lines"
+        "removeEmptyLines": "Remove empty lines",
+        "autoDetectLanguage": "Auto-detect language"
       },
       "writingBehavior": {
         "title": "Writing preferences",
@@ -840,7 +843,9 @@
       "findPrevious": "Find Previous",
       "replace": "Replace",
       "findInFolder": "Find in Folder",
-      "screenshot": "Screenshot"
+      "screenshot": "Screenshot",
+      "renumberHeadings": "Renumber headings",
+      "renumberLists": "Renumber ordered lists"
     },
     "paragraph": {
       "heading1": "Heading 1",

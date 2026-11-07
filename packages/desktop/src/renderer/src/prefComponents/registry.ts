@@ -118,6 +118,10 @@ export const preferenceDefinitions: Record<string, PreferenceDefinition> = {
     "category": "editor",
     "label": "preferences.editor.codeBlock.showLineNumbers"
   },
+  "codeBlockAutoDetectLanguage": {
+    "category": "editor",
+    "label": "preferences.editor.codeBlock.autoDetectLanguage"
+  },
   "trimUnnecessaryCodeBlockEmptyLines": {
     "category": "editor",
     "label": "preferences.editor.codeBlock.removeEmptyLines"

@@ -82,6 +82,12 @@
           :on-change="(value) => onSelectChange('codeBlockLineNumbers', value)"
         />
         <bool
+          id="setting-codeBlockAutoDetectLanguage"
+          :description="preferenceLabel('codeBlockAutoDetectLanguage')"
+          :bool="codeBlockAutoDetectLanguage"
+          :on-change="(value) => onSelectChange('codeBlockAutoDetectLanguage', value)"
+        />
+        <bool
           id="setting-trimUnnecessaryCodeBlockEmptyLines"
           :description="preferenceLabel('trimUnnecessaryCodeBlockEmptyLines')"
           :bool="trimUnnecessaryCodeBlockEmptyLines"
@@ -278,6 +284,7 @@ const {
   codeFontSize,
   codeFontFamily,
   codeBlockLineNumbers,
+  codeBlockAutoDetectLanguage,
   trimUnnecessaryCodeBlockEmptyLines,
   hideQuickInsertHint,
   hideLinkPopup,

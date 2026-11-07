@@ -58,7 +58,9 @@
       "screenshot": "スクリーンショット",
       "lineEnding": "改行コード",
       "lineEndingCrlf": "CRLF (Windows)",
-      "lineEndingLf": "LF (Linux/Mac)"
+      "lineEndingLf": "LF (Linux/Mac)",
+      "renumberHeadings": "Renumber Headings",
+      "renumberLists": "Renumber Ordered Lists"
     },
     "paragraph": {
       "title": "段落",
@@ -832,7 +834,9 @@
       "findPrevious": "前を検索",
       "replace": "置換",
       "findInFolder": "フォルダー内の検索",
-      "screenshot": "スクリーンショット"
+      "screenshot": "スクリーンショット",
+      "renumberHeadings": "Renumber headings",
+      "renumberLists": "Renumber ordered lists"
     },
     "paragraph": {
       "heading1": "見出し 1",

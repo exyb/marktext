@@ -24,6 +24,7 @@ export interface IMuyaOptions {
     orderListDelimiter: string;
     tabSize: number | 'tab';
     codeBlockLineNumbers: boolean;
+    codeBlockAutoDetectLanguage: boolean;
     listIndentation: number | 'dfm' | 'tab';
     frontMatter: boolean;
     frontmatterType: string; // '-' | '+' | ';' | '{';

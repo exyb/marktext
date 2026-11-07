@@ -25,6 +25,11 @@ class CodeBlock extends Parent {
     public meta: ICodeBlockState['meta'];
     static override blockName = 'code-block';
 
+    // Set by language-input when the user deliberately empties it, so
+    // codeBlockContent's auto-detection does not refill the field while the
+    // user keeps editing the code. A reload or re-parse creates a fresh block.
+    public langManuallyCleared = false;
+
     // The grammar the content was last rendered with, so a language change that
     // does not change the rendering skips the rebuild. Undefined until the
     // first render, which therefore always happens.
