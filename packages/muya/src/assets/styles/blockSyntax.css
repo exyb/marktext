@@ -1248,17 +1248,47 @@ pre.mu-active.mu-fenced-code::after {
 /* ------------------------------------------------------------------------
  * Fork: mermaid canvas controls (zoom bar, wheel zoom, drag pan, corner
  * resize). The container is inline-block + max-content so its width follows
- * the SVG's natural size; corners sit on the container edges.
+ * the SVG's natural size. Content is clipped to the canvas so resizing the
+ * canvas smaller (or zooming in) never paints over surrounding text; the
+ * corner handles sit inside the edges (0px) precisely so clipping keeps
+ * them visible.
  * ---------------------------------------------------------------------- */
 figure.mu-diagram-block div.mu-diagram-preview.mermaid {
     position: relative;
+
     display: inline-block;
     width: max-content;
     max-width: 100%;
-    overflow: visible;
+    overflow: hidden;
+
     vertical-align: middle;
+
     border: 1px solid transparent;
+
     transition: border-color 0.2s ease;
+}
+
+/* These rules share specificity with the upstream active-preview float
+   above and come later, so without re-asserting it the float's absolute
+   positioning, panel chrome and centering would be lost when editing. */
+figure.mu-active.mu-diagram-block > div.mu-diagram-preview.mermaid {
+    position: absolute;
+    top: calc(100% + 20px);
+    left: 50%;
+    z-index: 10000;
+
+    box-sizing: border-box;
+    width: max-content;
+    max-width: 100%;
+    padding: 0.5rem;
+
+    overflow: hidden;
+
+    background: var(--float-bg-color);
+    border: 1px solid var(--float-border-color);
+    border-radius: 4px;
+    box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
+    transform: translateX(-50%);
 }
 
 figure.mu-diagram-block div.mu-diagram-preview.mermaid:hover {
@@ -1268,26 +1298,32 @@ figure.mu-diagram-block div.mu-diagram-preview.mermaid:hover {
 figure.mu-diagram-block div.mu-diagram-preview.mermaid.diagram-focused {
     border-color: var(--theme-color);
     box-shadow: 0 0 0 2px var(--theme-color);
+
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 figure.mu-diagram-block div.mu-diagram-preview.mermaid .mu-diagram-zoom-wrapper svg,
 figure.mu-diagram-block div.mu-diagram-preview.mermaid .mu-diagram-zoom-wrapper img {
-    display: block;
-    max-width: none !important;
     position: relative;
     z-index: 1;
+
+    display: block;
+    max-width: none !important;
 }
 
 .mu-diagram-controls {
     position: absolute;
     top: 10px;
     right: 10px;
+    z-index: 100;
+
     display: flex;
     gap: 5px;
-    z-index: 100;
+
     opacity: 0;
+
     transition: opacity 0.2s ease;
+
     pointer-events: auto;
 }
 
@@ -1296,29 +1332,33 @@ figure.mu-diagram-block div.mu-diagram-preview.mermaid:hover .mu-diagram-control
 }
 
 .mu-diagram-btn {
-    width: 32px;
-    height: 32px;
-    border: 1px solid var(--float-border-color);
-    background-color: var(--float-bg-color);
-    color: var(--editor-color);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+    width: 32px;
+    height: 32px;
     padding: 0;
+
+    color: var(--editor-color);
+    font-weight: bold;
+    font-size: 16px;
+
+    background-color: var(--float-bg-color);
+    border: 1px solid var(--float-border-color);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+    cursor: pointer;
+
+    transition: all 0.2s ease;
 }
 
 .mu-diagram-btn:hover {
-    background-color: var(--theme-color);
     color: white;
+
+    background-color: var(--theme-color);
     border-color: var(--theme-color);
-    transform: translateY(-1px);
     box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
+    transform: translateY(-1px);
 }
 
 .mu-diagram-btn:active {
@@ -1328,25 +1368,29 @@ figure.mu-diagram-block div.mu-diagram-preview.mermaid:hover .mu-diagram-control
 /* Four drag-corner handles for canvas resizing */
 .mu-diagram-resize-corner {
     position: absolute;
+
+    box-sizing: border-box;
     width: 10px;
     height: 10px;
+
     background: var(--float-bg-color, #fff);
     border: 2px solid var(--theme-color, #409eff);
     border-radius: 2px;
     opacity: 0;
+
     transition: opacity 0.2s ease;
+
     user-select: none;
-    box-sizing: border-box;
+}
+
+.mu-diagram-resize-corner:hover {
+    background: var(--theme-color, #409eff);
+    opacity: 1;
 }
 
 figure.mu-diagram-block div.mu-diagram-preview.mermaid:hover .mu-diagram-resize-corner,
 figure.mu-diagram-block div.mu-diagram-preview.mermaid.diagram-focused .mu-diagram-resize-corner {
     opacity: 0.9;
-}
-
-.mu-diagram-resize-corner:hover {
-    opacity: 1;
-    background: var(--theme-color, #409eff);
 }
 
 .mu-diagram-resize-corner.resize-nw {
@@ -1365,6 +1409,6 @@ figure.mu-diagram-block div.mu-diagram-preview.mermaid.diagram-focused .mu-diagr
 }
 
 .mu-diagram-resize-corner.resize-se {
-    bottom: 0;
     right: 0;
+    bottom: 0;
 }
