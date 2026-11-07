@@ -51,8 +51,6 @@ export interface IMuyaOptions {
     softNewlineAsSpace: boolean;
     autoMoveCheckedToEnd: boolean;
     disableHtml: boolean;
-    /** Fork: click a diagram preview to jump into its source code. */
-    clickDiagramToEdit: boolean;
     locale: {
         name: string;
         resource: {

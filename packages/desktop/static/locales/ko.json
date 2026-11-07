@@ -417,9 +417,7 @@
     "learnMore": "{name} 자세히 알아보기",
     "search": {
       "placeholder": "환경설정 검색...",
-      "items": {
-        "tocInFileBar": "파일 사이드바에 목차를 포함할지 여부"
-      }
+      "items": {}
     },
     "categories": {
       "general": "일반",
@@ -483,7 +481,6 @@
         "tocLeft": "왼쪽",
         "tocRight": "오른쪽",
         "showOpenedFiles": "열린 파일 표시",
-        "tocInFileBar": "파일 사이드바에 목차 포함",
         "autoReveal": "사이드바에서 활성 파일 표시",
         "openFilesInPreviewMode": "사이드바 파일을 미리보기 탭에서 엽니다. 편집하거나 두 번 클릭하면 탭이 유지됩니다.",
         "excludePatterns": "파일 트리 제외 규칙",

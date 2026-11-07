@@ -88,7 +88,6 @@ export interface PreferencesState {
   isHtmlEnabled: boolean
   softNewlineAsSpace: boolean
   sequenceTheme: SequenceTheme | string
-  clickDiagramToEdit: boolean
   mermaidLightTheme: string
   mermaidDarkTheme: string
   plantumlServer: string
@@ -105,7 +104,6 @@ export interface PreferencesState {
 
   sourceCodeModeEnabled: boolean
   openedFilesInSidebar: boolean
-  tocInFileBar: boolean
   showMinimap: boolean
   editorLineNumbers: boolean
   autoRevealInSidebar: boolean
@@ -219,7 +217,6 @@ export const usePreferencesStore = defineStore('preferences', {
     isHtmlEnabled: true,
     softNewlineAsSpace: false,
     sequenceTheme: 'hand',
-    clickDiagramToEdit: true,
     mermaidLightTheme: 'default',
     mermaidDarkTheme: 'dark',
     plantumlServer: 'https://www.plantuml.com/plantuml',
@@ -236,7 +233,6 @@ export const usePreferencesStore = defineStore('preferences', {
 
     sourceCodeModeEnabled: false,
     openedFilesInSidebar: true,
-    tocInFileBar: false,
     showMinimap: false,
     editorLineNumbers: false,
     autoRevealInSidebar: true,

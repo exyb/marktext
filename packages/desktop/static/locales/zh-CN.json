@@ -420,9 +420,7 @@
     "learnMore": "了解更多：{name}",
     "search": {
       "placeholder": "搜索偏好设置…",
-      "items": {
-        "tocInFileBar": "是否在文件侧边栏中嵌入目录"
-      }
+      "items": {}
     },
     "categories": {
       "general": "通用",
@@ -486,7 +484,6 @@
         "tocLeft": "左侧",
         "tocRight": "右侧",
         "showOpenedFiles": "显示已打开文件",
-        "tocInFileBar": "在文件侧边栏中嵌入目录",
         "autoReveal": "在侧边栏中定位当前文件",
         "openFilesInPreviewMode": "单击侧栏文件时复用预览标签页；编辑或双击后保留该标签页",
         "excludePatterns": "文件树排除规则",
@@ -670,7 +667,6 @@
           "handDrawn": "手绘",
           "simple": "简单"
         },
-        "clickDiagramToEdit": "点击图表切换源码编辑",
         "mermaidLightTheme": {
           "title": "MarkText 使用浅色主题时的 Mermaid 主题"
         },

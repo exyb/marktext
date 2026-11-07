@@ -380,8 +380,6 @@ export const MUYA_DEFAULT_OPTIONS = {
     autoMoveCheckedToEnd: false,
     // Whether HTML rendering is disabled or not.
     disableHtml: false,
-    // Fork: whether clicking a diagram preview jumps into its source code.
-    clickDiagramToEdit: true,
     locale: en,
 };
 

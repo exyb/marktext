@@ -417,9 +417,7 @@
     "learnMore": "Saiba mais sobre {name}",
     "search": {
       "placeholder": "Pesquisar preferências...",
-      "items": {
-        "tocInFileBar": "Se deve incorporar o sumário na barra lateral de arquivos"
-      }
+      "items": {}
     },
     "categories": {
       "general": "Geral",
@@ -483,7 +481,6 @@
         "tocLeft": "Esquerda",
         "tocRight": "Direita",
         "showOpenedFiles": "Mostrar arquivos abertos",
-        "tocInFileBar": "Incorporar sumário na barra lateral de arquivos",
         "autoReveal": "Mostrar o arquivo ativo na barra lateral",
         "openFilesInPreviewMode": "Abrir arquivos da barra lateral em abas de visualização. Editar ou clicar duas vezes mantém a aba.",
         "excludePatterns": "Regras de exclusão da árvore de arquivos",

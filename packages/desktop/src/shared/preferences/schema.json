@@ -357,11 +357,6 @@
     "enum": ["hand", "simple"],
     "default": "hand"
   },
-  "clickDiagramToEdit": {
-    "description": "Markdown--Click diagram preview to edit source code",
-    "type": "boolean",
-    "default": true
-  },
   "mermaidLightTheme": {
     "description": "Markdown--Mermaid theme for light MarkText themes",
     "enum": [
@@ -487,11 +482,6 @@
     "description": "General--Whether to show opened files in the sidebar.",
     "type": "boolean",
     "default": true
-  },
-  "tocInFileBar": {
-    "description": "General--Whether to embed the TOC in the file sidebar.",
-    "type": "boolean",
-    "default": false
   },
   "showMinimap": {
     "description": "Editor--Whether to show the document minimap on the right side.",

@@ -1268,27 +1268,13 @@ figure.mu-diagram-block div.mu-diagram-preview.mermaid {
     transition: border-color 0.2s ease;
 }
 
-/* These rules share specificity with the upstream active-preview float
-   above and come later, so without re-asserting it the float's absolute
-   positioning, panel chrome and centering would be lost when editing. */
-figure.mu-active.mu-diagram-block > div.mu-diagram-preview.mermaid {
-    position: absolute;
-    top: calc(100% + 20px);
-    left: 50%;
-    z-index: 10000;
-
-    box-sizing: border-box;
-    width: max-content;
-    max-width: 100%;
-    padding: 0.5rem;
-
-    overflow: hidden;
-
-    background: var(--float-bg-color);
-    border: 1px solid var(--float-border-color);
-    border-radius: 4px;
-    box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
-    transform: translateX(-50%);
+/* While the block is active (source code shown), hide the rendered canvas
+   entirely — upstream floats it below the code as a live preview, but the
+   canvas overlaps surrounding text and the code pane already reflects every
+   keystroke. Same specificity as the upstream active rule, later in the
+   file, so it also wins over the inline-canvas sizing above. */
+figure.mu-active.mu-diagram-block > div.mu-diagram-preview {
+    display: none;
 }
 
 figure.mu-diagram-block div.mu-diagram-preview.mermaid:hover {

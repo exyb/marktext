@@ -196,12 +196,6 @@
           :on-change="(value) => onSelectChange('sequenceTheme', value)"
           more="https://bramp.github.io/js-sequence-diagrams/"
         />
-        <bool
-          id="setting-clickDiagramToEdit"
-          :description="t('preferences.markdown.diagrams.clickDiagramToEdit')"
-          :bool="clickDiagramToEdit"
-          :on-change="(value) => onSelectChange('clickDiagramToEdit', value)"
-        />
         <text-box
           id="setting-plantumlServer"
           :description="preferenceLabel('plantumlServer')"
@@ -281,7 +275,6 @@ const {
   mermaidLightTheme,
   mermaidDarkTheme,
   sequenceTheme,
-  clickDiagramToEdit,
   plantumlServer
 } = storeToRefs(preferenceStore)
 

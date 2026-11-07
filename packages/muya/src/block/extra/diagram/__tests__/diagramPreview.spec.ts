@@ -165,12 +165,11 @@ describe('diagramPreview — clickHandler routing', () => {
         expect(emit).not.toHaveBeenCalled();
     });
 
-    it('preventDefault + stopPropagation + setCursor(0,0) on the parent first content', () => {
+    it('preventDefault + stopPropagation but never jumps into the code (edit is toolbar-only)', () => {
         const { preview } = makePreview('');
         const setCursor = vi.fn();
-        const cursorBlock = { setCursor };
         const parent = {
-            firstContentInDescendant: vi.fn(() => cursorBlock),
+            firstContentInDescendant: vi.fn(() => ({ setCursor })),
         };
         preview.parent = parent as unknown as DiagramPreview['parent'];
 
@@ -183,8 +182,8 @@ describe('diagramPreview — clickHandler routing', () => {
 
         expect(event.preventDefault).toHaveBeenCalledTimes(1);
         expect(event.stopPropagation).toHaveBeenCalledTimes(1);
-        expect(parent.firstContentInDescendant).toHaveBeenCalledTimes(1);
-        expect(setCursor).toHaveBeenCalledWith(0, 0);
+        expect(parent.firstContentInDescendant).not.toHaveBeenCalled();
+        expect(setCursor).not.toHaveBeenCalled();
     });
 
     it('still preventDefault/stopPropagation but does not throw when parent is null', () => {
@@ -199,22 +198,6 @@ describe('diagramPreview — clickHandler routing', () => {
         expect(() => preview.clickHandler(event)).not.toThrow();
         expect(event.preventDefault).toHaveBeenCalledTimes(1);
         expect(event.stopPropagation).toHaveBeenCalledTimes(1);
-    });
-
-    it('does not throw when parent has no content (firstContentInDescendant returns null)', () => {
-        const { preview } = makePreview('');
-        const parent = {
-            firstContentInDescendant: vi.fn(() => null),
-        };
-        preview.parent = parent as unknown as DiagramPreview['parent'];
-
-        const event = {
-            preventDefault: vi.fn(),
-            stopPropagation: vi.fn(),
-        } as unknown as Event;
-
-        expect(() => preview.clickHandler(event)).not.toThrow();
-        expect(parent.firstContentInDescendant).toHaveBeenCalledTimes(1);
     });
 });
 

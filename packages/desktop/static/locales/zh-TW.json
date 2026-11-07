@@ -417,9 +417,7 @@
     "learnMore": "了解更多：{name}",
     "search": {
       "placeholder": "搜尋偏好設定…",
-      "items": {
-        "tocInFileBar": "是否在檔案側邊欄中嵌入目錄"
-      }
+      "items": {}
     },
     "categories": {
       "general": "一般",
@@ -483,7 +481,6 @@
         "tocLeft": "左側",
         "tocRight": "右側",
         "showOpenedFiles": "顯示已開啟的檔案",
-        "tocInFileBar": "在檔案側邊欄中嵌入目錄",
         "autoReveal": "在側邊欄中定位目前檔案",
         "openFilesInPreviewMode": "按一下側邊欄檔案時重複使用預覽分頁；編輯或按兩下後保留該分頁",
         "excludePatterns": "檔案樹排除規則",

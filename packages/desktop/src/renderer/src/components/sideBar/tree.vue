@@ -205,45 +205,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Document TOC -->
-    <div
-      v-if="tocInFileBar"
-      class="document-toc"
-    >
-      <div class="title">
-        <el-icon
-          class="icon-arrow"
-          :class="{ fold: !showToc }"
-          :size="12"
-          @click.stop="toggleToc()"
-        >
-          <ArrowRight />
-        </el-icon>
-        <span
-          class="default-cursor text-overflow"
-          @click.stop="toggleToc()"
-        >{{
-          t('sideBar.toc.title')
-        }}</span>
-      </div>
-      <div
-        v-show="showToc"
-        class="toc-wrapper"
-        :class="{ 'toc-wordwrap': wordWrapInToc }"
-      >
-        <el-tree
-          v-if="toc.length"
-          :data="toc"
-          :default-expand-all="true"
-          :props="defaultProps"
-          :expand-on-click-node="false"
-          :indent="10"
-          :icon="ArrowRight"
-          @node-click="handleTocClick"
-        />
-      </div>
-    </div>
   </div>
 </template>
 
@@ -300,7 +261,6 @@ const showOpenedFiles = computed({
   get: () => layoutStore.openedFilesExpanded,
   set: (expanded) => layoutStore.SET_OPENED_FILES({ expanded })
 })
-const showToc = ref(true)
 const preferencesStore = usePreferencesStore()
 
 const { roots, createCache } = storeToRefs(projectStore)
@@ -308,13 +268,7 @@ const { clipboard } = storeToRefs(projectStore)
 const { activeItem } = storeToRefs(projectStore)
 const { renameCache } = storeToRefs(projectStore)
 const { nameInputValue } = storeToRefs(projectStore)
-const { openedFilesInSidebar, tocInFileBar, wordWrapInToc } = storeToRefs(preferencesStore)
-const { toc } = storeToRefs(editorStore)
-
-const defaultProps = {
-  children: 'children',
-  label: 'label'
-}
+const { openedFilesInSidebar } = storeToRefs(preferencesStore)
 
 // The create cache is empty when no input is shown.
 const createCacheDirname = computed<string | undefined>(() => {
@@ -418,15 +372,6 @@ const registerRootRow = (root: RootView, row: HTMLElement | null): void => {
 
 const toggleOpenedFiles = (): void => {
   showOpenedFiles.value = !showOpenedFiles.value
-}
-
-const toggleToc = (): void => {
-  showToc.value = !showToc.value
-}
-
-const handleTocClick = (data: { slug?: unknown }): void => {
-  if (typeof data.slug !== 'string' || data.slug.length === 0) return
-  bus.emit('scroll-to-header', data.slug)
 }
 
 const findRow = (pathname: string): HTMLElement | undefined => {
@@ -910,56 +855,5 @@ onUnmounted(() => {
   font-weight: 600;
 }
 
-/* Document TOC. Upstream keeps `.project-trees` as the scrolling tree area
-   (flex: 1), so the panel takes only its content height and is capped at half
-   the sidebar; a long TOC scrolls inside `.toc-wrapper` instead of squeezing
-   the project tree. */
-.document-toc {
-  display: flex;
-  flex-direction: column;
-  flex: 0 1 auto;
-  min-height: 0;
-  max-height: 50%;
-  overflow: hidden;
-}
 
-.document-toc > .title {
-  height: 30px;
-  line-height: 30px;
-  font-size: 14px;
-  padding-right: 15px;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.document-toc > .title > span {
-  flex: 1;
-  user-select: none;
-}
-
-.document-toc .toc-wrapper {
-  flex: 1;
-  overflow: auto;
-  min-height: 0;
-}
-
-.document-toc .el-tree {
-  background: transparent;
-  color: var(--sideBarColor);
-}
-
-.document-toc .el-tree-node:focus > .el-tree-node__content {
-  background-color: var(--sideBarItemHoverBgColor);
-}
-
-.document-toc .el-tree-node__content:hover {
-  background: var(--sideBarItemHoverBgColor);
-}
-
-.toc-wordwrap .el-tree-node__content {
-  white-space: normal;
-  height: auto;
-  min-height: 26px;
-}
 </style>

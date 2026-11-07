@@ -417,9 +417,7 @@
     "learnMore": "En savoir plus sur {name}",
     "search": {
       "placeholder": "Rechercher dans les préférences...",
-      "items": {
-        "tocInFileBar": "Intégrer ou non la TOC dans la barre latérale de fichiers"
-      }
+      "items": {}
     },
     "categories": {
       "general": "Général",
@@ -483,7 +481,6 @@
         "tocLeft": "À gauche",
         "tocRight": "À droite",
         "showOpenedFiles": "Afficher les fichiers ouverts",
-        "tocInFileBar": "Intégrer la TOC dans la barre latérale de fichiers",
         "autoReveal": "Afficher le fichier actif dans la barre latérale",
         "openFilesInPreviewMode": "Ouvrir les fichiers de la barre latérale dans des onglets d’aperçu. La modification ou le double-clic conserve l’onglet.",
         "excludePatterns": "Règles d’exclusion de l’arborescence des fichiers",

@@ -421,7 +421,6 @@
     "search": {
       "placeholder": "Search preferences...",
       "items": {
-        "tocInFileBar": "Whether to embed the TOC in the file sidebar",
         "showMinimap": "Whether to show the document minimap on the right side",
         "editorLineNumbers": "Whether to show line numbers in the WYSIWYG editor"
       }
@@ -488,7 +487,6 @@
         "tocLeft": "Left",
         "tocRight": "Right",
         "showOpenedFiles": "Show opened files",
-        "tocInFileBar": "Embed TOC in file sidebar",
         "autoReveal": "Reveal the active file in the sidebar",
         "openFilesInPreviewMode": "Open sidebar files in preview tabs. Editing or double-clicking keeps the tab open.",
         "excludePatterns": "File tree exclusion rules",
@@ -674,7 +672,6 @@
           "handDrawn": "Hand Drawn",
           "simple": "Simple"
         },
-        "clickDiagramToEdit": "Click diagram to edit source",
         "mermaidLightTheme": {
           "title": "Mermaid theme for light MarkText themes"
         },

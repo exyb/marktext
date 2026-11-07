@@ -236,7 +236,6 @@ const {
   spellcheckerNoUnderline,
   spellcheckerLanguage,
   language,
-  clickDiagramToEdit,
   editorLineNumbers,
 
   typewriter: typewriterPreference,
@@ -501,12 +500,6 @@ watch([theme, mermaidLightTheme, mermaidDarkTheme], () => {
 watch(sequenceTheme, (value, oldValue) => {
   if (value !== oldValue && editor.value) {
     editor.value.setOptions({ sequenceTheme: toSequenceTheme(value) }, true)
-  }
-})
-
-watch(clickDiagramToEdit, (value, oldValue) => {
-  if (value !== oldValue && editor.value) {
-    editor.value.setOptions({ clickDiagramToEdit: value })
   }
 })
 
@@ -1999,7 +1992,6 @@ onMounted(() => {
     githubAlerts: githubAlerts.value,
     disableHtml: !isHtmlEnabled.value,
     softNewlineAsSpace: softNewlineAsSpace.value,
-    clickDiagramToEdit: clickDiagramToEdit.value,
     hideQuickInsertHint: hideQuickInsertHint.value,
     hideLinkPopup: hideLinkPopup.value,
     autoCheck: autoCheck.value,

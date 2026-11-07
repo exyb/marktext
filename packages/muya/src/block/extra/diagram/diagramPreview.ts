@@ -93,6 +93,9 @@ class DiagramPreview extends Parent {
         event.preventDefault();
         event.stopPropagation();
 
+        // Clicking the canvas must never jump into the code — editing goes
+        // through the hover toolbar's edit button. In read-only mode the
+        // click opens the diagram viewer instead.
         if (this.muya.isReadOnly) {
             if (this._rendered) {
                 this.muya.eventCenter.emit('preview-diagram', {
@@ -102,19 +105,7 @@ class DiagramPreview extends Parent {
                     label: this.domNode!.getAttribute('aria-label'),
                 } satisfies IPreviewDiagramPayload);
             }
-            return;
         }
-
-        // Fork preference: clicking a diagram only opens the source code when
-        // `clickDiagramToEdit` is enabled.
-        if (this.muya.options.clickDiagramToEdit === false)
-            return;
-
-        if (this.parent == null)
-            return;
-
-        const cursorBlock = this.parent.firstContentInDescendant();
-        cursorBlock?.setCursor(0, 0);
     }
 
     async update(code = this._code) {

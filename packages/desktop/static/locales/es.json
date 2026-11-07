@@ -417,9 +417,7 @@
     "learnMore": "Más información sobre {name}",
     "search": {
       "placeholder": "Buscar preferencias...",
-      "items": {
-        "tocInFileBar": "Si se debe incrustar la TOC en la barra lateral de archivos"
-      }
+      "items": {}
     },
     "categories": {
       "general": "General",
@@ -483,7 +481,6 @@
         "tocLeft": "Izquierda",
         "tocRight": "Derecha",
         "showOpenedFiles": "Mostrar archivos abiertos",
-        "tocInFileBar": "Incrustar TOC en la barra lateral de archivos",
         "autoReveal": "Mostrar el archivo activo en la barra lateral",
         "openFilesInPreviewMode": "Abrir archivos de la barra lateral en pestañas de vista previa. Al editar o hacer doble clic se conserva la pestaña.",
         "excludePatterns": "Reglas de exclusión del árbol de archivos",

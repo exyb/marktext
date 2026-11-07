@@ -417,9 +417,7 @@
     "learnMore": "{name} の詳細",
     "search": {
       "placeholder": "設定の検索...",
-      "items": {
-        "tocInFileBar": "ファイルサイドバーに目次を埋め込むかどうか"
-      }
+      "items": {}
     },
     "categories": {
       "general": "一般",
@@ -483,7 +481,6 @@
         "tocLeft": "左側",
         "tocRight": "右側",
         "showOpenedFiles": "開いているファイルを表示",
-        "tocInFileBar": "ファイルサイドバーに目次を埋め込む",
         "autoReveal": "サイドバーで現在のファイルを表示",
         "openFilesInPreviewMode": "サイドバーのファイルをプレビュータブで開きます。編集またはダブルクリックするとタブが保持されます。",
         "excludePatterns": "ファイルツリーの除外ルール",

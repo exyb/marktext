@@ -145,12 +145,6 @@
           :on-change="(value) => onSelectChange('openedFilesInSidebar', value)"
         />
         <bool
-          id="setting-tocInFileBar"
-          :description="t('preferences.general.sidebar.tocInFileBar')"
-          :bool="tocInFileBar"
-          :on-change="(value) => onSelectChange('tocInFileBar', value)"
-        />
-        <bool
           id="setting-autoRevealInSidebar"
           :description="preferenceLabel('autoRevealInSidebar')"
           :bool="autoRevealInSidebar"
@@ -284,7 +278,6 @@ const {
   fileSortOrder,
   language,
   openedFilesInSidebar,
-  tocInFileBar,
   autoRevealInSidebar,
   openFilesInPreviewMode,
   showPandocConvert

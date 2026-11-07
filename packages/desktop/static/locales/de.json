@@ -417,9 +417,7 @@
     "learnMore": "Mehr erfahren: {name}",
     "search": {
       "placeholder": "In Einstellungen suchen...",
-      "items": {
-        "tocInFileBar": "Ob das Inhaltsverzeichnis in die Datei-Seitenleiste eingebettet werden soll"
-      }
+      "items": {}
     },
     "categories": {
       "general": "Allgemein",
@@ -483,7 +481,6 @@
         "tocLeft": "Links",
         "tocRight": "Rechts",
         "showOpenedFiles": "Geöffnete Dateien anzeigen",
-        "tocInFileBar": "Inhaltsverzeichnis in Datei-Seitenleiste einbetten",
         "autoReveal": "Aktive Datei in der Seitenleiste anzeigen",
         "openFilesInPreviewMode": "Sidebar-Dateien in Vorschauregistern öffnen. Bearbeiten oder Doppelklicken behält das Register bei.",
         "excludePatterns": "Ausschlussregeln für den Dateibaum",
