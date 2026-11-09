@@ -1064,5 +1064,76 @@
     "viewImage": "Просмотреть изображение",
     "copyLink": "Копировать адрес ссылки",
     "resumed": "Режим редактирования включён. Автосохранение возобновлено."
+  },
+  "aiChat": {
+    "panel": {
+      "title": "ИИ-помощник",
+      "history": "История сессий",
+      "settings": "Настройки модели",
+      "close": "Закрыть панель",
+      "newChat": "Новый чат",
+      "emptySessions": "Сессий пока нет",
+      "untitled": "Сессия без названия",
+      "deleteSession": "Удалить сессию"
+    },
+    "composer": {
+      "placeholder": "Задайте вопрос ИИ… (Enter — отправить, Shift+Enter — новая строка)",
+      "send": "Отправить",
+      "stop": "Остановить",
+      "attachDoc": "Приложить текущий документ",
+      "dropHint": "Перетащите выделенный текст сюда для ссылки",
+      "pickModel": "Выбрать модель",
+      "removeReference": "Убрать ссылку"
+    },
+    "message": {
+      "roleUser": "Я",
+      "roleAssistant": "ИИ",
+      "thinking": "Процесс рассуждения",
+      "running": "Выполняется",
+      "success": "Готово",
+      "failed": "Ошибка",
+      "copy": "Копировать",
+      "copied": "Скопировано",
+      "insertSvg": "Вставить SVG в документ",
+      "emptyHint": "Спросите ИИ или позвольте ему изменить текущий документ.",
+      "emptyHintSub": "Если поставщик не настроен, сначала откройте настройки модели."
+    },
+    "tools": {
+      "updateDocument": "Обновить документ",
+      "replaceText": "Заменить текст",
+      "insertSvg": "Вставить SVG"
+    },
+    "settings": {
+      "title": "Настройки модели",
+      "provider": "Поставщик",
+      "addProvider": "Создать",
+      "deleteProvider": "Удалить",
+      "name": "Название",
+      "type": "Тип API",
+      "baseUrl": "Базовый URL API",
+      "apiKey": "API-ключ",
+      "models": "Модели",
+      "modelsPlaceholder": "Одна модель в строке, напр. gpt-4o",
+      "thinkingLevel": "Уровень рассуждения",
+      "thinkingOff": "Выкл.",
+      "thinkingLow": "Низкий",
+      "thinkingMedium": "Средний",
+      "thinkingHigh": "Высокий",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "noProvider": "Поставщик не настроен",
+      "defaultProviderName": "Новый поставщик",
+      "fetchModels": "Получить модели",
+      "fetchModelsDone": "Добавлено новых моделей: {count}",
+      "fetchModelsFailed": "Не удалось получить",
+      "contextTokens": "Токены контекста",
+      "maxOutputTokens": "Макс. вывод",
+      "temperature": "Температура",
+      "testConnection": "Проверить соединение",
+      "testOk": "Подключено ({latency}ms)",
+      "defaultValue": "По умолчанию",
+      "saved": "Настройки сохранены",
+      "saveFailed": "Не удалось сохранить"
+    }
   }
 }

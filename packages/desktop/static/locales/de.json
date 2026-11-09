@@ -1065,5 +1065,76 @@
     "viewImage": "Bild anzeigen",
     "copyLink": "Linkadresse kopieren",
     "resumed": "Der Bearbeitungsmodus ist aktiviert. Das automatische Speichern wurde fortgesetzt."
+  },
+  "aiChat": {
+    "panel": {
+      "title": "KI-Copilot",
+      "history": "Sitzungsverlauf",
+      "settings": "Modelleinstellungen",
+      "close": "Panel schließen",
+      "newChat": "Neuer Chat",
+      "emptySessions": "Noch keine Sitzungen",
+      "untitled": "Unbenannte Sitzung",
+      "deleteSession": "Sitzung löschen"
+    },
+    "composer": {
+      "placeholder": "Die KI fragen… (Enter zum Senden, Shift+Enter für eine neue Zeile)",
+      "send": "Senden",
+      "stop": "Stopp",
+      "attachDoc": "Aktuelles Dokument anhängen",
+      "dropHint": "Ziehen Sie eine Auswahl hierher, um sie zu referenzieren",
+      "pickModel": "Modell wählen",
+      "removeReference": "Referenz entfernen"
+    },
+    "message": {
+      "roleUser": "Ich",
+      "roleAssistant": "KI",
+      "thinking": "Denkprozess",
+      "running": "Läuft",
+      "success": "Erfolgreich",
+      "failed": "Fehlgeschlagen",
+      "copy": "Kopieren",
+      "copied": "Kopiert",
+      "insertSvg": "SVG ins Dokument einfügen",
+      "emptyHint": "Fragen Sie die KI oder lassen Sie sie das aktuelle Dokument direkt bearbeiten.",
+      "emptyHintSub": "Ohne Anbieter bitte zuerst die Modelleinstellungen öffnen."
+    },
+    "tools": {
+      "updateDocument": "Dokument aktualisieren",
+      "replaceText": "Text ersetzen",
+      "insertSvg": "SVG einfügen"
+    },
+    "settings": {
+      "title": "Modelleinstellungen",
+      "provider": "Anbieter",
+      "addProvider": "Neu",
+      "deleteProvider": "Löschen",
+      "name": "Name",
+      "type": "API-Typ",
+      "baseUrl": "API-Basis-URL",
+      "apiKey": "API-Schlüssel",
+      "models": "Modelle",
+      "modelsPlaceholder": "Ein Modell pro Zeile, z. B. gpt-4o",
+      "thinkingLevel": "Denkstufe",
+      "thinkingOff": "Aus",
+      "thinkingLow": "Niedrig",
+      "thinkingMedium": "Mittel",
+      "thinkingHigh": "Hoch",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "noProvider": "Kein Anbieter konfiguriert",
+      "defaultProviderName": "Neuer Anbieter",
+      "fetchModels": "Modelle abrufen",
+      "fetchModelsDone": "{count} neue Modell(e) hinzugefügt",
+      "fetchModelsFailed": "Abruf fehlgeschlagen",
+      "contextTokens": "Kontext-Tokens",
+      "maxOutputTokens": "Max. Ausgabe",
+      "temperature": "Temperatur",
+      "testConnection": "Verbindung testen",
+      "testOk": "Verbunden ({latency}ms)",
+      "defaultValue": "Standard",
+      "saved": "Einstellungen gespeichert",
+      "saveFailed": "Speichern fehlgeschlagen"
+    }
   }
 }

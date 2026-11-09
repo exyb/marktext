@@ -8,6 +8,31 @@ import type { IKeyboardLayoutInfo, IKeyboardMapping } from 'native-keymap'
 import type { TabOptions, SidebarOpenOptions, PageOptions, ExportType, SerializedStat, LineEnding, FileChangeDetail, PandocExportPayload } from './files'
 import type { MenuTemplate, MenuPopupPosition } from './menu'
 import type { PandocCommandInfo } from './pandoc'
+import type {
+  AiChatConfig,
+  AiChatRequest,
+  AiChatSession,
+  AiChatSessionMeta,
+  AiModelListResult,
+  AiModelProbeRequest,
+  AiModelProbeResult,
+  AiProviderCredentials,
+  AiStreamEvent
+} from './aiChat'
+
+// Re-exported so preload and renderer consumers can import these from the
+// IPC contract module alongside the channel types.
+export type {
+  AiChatConfig,
+  AiChatRequest,
+  AiChatSession,
+  AiChatSessionMeta,
+  AiModelListResult,
+  AiModelProbeRequest,
+  AiModelProbeResult,
+  AiProviderCredentials,
+  AiStreamEvent
+} from './aiChat'
 
 export interface SaveDialogRequest {
   title?: string
@@ -88,6 +113,17 @@ export interface IpcInvokeChannels extends StateIpcInvokeChannels {
   'mt::keybinding-save-user-keybindings': { args: [bindings: unknown]; ret: boolean }
   'mt::pandoc::command': { args: []; ret: PandocCommandInfo }
   'mt::paths::is-image': { args: [path: string]; ret: boolean }
+  'mt::ai::config-get': { args: []; ret: AiChatConfig }
+  'mt::ai::config-update': { args: [config: AiChatConfig]; ret: boolean }
+  'mt::ai::session-list': { args: []; ret: AiChatSessionMeta[] }
+  'mt::ai::session-load': { args: [id: string]; ret: AiChatSession | null }
+  'mt::ai::session-save': { args: [session: AiChatSession]; ret: boolean }
+  'mt::ai::session-delete': { args: [id: string]; ret: boolean }
+  // Starts the streaming loop in main; chunks arrive via `mt::ai::chat-event`.
+  'mt::ai::chat-start': { args: [request: AiChatRequest]; ret: boolean }
+  'mt::ai::chat-abort': { args: [requestId: string]; ret: boolean }
+  'mt::ai::fetch-models': { args: [credentials: AiProviderCredentials]; ret: AiModelListResult }
+  'mt::ai::test-model': { args: [request: AiModelProbeRequest]; ret: AiModelProbeResult }
   'mt::rg::start': { args: [req: unknown]; ret: { searchId: string } }
   'mt::shell::open-external': { args: [url: string]; ret: void }
   'mt::shell::open-path': { args: [fullPath: string]; ret: string }
@@ -212,6 +248,7 @@ export interface IpcSyncChannels {
 export interface IpcMainEventChannels extends StateIpcMainEvents {
   'mt::toggle-read-only': []
   'language-changed': [language: string]
+  'mt::ai::chat-event': [requestId: string, event: AiStreamEvent]
   'mt::UPDATE_AVAILABLE': [info?: unknown]
   'mt::UPDATE_DOWNLOADED': [info?: unknown]
   'mt::UPDATE_ERROR': [error: unknown]

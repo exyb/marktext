@@ -5,7 +5,7 @@ import type { IAnchorFocusInfo, ITextSelectionState } from '../selection/types';
 import { isOsx } from '../config';
 import { findContentDOM, resolveEndpoint } from '../selection/dom';
 import { createTextSelectionState } from '../selection/state';
-import { SelectionType } from '../selection/types';
+import { SelectionDirection, SelectionType } from '../selection/types';
 import { atxHeadingBodyRange } from '../state/headings';
 
 const TEXT_BLOCKS = new Set([
@@ -22,6 +22,11 @@ export interface ITextDragSource {
     end: number;
     original: string;
     selection: ITextSelectionState;
+    // Full selected text: equals `original.slice(start, end)` for same-block
+    // sources; for cross-block sources it spans blocks and `endBlock` is set.
+    text: string;
+    endBlock: Content | null;
+    endOffset: number;
 }
 
 function validOffset(block: Content, offset: number): boolean {
@@ -38,25 +43,62 @@ export function getTextDragSource(muya: Muya): ITextDragSource | null {
     const selection = muya.getSelection();
     if (muya.isReadOnly || muya.editor.isComposing || selection?.kind !== SelectionType.TEXT)
         return null;
-    const { anchorBlock: block, isSelectionInSameBlock, isCollapsed } = selection.context;
-    const start = Math.min(selection.anchor.offset, selection.focus.offset);
-    const end = Math.max(selection.anchor.offset, selection.focus.offset);
-    if (!isSelectionInSameBlock || isCollapsed || !validOffset(block, start) || !validOffset(block, end))
+    const { anchorBlock, focusBlock, isCollapsed, direction } = selection.context;
+    if (isCollapsed)
+        return null;
+    if (anchorBlock === focusBlock) {
+        const start = Math.min(selection.anchor.offset, selection.focus.offset);
+        const end = Math.max(selection.anchor.offset, selection.focus.offset);
+        if (!validOffset(anchorBlock, start) || !validOffset(anchorBlock, end))
+            return null;
+        return {
+            block: anchorBlock,
+            start,
+            end,
+            original: anchorBlock.text,
+            text: anchorBlock.text.slice(start, end),
+            endBlock: null,
+            endOffset: end,
+            selection: createTextSelectionState(
+                { block: anchorBlock, offset: selection.anchor.offset, path: anchorBlock.path },
+                { block: focusBlock, offset: selection.focus.offset, path: focusBlock.path },
+            ),
+        };
+    }
+    // Cross-block selections drag as copy-only sources: removal would span
+    // block boundaries, so only outside drops (host quoting) consume them.
+    const [startBlock, endBlock] = direction === SelectionDirection.BACKWARD
+        ? [focusBlock, anchorBlock]
+        : [anchorBlock, focusBlock];
+    if (!muya.isBlockInDocument(startBlock) || !muya.isBlockInDocument(endBlock))
+        return null;
+    const startOffset = startBlock === anchorBlock ? selection.anchor.offset : selection.focus.offset;
+    const endOffset = endBlock === focusBlock ? selection.focus.offset : selection.anchor.offset;
+    if (!validOffset(startBlock, startOffset) || !validOffset(endBlock, endOffset))
+        return null;
+    const text = muya.getSelectedText();
+    if (!text)
         return null;
     return {
-        block,
-        start,
-        end,
-        original: block.text,
+        block: startBlock,
+        start: startOffset,
+        end: startBlock.text.length,
+        original: startBlock.text,
+        text,
+        endBlock,
+        endOffset,
         selection: createTextSelectionState(
-            { block, offset: selection.anchor.offset, path: block.path },
-            { block, offset: selection.focus.offset, path: block.path },
+            { block: anchorBlock, offset: selection.anchor.offset, path: anchorBlock.path },
+            { block: focusBlock, offset: selection.focus.offset, path: focusBlock.path },
         ),
     };
 }
 
 export function canDropText(muya: Muya, source: ITextDragSource, target: IAnchorFocusInfo, copy: boolean): boolean {
     if (muya.isReadOnly || muya.editor.isComposing || source.block.text !== source.original)
+        return false;
+    // Cross-block sources are quote-only and never drop inside the editor.
+    if (source.endBlock)
         return false;
     if (!muya.isBlockInDocument(source.block) || !muya.isBlockInDocument(target.block) || !validOffset(target.block, target.offset))
         return false;
@@ -106,11 +148,10 @@ function bookmarkTarget(muya: Muya, source: Content, target: Content): () => Con
 export function dropText(muya: Muya, source: ITextDragSource, target: IAnchorFocusInfo, copy: boolean): void {
     if (!canDropText(muya, source, target, copy))
         return;
-    const { block, start, end, original } = source;
-    const raw = original.slice(start, end);
-    const text = ['atxheading.content', 'table.cell.content'].includes(target.block.blockName)
-        ? raw.replace(/\r\n|[\r\n]/g, '<br>')
-        : raw;
+    const { block, start, end, original, text } = source;
+    const inserted = ['atxheading.content', 'table.cell.content'].includes(target.block.blockName)
+        ? text.replace(/\r\n|[\r\n]/g, '<br>')
+        : text;
     const offset = target.offset - (!copy && target.block === block && target.offset > end ? end - start : 0);
 
     muya.editor.transact(() => {
@@ -126,8 +167,8 @@ export function dropText(muya: Muya, source: ITextDragSource, target: IAnchorFoc
             (block as Format).checkInlineUpdate();
             destination = resolveTarget();
         }
-        destination.text = destination.text.slice(0, offset) + text + destination.text.slice(offset);
-        destination.setCursor(offset, offset + text.length, true);
+        destination.text = destination.text.slice(0, offset) + inserted + destination.text.slice(offset);
+        destination.setCursor(offset, offset + inserted.length, true);
         if (destination.blockName !== 'codeblock.content')
             (destination as Format).checkInlineUpdate();
     }, true, source.selection);
@@ -178,6 +219,10 @@ export class TextDrag {
     private _scroll = { top: 0, left: 0 };
     private _preview: HTMLElement | null = null;
     private _indicator: HTMLElement | null = null;
+    // A multi-click press (detail > 1) may become a drag of the selection the
+    // editor just committed; the gesture adopts it from the first move.
+    private _pending = false;
+    private _pendingPoint = { x: 0, y: 0 };
 
     constructor(private _muya: Muya) {
         const { eventCenter, domNode } = _muya;
@@ -233,47 +278,94 @@ export class TextDrag {
         const source = this._source;
         if (!source)
             return;
+        const wasDragging = this._dragging;
         this._source = null;
         this._dragging = false;
+        this._pending = false;
         this._preview?.remove();
         this._indicator?.remove();
         this._preview = this._indicator = null;
         delete this._muya.domNode.dataset.textDragging;
         this._muya.domNode.style.cursor = this._cursor;
+        this._muya.domNode.ownerDocument.documentElement.style.cursor = '';
         if (restore && source && source.block.text === source.original && this._muya.isBlockInDocument(source.block))
             this._muya.setSelection(source.selection);
+        // Hosts track the drag through move events; they must see the end too.
+        if (wasDragging)
+            this._muya.eventCenter.emit('text-drag-end');
     }
 
     private _down = (event: Event) => {
         this._suppressClick = false;
         this.cancel(false);
-        if (!(event instanceof MouseEvent) || event.button !== 0 || event.detail > 1 || event.shiftKey)
+        this._pending = false;
+        if (!(event instanceof MouseEvent) || event.button !== 0 || event.shiftKey)
             return;
         if (!(event.target instanceof Node) || !this._muya.domNode.contains(event.target))
             return;
-        const source = getTextDragSource(this._muya);
-        const native = document.getSelection();
-        if (!source || !native?.rangeCount)
+        if (event.detail > 1) {
+            // Double/triple clicks still select through the editor's own
+            // handlers; only a following move may turn the press into a drag.
+            this._pending = true;
+            this._pendingPoint = { x: event.clientX, y: event.clientY };
             return;
-        const inside = [...native.getRangeAt(0).getClientRects()].some(rect =>
-            event.clientX >= rect.left && event.clientX <= rect.right
-            && event.clientY >= rect.top && event.clientY <= rect.bottom,
-        );
-        if (!inside || findContentDOM(event.target) !== source.block.domNode)
+        }
+        if (!this._adopt(getTextDragSource(this._muya), { x: event.clientX, y: event.clientY }))
             return;
         event.preventDefault();
         event.stopImmediatePropagation();
+    };
+
+    // Take ownership of a press on the current selection. Returns false when
+    // the press is not a drag of selectable text and must stay a plain click.
+    private _adopt(source: ITextDragSource | null, press: { x: number; y: number }): boolean {
+        const native = document.getSelection();
+        if (!source || !native?.rangeCount)
+            return false;
+        const inside = [...native.getRangeAt(0).getClientRects()].some(rect =>
+            press.x >= rect.left && press.x <= rect.right
+            && press.y >= rect.top && press.y <= rect.bottom,
+        );
+        if (!inside)
+            return false;
+        // The DOM selection must still be the source one; either endpoint
+        // matches because backward selections anchor at the focus block.
+        const anchorContent = findContentDOM(native.anchorNode);
+        if (anchorContent !== source.block.domNode && anchorContent !== source.endBlock?.domNode)
+            return false;
         this._scroll = { top: this._muya.domNode.scrollTop, left: this._muya.domNode.scrollLeft };
         this._muya.flush();
         this._source = source;
         this._restoreScroll();
-        this._origin = this._point = { x: event.clientX, y: event.clientY };
+        this._origin = this._point = press;
         this._cursor = this._muya.domNode.style.cursor;
-    };
+        return true;
+    }
 
     // Native mouse-drag sources can omit buttons; the captured down/up events own the gesture.
     private _move = (event: Event) => {
-        if (!this._source || !(event instanceof MouseEvent))
+        if (!(event instanceof MouseEvent))
+            return;
+        if (this._pending) {
+            if (!(event.buttons & 1)) {
+                this._pending = false;
+                return;
+            }
+            if (Math.hypot(event.clientX - this._pendingPoint.x, event.clientY - this._pendingPoint.y) < 4)
+                return;
+            this._pending = false;
+            const press = this._pendingPoint;
+            if (!this._adopt(getTextDragSource(this._muya), press))
+                return;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this._point = { x: event.clientX, y: event.clientY };
+            this._copy = isOsx ? event.altKey : event.ctrlKey;
+            this._beginDrag();
+            this._paint();
+            return;
+        }
+        if (!this._source)
             return;
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -281,16 +373,21 @@ export class TextDrag {
         this._copy = isOsx ? event.altKey : event.ctrlKey;
         if (!this._dragging && Math.hypot(event.clientX - this._origin.x, event.clientY - this._origin.y) < 4)
             return;
-        if (!this._dragging) {
-            this._dragging = true;
-            this._muya.domNode.dataset.textDragging = 'true';
-            this._muya.hideAllFloatTools();
-            this._preview = this._overlay('mu-text-drag-preview');
-            this._preview.textContent = this._source.original.slice(this._source.start, this._source.end).slice(0, 100);
-            this._indicator = this._overlay('mu-text-drop-caret');
-        }
+        if (!this._dragging)
+            this._beginDrag();
         this._paint();
     };
+
+    private _beginDrag(): void {
+        if (!this._source)
+            return;
+        this._dragging = true;
+        this._muya.domNode.dataset.textDragging = 'true';
+        this._muya.hideAllFloatTools();
+        this._preview = this._overlay('mu-text-drag-preview');
+        this._preview.textContent = this._source.text.slice(0, 100);
+        this._indicator = this._overlay('mu-text-drop-caret');
+    }
 
     private _key = (event: Event) => {
         if (!this._source || !(event instanceof KeyboardEvent))
@@ -308,6 +405,7 @@ export class TextDrag {
     };
 
     private _up = (event: Event) => {
+        this._pending = false;
         if (!this._source || !(event instanceof MouseEvent) || event.button !== 0)
             return;
         event.preventDefault();
@@ -319,18 +417,44 @@ export class TextDrag {
         const dragging = this._dragging;
         this._suppressClick = dragging;
         this.cancel();
-        if (dragging && target)
+        if (dragging && target) {
             dropText(this._muya, source, target.endpoint, copy);
-        else if (!dragging && target)
+        }
+        else if (!dragging && target) {
             target.endpoint.block.setCursor(target.endpoint.offset, target.endpoint.offset, true);
+        }
+        else if (dragging && !target) {
+            // The gesture ended outside editable content: hand the text to the
+            // host (e.g. an AI chat panel) instead of silently cancelling.
+            // Outside drops stay copy-like; the source text is left intact.
+            const blocks = this._muya.editor.scrollPage ? contentBlocks(this._muya) : [];
+            this._muya.eventCenter.emit('text-drag-outside', {
+                text: source.text,
+                clientX: event.clientX,
+                clientY: event.clientY,
+                copy,
+                range: {
+                    startPath: [...source.block.path],
+                    startOffset: source.start,
+                    endPath: [...(source.endBlock ?? source.block).path],
+                    endOffset: source.endBlock ? source.endOffset : source.end,
+                    startBlockIndex: blocks.indexOf(source.block),
+                    endBlockIndex: blocks.indexOf(source.endBlock ?? source.block),
+                },
+            });
+        }
     };
 
     private _overlay(className: string): HTMLElement {
-        const element = document.createElement('div');
+        const doc = this._muya.domNode.ownerDocument;
+        const element = doc.createElement('div');
         element.className = className;
         element.contentEditable = 'false';
         element.setAttribute('aria-hidden', 'true');
-        this._muya.domNode.appendChild(element);
+        // The overlays position against the viewport, so they must live outside
+        // the editor subtree: host containers use container-type/overflow that
+        // turns them into the fixed-position containing block and clip them.
+        doc.body.appendChild(element);
         return element;
     }
 
@@ -352,7 +476,17 @@ export class TextDrag {
         const { x, y } = this._point;
         const target = targetAt(this._muya, x, y);
         const allowed = target && canDropText(this._muya, this._source, target.endpoint, this._copy);
-        this._muya.domNode.style.cursor = allowed ? (this._copy ? 'copy' : 'grabbing') : 'not-allowed';
+        // Outside the editor entirely the host may still accept the drop, so
+        // advertise copy rather than blocking with not-allowed. The document
+        // cursor covers the area outside `domNode`, whose inline cursor still
+        // rules inside the editor.
+        const doc = this._muya.domNode.ownerDocument;
+        doc.documentElement.style.cursor = !target ? 'copy' : '';
+        this._muya.domNode.style.cursor = !target
+            ? 'copy'
+            : allowed
+                ? (this._copy ? 'copy' : 'grabbing')
+                : 'not-allowed';
         this._preview.dataset.operation = this._copy ? 'copy' : 'move';
         this._preview.style.left = `${x + 14}px`;
         this._preview.style.top = `${y + 14}px`;
@@ -362,5 +496,6 @@ export class TextDrag {
             this._indicator.style.top = `${target.rect.top}px`;
             this._indicator.style.height = `${Math.max(target.rect.height, 16)}px`;
         }
+        this._muya.eventCenter.emit('text-drag-move', { clientX: x, clientY: y });
     }
 }

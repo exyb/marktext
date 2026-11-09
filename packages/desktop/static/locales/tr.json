@@ -1064,5 +1064,76 @@
     "viewImage": "Görseli Görüntüle",
     "copyLink": "Bağlantı Adresini Kopyala",
     "resumed": "Düzenleme Modu açık. Otomatik kaydetme devam ediyor."
+  },
+  "aiChat": {
+    "panel": {
+      "title": "AI Yardımcısı",
+      "history": "Oturum geçmişi",
+      "settings": "Model ayarları",
+      "close": "Paneli kapat",
+      "newChat": "Yeni sohbet",
+      "emptySessions": "Henüz oturum yok",
+      "untitled": "Adsız oturum",
+      "deleteSession": "Oturumu sil"
+    },
+    "composer": {
+      "placeholder": "AI'ya sorun… (göndermek için Enter, yeni satır için Shift+Enter)",
+      "send": "Gönder",
+      "stop": "Durdur",
+      "attachDoc": "Geçerli belgeyi ekle",
+      "dropHint": "Referans vermek için bir seçimi buraya sürükleyin",
+      "pickModel": "Model seç",
+      "removeReference": "Referansı kaldır"
+    },
+    "message": {
+      "roleUser": "Ben",
+      "roleAssistant": "AI",
+      "thinking": "Düşünme süreci",
+      "running": "Çalışıyor",
+      "success": "Tamamlandı",
+      "failed": "Başarısız",
+      "copy": "Kopyala",
+      "copied": "Kopyalandı",
+      "insertSvg": "SVG'yi belgeye ekle",
+      "emptyHint": "AI'ya sorun ya da geçerli belgeyi doğrudan düzenlemesini isteyin.",
+      "emptyHintSub": "Sağlayıcı yapılandırılmamışsa önce model ayarlarını açın."
+    },
+    "tools": {
+      "updateDocument": "Belgeyi güncelle",
+      "replaceText": "Metni değiştir",
+      "insertSvg": "SVG ekle"
+    },
+    "settings": {
+      "title": "Model ayarları",
+      "provider": "Sağlayıcı",
+      "addProvider": "Ekle",
+      "deleteProvider": "Sil",
+      "name": "Ad",
+      "type": "API türü",
+      "baseUrl": "API taban URL'si",
+      "apiKey": "API anahtarı",
+      "models": "Modeller",
+      "modelsPlaceholder": "Her satıra bir model, ör. gpt-4o",
+      "thinkingLevel": "Düşünme düzeyi",
+      "thinkingOff": "Kapalı",
+      "thinkingLow": "Düşük",
+      "thinkingMedium": "Orta",
+      "thinkingHigh": "Yüksek",
+      "save": "Kaydet",
+      "cancel": "İptal",
+      "noProvider": "Sağlayıcı yapılandırılmamış",
+      "defaultProviderName": "Yeni sağlayıcı",
+      "fetchModels": "Modelleri getir",
+      "fetchModelsDone": "{count} yeni model eklendi",
+      "fetchModelsFailed": "Getirme başarısız",
+      "contextTokens": "Bağlam tokens",
+      "maxOutputTokens": "Azami çıktı",
+      "temperature": "Sıcaklık",
+      "testConnection": "Bağlantıyı sına",
+      "testOk": "Bağlandı ({latency}ms)",
+      "defaultValue": "Varsayılan",
+      "saved": "Ayarlar kaydedildi",
+      "saveFailed": "Kaydetme başarısız"
+    }
   }
 }

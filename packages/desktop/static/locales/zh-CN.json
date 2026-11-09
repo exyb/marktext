@@ -1074,5 +1074,76 @@
     "viewImage": "查看图片",
     "copyLink": "复制链接地址",
     "resumed": "已切换到编辑模式，自动保存已恢复。"
+  },
+  "aiChat": {
+    "panel": {
+      "title": "AI 助手",
+      "history": "会话历史",
+      "settings": "模型设置",
+      "close": "关闭面板",
+      "newChat": "新会话",
+      "emptySessions": "暂无历史会话",
+      "untitled": "未命名会话",
+      "deleteSession": "删除会话"
+    },
+    "composer": {
+      "placeholder": "向 AI 提问…(Enter 发送,Shift+Enter 换行)",
+      "send": "发送",
+      "stop": "停止",
+      "attachDoc": "附当前文档",
+      "dropHint": "拖拽编辑器选区到此处作为引用",
+      "pickModel": "选择模型",
+      "removeReference": "移除引用"
+    },
+    "message": {
+      "roleUser": "我",
+      "roleAssistant": "AI",
+      "thinking": "思考过程",
+      "running": "执行中",
+      "success": "成功",
+      "failed": "失败",
+      "copy": "复制",
+      "copied": "已复制",
+      "insertSvg": "插入 SVG 到文档",
+      "emptyHint": "向 AI 提问,或让它直接修改当前文档。",
+      "emptyHintSub": "尚未配置服务商时请先进行模型设置。"
+    },
+    "tools": {
+      "updateDocument": "更新文档",
+      "replaceText": "替换文本",
+      "insertSvg": "插入 SVG"
+    },
+    "settings": {
+      "title": "模型设置",
+      "provider": "服务商",
+      "addProvider": "新建",
+      "deleteProvider": "删除",
+      "name": "名称",
+      "type": "API 类型",
+      "baseUrl": "API 地址",
+      "apiKey": "API Key",
+      "models": "模型列表",
+      "modelsPlaceholder": "每行一个模型,如 gpt-4o",
+      "thinkingLevel": "思考级别",
+      "thinkingOff": "关闭",
+      "thinkingLow": "低",
+      "thinkingMedium": "中",
+      "thinkingHigh": "高",
+      "save": "保存",
+      "cancel": "取消",
+      "noProvider": "尚未配置服务商",
+      "defaultProviderName": "新建服务商",
+      "fetchModels": "获取模型列表",
+      "fetchModelsDone": "已添加 {count} 个新模型",
+      "fetchModelsFailed": "获取失败",
+      "contextTokens": "上下文 tokens",
+      "maxOutputTokens": "最大输出",
+      "temperature": "温度",
+      "testConnection": "测试连接",
+      "testOk": "连接成功({latency}ms)",
+      "defaultValue": "默认",
+      "saved": "设置已保存",
+      "saveFailed": "保存失败"
+    }
   }
 }

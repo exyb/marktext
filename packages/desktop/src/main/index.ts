@@ -14,6 +14,7 @@ import App from './app'
 import { t } from './i18n'
 import { registerSandboxIpcHandlers } from './ipc'
 import { setPlantumlServerSource } from './ipc/diagram'
+import { setAiChatStoreSource } from './ai/ipc'
 
 process.env.MARKTEXT_VERSION = MARKTEXT_VERSION
 process.env.MARKTEXT_VERSION_STRING = MARKTEXT_VERSION_STRING
@@ -120,6 +121,8 @@ try {
 // Preferences only exist now; the fetch handler refuses everything until it
 // knows which server the user configured.
 setPlantumlServerSource(() => accessor.preferences.getItem<string>('plantumlServer') ?? '')
+// Same lazy binding for the AI chat store; Accessor owns the user data path.
+setAiChatStoreSource(() => accessor.paths.userDataPath)
 
 const appController = new App(accessor, args as unknown as { _: string[] })
 appController.init()

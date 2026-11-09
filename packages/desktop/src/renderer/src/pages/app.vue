@@ -77,6 +77,8 @@
     </div>
 
     <minimap-panel v-if="showMinimap && init" />
+    <ai-chat-panel />
+    <ai-floating-button />
   </div>
 </template>
 
@@ -90,6 +92,8 @@ import EditorWithTabs from '@/components/editorWithTabs/index.vue'
 import TitleBar from '@/components/titleBar/index.vue'
 import SideBar from '@/components/sideBar/index.vue'
 import MinimapPanel from '@/components/minimap/index.vue'
+import AiChatPanel from '@/components/aiChat/index.vue'
+import AiFloatingButton from '@/components/aiChat/floatingButton.vue'
 import AboutDialog from '@/components/about/index.vue'
 import CommandPalette from '@/components/commandPalette/index.vue'
 import ExportSettingDialog from '@/components/exportSettings/index.vue'

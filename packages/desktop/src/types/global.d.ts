@@ -12,6 +12,17 @@ import type {
 } from '@shared/types/ipc'
 import type { MenuTemplate, MenuPopupPosition } from '@shared/types/menu'
 import type { SerializedStat } from '@shared/types/files'
+import type {
+  AiChatConfig,
+  AiChatRequest,
+  AiChatSession,
+  AiChatSessionMeta,
+  AiModelListResult,
+  AiModelProbeRequest,
+  AiModelProbeResult,
+  AiProviderCredentials,
+  AiStreamEvent
+} from '@shared/types/aiChat'
 
 declare global {
   const MARKTEXT_VERSION: string
@@ -111,6 +122,20 @@ declare global {
     ): Promise<PlantumlFetchResult>
   }
 
+  interface AiChatAPI {
+    getConfig(): Promise<AiChatConfig>
+    updateConfig(config: AiChatConfig): Promise<boolean>
+    listSessions(): Promise<AiChatSessionMeta[]>
+    loadSession(id: string): Promise<AiChatSession | null>
+    saveSession(session: AiChatSession): Promise<boolean>
+    deleteSession(id: string): Promise<boolean>
+    startChat(request: AiChatRequest): Promise<boolean>
+    abortChat(requestId: string): Promise<boolean>
+    fetchModels(credentials: AiProviderCredentials): Promise<AiModelListResult>
+    testModel(request: AiModelProbeRequest): Promise<AiModelProbeResult>
+    onChatEvent(handler: (requestId: string, event: AiStreamEvent) => void): () => void
+  }
+
   interface FileUtilsAPI {
     isFile(p: string): Promise<boolean>
     isDirectory(p: string): Promise<boolean>
@@ -201,6 +226,7 @@ declare global {
     uploader: UploaderAPI
     fonts: FontsAPI
     diagram: DiagramAPI
+    aiChat: AiChatAPI
     process: ProcessShim
     rgPath: string
     // Set by the legacy editor store at runtime; consumed by muya internals.

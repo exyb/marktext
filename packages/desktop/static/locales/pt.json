@@ -1065,5 +1065,76 @@
     "viewImage": "Ver imagem",
     "copyLink": "Copiar endereço do link",
     "resumed": "O modo de edição está ativado. O salvamento automático foi retomado."
+  },
+  "aiChat": {
+    "panel": {
+      "title": "Copiloto IA",
+      "history": "Histórico de sessões",
+      "settings": "Configurações do modelo",
+      "close": "Fechar painel",
+      "newChat": "Nova conversa",
+      "emptySessions": "Ainda não há sessões",
+      "untitled": "Sessão sem título",
+      "deleteSession": "Excluir sessão"
+    },
+    "composer": {
+      "placeholder": "Pergunte à IA… (Enter para enviar, Shift+Enter para nova linha)",
+      "send": "Enviar",
+      "stop": "Parar",
+      "attachDoc": "Anexar documento atual",
+      "dropHint": "Arraste uma seleção para cá para referenciá-la",
+      "pickModel": "Escolher modelo",
+      "removeReference": "Remover referência"
+    },
+    "message": {
+      "roleUser": "Eu",
+      "roleAssistant": "IA",
+      "thinking": "Raciocínio",
+      "running": "Executando",
+      "success": "Concluído",
+      "failed": "Falhou",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "insertSvg": "Inserir SVG no documento",
+      "emptyHint": "Pergunte à IA ou deixe-a editar o documento atual.",
+      "emptyHintSub": "Sem provedor configurado, abra primeiro as configurações do modelo."
+    },
+    "tools": {
+      "updateDocument": "Atualizar documento",
+      "replaceText": "Substituir texto",
+      "insertSvg": "Inserir SVG"
+    },
+    "settings": {
+      "title": "Configurações do modelo",
+      "provider": "Provedor",
+      "addProvider": "Novo",
+      "deleteProvider": "Excluir",
+      "name": "Nome",
+      "type": "Tipo de API",
+      "baseUrl": "URL base da API",
+      "apiKey": "Chave de API",
+      "models": "Modelos",
+      "modelsPlaceholder": "Um modelo por linha, ex.: gpt-4o",
+      "thinkingLevel": "Nível de raciocínio",
+      "thinkingOff": "Desativado",
+      "thinkingLow": "Baixo",
+      "thinkingMedium": "Médio",
+      "thinkingHigh": "Alto",
+      "save": "Salvar",
+      "cancel": "Cancelar",
+      "noProvider": "Nenhum provedor configurado",
+      "defaultProviderName": "Novo provedor",
+      "fetchModels": "Obter modelos",
+      "fetchModelsDone": "{count} novo(s) modelo(s) adicionado(s)",
+      "fetchModelsFailed": "Falha ao obter",
+      "contextTokens": "Tokens de contexto",
+      "maxOutputTokens": "Saída máx.",
+      "temperature": "Temperatura",
+      "testConnection": "Testar conexão",
+      "testOk": "Conectado ({latency}ms)",
+      "defaultValue": "Padrão",
+      "saved": "Configurações salvas",
+      "saveFailed": "Falha ao salvar"
+    }
   }
 }

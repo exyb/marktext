@@ -129,6 +129,7 @@ import {
 } from '@muyajs/core'
 import { getMuyaLocale } from '@/util/muyaLocale'
 import { createMuyaShortcutResolvers } from '@/util/muyaShortcuts'
+import { setActiveAiEditor } from '@/ai/tools'
 import { useCommandCenterStore } from '@/store/commandCenter'
 import { exportStyledHTML, type HeaderFooterPart } from '@/util/exportHtml'
 import { applyCursor, isIndexCursor } from '@/util/cursor'
@@ -2110,6 +2111,12 @@ onMounted(() => {
   )
   document.addEventListener('selectionchange', readingSelectionChanged)
   registerDocumentView((value) => muya.setReadOnly(value))
+  // AI copilot tools act on the live muya instance; read-only state is
+  // resolved per tool call because it follows the current file.
+  setActiveAiEditor({
+    muya,
+    getReadOnly: () => currentFile.value?.readOnly === true || !muya.canMutate
+  })
   // The first document's content is set via constructor options, so no
   // `file-loaded` / `setMarkdownToEditor` runs for it — seed its TOC here.
   editorStore.UPDATE_TOC(muya.getTOC())
@@ -2124,6 +2131,18 @@ onMounted(() => {
   renderedMarkdown = currentFile.value?.markdown ?? ''
   releaseViewState = registerRenderedViewState({ documentId: () => renderedDocumentId, markdown: () => renderedMarkdown, view: { engine: muya, container, refreshToc: () => editorStore.UPDATE_TOC(muya.getTOC()) } })
   muya.on('selection-change', documentViewChanged)
+  // muya replaces native text drag with its own gesture; drops outside the
+  // editor arrive here and the AI composer decides whether to accept them.
+  // The move/end events drive the composer's drop-zone highlight.
+  muya.on('text-drag-outside', (payload: { text: string; clientX: number; clientY: number }) => {
+    bus.emit('ai-text-drop', payload)
+  })
+  muya.on('text-drag-move', (payload: { clientX: number; clientY: number }) => {
+    bus.emit('ai-text-drag-move', payload)
+  })
+  muya.on('text-drag-end', () => {
+    bus.emit('ai-text-drag-end')
+  })
 
   bus.on('language-changed', handleLanguageChanged)
 
@@ -2316,6 +2335,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   releaseViewState?.()
   registerDocumentView(null)
+  setActiveAiEditor(null)
   document.removeEventListener('selectionchange', readingSelectionChanged)
   bus.off('file-loaded', setMarkdownToEditor)
   bus.off('invalidate-image-cache', handleInvalidateImageCache)

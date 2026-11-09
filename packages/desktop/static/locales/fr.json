@@ -1065,5 +1065,76 @@
     "viewImage": "Afficher l’image",
     "copyLink": "Copier l’adresse du lien",
     "resumed": "Le mode édition est activé. L’enregistrement automatique a repris."
+  },
+  "aiChat": {
+    "panel": {
+      "title": "Copilote IA",
+      "history": "Historique des sessions",
+      "settings": "Paramètres du modèle",
+      "close": "Fermer le panneau",
+      "newChat": "Nouvelle discussion",
+      "emptySessions": "Aucune session pour le moment",
+      "untitled": "Session sans titre",
+      "deleteSession": "Supprimer la session"
+    },
+    "composer": {
+      "placeholder": "Posez une question à l’IA… (Entrée pour envoyer, Maj+Entrée pour un retour à la ligne)",
+      "send": "Envoyer",
+      "stop": "Arrêter",
+      "attachDoc": "Joindre le document actuel",
+      "dropHint": "Faites glisser une sélection ici pour la référencer",
+      "pickModel": "Choisir un modèle",
+      "removeReference": "Supprimer la référence"
+    },
+    "message": {
+      "roleUser": "Moi",
+      "roleAssistant": "IA",
+      "thinking": "Réflexion",
+      "running": "En cours",
+      "success": "Terminé",
+      "failed": "Échec",
+      "copy": "Copier",
+      "copied": "Copié",
+      "insertSvg": "Insérer le SVG dans le document",
+      "emptyHint": "Demandez à l’IA ou laissez-la modifier le document actuel.",
+      "emptyHintSub": "Sans fournisseur configuré, ouvrez d’abord les paramètres du modèle."
+    },
+    "tools": {
+      "updateDocument": "Mettre à jour le document",
+      "replaceText": "Remplacer le texte",
+      "insertSvg": "Insérer le SVG"
+    },
+    "settings": {
+      "title": "Paramètres du modèle",
+      "provider": "Fournisseur",
+      "addProvider": "Nouveau",
+      "deleteProvider": "Supprimer",
+      "name": "Nom",
+      "type": "Type d’API",
+      "baseUrl": "URL de base de l’API",
+      "apiKey": "Clé API",
+      "models": "Modèles",
+      "modelsPlaceholder": "Un modèle par ligne, ex. gpt-4o",
+      "thinkingLevel": "Niveau de réflexion",
+      "thinkingOff": "Désactivé",
+      "thinkingLow": "Bas",
+      "thinkingMedium": "Moyen",
+      "thinkingHigh": "Élevé",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "noProvider": "Aucun fournisseur configuré",
+      "defaultProviderName": "Nouveau fournisseur",
+      "fetchModels": "Récupérer les modèles",
+      "fetchModelsDone": "{count} nouveau(x) modèle(s) ajouté(s)",
+      "fetchModelsFailed": "Échec de la récupération",
+      "contextTokens": "Tokens de contexte",
+      "maxOutputTokens": "Sortie max.",
+      "temperature": "Température",
+      "testConnection": "Tester la connexion",
+      "testOk": "Connecté ({latency}ms)",
+      "defaultValue": "Par défaut",
+      "saved": "Paramètres enregistrés",
+      "saveFailed": "Échec de l’enregistrement"
+    }
   }
 }

@@ -1064,5 +1064,76 @@
     "viewImage": "Visualizza immagine",
     "copyLink": "Copia indirizzo del link",
     "resumed": "La modalità modifica è attiva. Il salvataggio automatico è ripreso."
+  },
+  "aiChat": {
+    "panel": {
+      "title": "Copilota IA",
+      "history": "Cronologia sessioni",
+      "settings": "Impostazioni modello",
+      "close": "Chiudi pannello",
+      "newChat": "Nuova chat",
+      "emptySessions": "Nessuna sessione",
+      "untitled": "Sessione senza titolo",
+      "deleteSession": "Elimina sessione"
+    },
+    "composer": {
+      "placeholder": "Chiedi all’IA… (Invio per inviare, Maiusc+Invio per andare a capo)",
+      "send": "Invia",
+      "stop": "Ferma",
+      "attachDoc": "Allega documento corrente",
+      "dropHint": "Trascina una selezione qui per farvi riferimento",
+      "pickModel": "Scegli modello",
+      "removeReference": "Rimuovi riferimento"
+    },
+    "message": {
+      "roleUser": "Io",
+      "roleAssistant": "IA",
+      "thinking": "Ragionamento",
+      "running": "In corso",
+      "success": "Completato",
+      "failed": "Non riuscito",
+      "copy": "Copia",
+      "copied": "Copiato",
+      "insertSvg": "Inserisci SVG nel documento",
+      "emptyHint": "Chiedi all’IA o lasciala modificare direttamente il documento corrente.",
+      "emptyHintSub": "Se nessun provider è configurato, apri prima le impostazioni del modello."
+    },
+    "tools": {
+      "updateDocument": "Aggiorna documento",
+      "replaceText": "Sostituisci testo",
+      "insertSvg": "Inserisci SVG"
+    },
+    "settings": {
+      "title": "Impostazioni modello",
+      "provider": "Provider",
+      "addProvider": "Nuovo",
+      "deleteProvider": "Elimina",
+      "name": "Nome",
+      "type": "Tipo di API",
+      "baseUrl": "URL base API",
+      "apiKey": "Chiave API",
+      "models": "Modelli",
+      "modelsPlaceholder": "Un modello per riga, es. gpt-4o",
+      "thinkingLevel": "Livello di ragionamento",
+      "thinkingOff": "Disattivato",
+      "thinkingLow": "Basso",
+      "thinkingMedium": "Medio",
+      "thinkingHigh": "Alto",
+      "save": "Salva",
+      "cancel": "Annulla",
+      "noProvider": "Nessun provider configurato",
+      "defaultProviderName": "Nuovo provider",
+      "fetchModels": "Recupera modelli",
+      "fetchModelsDone": "{count} nuovo/i modello/i aggiunto/i",
+      "fetchModelsFailed": "Recupero non riuscito",
+      "contextTokens": "Token di contesto",
+      "maxOutputTokens": "Output max",
+      "temperature": "Temperatura",
+      "testConnection": "Prova connessione",
+      "testOk": "Connesso ({latency}ms)",
+      "defaultValue": "Predefinito",
+      "saved": "Impostazioni salvate",
+      "saveFailed": "Salvataggio non riuscito"
+    }
   }
 }

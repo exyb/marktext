@@ -1065,5 +1065,76 @@
     "viewImage": "이미지 보기",
     "copyLink": "링크 주소 복사",
     "resumed": "편집 모드가 켜졌습니다. 자동 저장이 재개되었습니다."
+  },
+  "aiChat": {
+    "panel": {
+      "title": "AI 코파일럿",
+      "history": "세션 기록",
+      "settings": "모델 설정",
+      "close": "패널 닫기",
+      "newChat": "새 채팅",
+      "emptySessions": "아직 세션이 없습니다",
+      "untitled": "제목 없는 세션",
+      "deleteSession": "세션 삭제"
+    },
+    "composer": {
+      "placeholder": "AI에게 질문… (Enter 전송, Shift+Enter 줄바꿈)",
+      "send": "전송",
+      "stop": "중지",
+      "attachDoc": "현재 문서 첨부",
+      "dropHint": "선택 영역을 여기로 드래그하여 참조",
+      "pickModel": "모델 선택",
+      "removeReference": "참조 제거"
+    },
+    "message": {
+      "roleUser": "나",
+      "roleAssistant": "AI",
+      "thinking": "사고 과정",
+      "running": "실행 중",
+      "success": "완료",
+      "failed": "실패",
+      "copy": "복사",
+      "copied": "복사됨",
+      "insertSvg": "SVG를 문서에 삽입",
+      "emptyHint": "AI에게 질문하거나 현재 문서 편집을 요청하세요.",
+      "emptyHintSub": "공급자가 설정되지 않았다면 먼저 모델 설정을 여세요."
+    },
+    "tools": {
+      "updateDocument": "문서 업데이트",
+      "replaceText": "텍스트 바꾸기",
+      "insertSvg": "SVG 삽입"
+    },
+    "settings": {
+      "title": "모델 설정",
+      "provider": "공급자",
+      "addProvider": "추가",
+      "deleteProvider": "삭제",
+      "name": "이름",
+      "type": "API 유형",
+      "baseUrl": "API 기본 URL",
+      "apiKey": "API 키",
+      "models": "모델 목록",
+      "modelsPlaceholder": "한 줄에 하나의 모델(예: gpt-4o)",
+      "thinkingLevel": "사고 수준",
+      "thinkingOff": "끔",
+      "thinkingLow": "낮음",
+      "thinkingMedium": "중간",
+      "thinkingHigh": "높음",
+      "save": "저장",
+      "cancel": "취소",
+      "noProvider": "공급자가 설정되지 않았습니다",
+      "defaultProviderName": "새 공급자",
+      "fetchModels": "모델 목록 가져오기",
+      "fetchModelsDone": "새 모델 {count}개 추가됨",
+      "fetchModelsFailed": "가져오기 실패",
+      "contextTokens": "컨텍스트 tokens",
+      "maxOutputTokens": "최대 출력",
+      "temperature": "온도",
+      "testConnection": "연결 테스트",
+      "testOk": "연결 성공({latency}ms)",
+      "defaultValue": "기본값",
+      "saved": "설정이 저장되었습니다",
+      "saveFailed": "저장 실패"
+    }
   }
 }

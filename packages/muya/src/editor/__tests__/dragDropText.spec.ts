@@ -118,10 +118,17 @@ describe('single-content text moves', () => {
         expect(leaves().map(b => b.text)).toEqual(['', '甲\n乙Target']);
     });
 
-    it('rejects cross-block selections, metadata, heading markers and surrogate interiors', () => {
+    it('quotes cross-block selections copy-only, rejects metadata, heading markers and surrogate interiors', () => {
         const [a, b] = leaves();
         muya.setSelection(createTextSelectionState(target(a, 1), target(b, 1)));
-        expect(getTextDragSource(muya)).toBeNull();
+        const cross = getTextDragSource(muya);
+        expect(cross).not.toBeNull();
+        expect(cross!.block).toBe(a);
+        expect(cross!.endBlock).toBe(b);
+        expect(cross!.text).toBe(muya.getSelectedText());
+        // Quote-only: a cross-block source never drops inside the editor.
+        expect(canDropText(muya, cross!, target(b, 0), true)).toBe(false);
+        expect(canDropText(muya, cross!, target(a, 2), false)).toBe(false);
         muya.setContent('A😀B\n\n# Title\n\n```js\nx\n```');
         const [text, heading, language] = leaves();
         const drag = source(text, 0, 1);
@@ -247,6 +254,35 @@ describe('single-content text moves', () => {
 });
 
 describe('text drag lifecycle', () => {
+    it('emits an outside drop with text and range, then an end event, when released over the host', () => {
+        const [a, b] = leaves();
+        muya.setSelection(createTextSelectionState(target(a, 1), target(b, 1)));
+        const source = getTextDragSource(muya)!;
+        const drag = muya.editor.textDrag!;
+        const events: string[] = [];
+        let outsidePayload: { text: string; range: { startBlockIndex: number; endBlockIndex: number; endPath: unknown[] } } | null = null;
+        muya.on('text-drag-move', () => events.push('move'));
+        muya.on('text-drag-end', () => events.push('end'));
+        muya.on('text-drag-outside', (payload) => {
+            events.push('outside');
+            outsidePayload = payload as typeof outsidePayload;
+        });
+
+        // The gesture internals are driven directly: happy-dom cannot replay
+        // the pointer geometry the adoption path requires.
+        const internals = drag as unknown as { _source: unknown; _dragging: boolean };
+        internals._source = source;
+        internals._dragging = true;
+        document.dispatchEvent(new MouseEvent('mouseup', { button: 0, clientX: 400, clientY: 300, bubbles: true }));
+
+        expect(events).toEqual(['end', 'outside']);
+        expect(outsidePayload!.text).toBe(muya.getSelectedText());
+        expect(outsidePayload!.range.startBlockIndex).toBe(0);
+        expect(outsidePayload!.range.endBlockIndex).toBe(1);
+        expect(outsidePayload!.range.endPath).toEqual(b.path);
+        expect(internals._source).toBeNull();
+    });
+
     it('independently detaches its listeners without removing other editor listeners', () => {
         muya.editor.textDrag!.destroy();
         const { eventCenter, domNode } = muya;

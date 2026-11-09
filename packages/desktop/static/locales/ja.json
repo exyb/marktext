@@ -1065,5 +1065,76 @@
     "viewImage": "画像を表示",
     "copyLink": "リンクのアドレスをコピー",
     "resumed": "編集モードになりました。自動保存を再開しました。"
+  },
+  "aiChat": {
+    "panel": {
+      "title": "AI コパイロット",
+      "history": "セッション履歴",
+      "settings": "モデル設定",
+      "close": "パネルを閉じる",
+      "newChat": "新規チャット",
+      "emptySessions": "セッションはまだありません",
+      "untitled": "無題のセッション",
+      "deleteSession": "セッションを削除"
+    },
+    "composer": {
+      "placeholder": "AI に質問…(Enter で送信、Shift+Enter で改行)",
+      "send": "送信",
+      "stop": "停止",
+      "attachDoc": "現在のドキュメントを添付",
+      "dropHint": "選択範囲をここにドラッグして参照",
+      "pickModel": "モデルを選択",
+      "removeReference": "参照を削除"
+    },
+    "message": {
+      "roleUser": "自分",
+      "roleAssistant": "AI",
+      "thinking": "思考プロセス",
+      "running": "実行中",
+      "success": "成功",
+      "failed": "失敗",
+      "copy": "コピー",
+      "copied": "コピーしました",
+      "insertSvg": "SVG をドキュメントに挿入",
+      "emptyHint": "AI に質問するか、現在のドキュメントの編集を依頼できます。",
+      "emptyHintSub": "プロバイダー未設定の場合は先にモデル設定を開いてください。"
+    },
+    "tools": {
+      "updateDocument": "ドキュメント更新",
+      "replaceText": "テキスト置換",
+      "insertSvg": "SVG 挿入"
+    },
+    "settings": {
+      "title": "モデル設定",
+      "provider": "プロバイダー",
+      "addProvider": "新規",
+      "deleteProvider": "削除",
+      "name": "名前",
+      "type": "API タイプ",
+      "baseUrl": "API ベース URL",
+      "apiKey": "API キー",
+      "models": "モデル一覧",
+      "modelsPlaceholder": "1 行に 1 モデル(例: gpt-4o)",
+      "thinkingLevel": "思考レベル",
+      "thinkingOff": "オフ",
+      "thinkingLow": "低",
+      "thinkingMedium": "中",
+      "thinkingHigh": "高",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "noProvider": "プロバイダーが未設定です",
+      "defaultProviderName": "新しいプロバイダー",
+      "fetchModels": "モデル一覧を取得",
+      "fetchModelsDone": "{count} 個の新しいモデルを追加",
+      "fetchModelsFailed": "取得に失敗しました",
+      "contextTokens": "コンテキスト tokens",
+      "maxOutputTokens": "最大出力",
+      "temperature": "温度",
+      "testConnection": "接続テスト",
+      "testOk": "接続成功({latency}ms)",
+      "defaultValue": "デフォルト",
+      "saved": "設定を保存しました",
+      "saveFailed": "保存に失敗しました"
+    }
   }
 }

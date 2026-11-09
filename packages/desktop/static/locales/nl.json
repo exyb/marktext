@@ -1064,5 +1064,76 @@
     "viewImage": "Afbeelding bekijken",
     "copyLink": "Linkadres kopiëren",
     "resumed": "De bewerkingsmodus is ingeschakeld. Automatisch opslaan is hervat."
+  },
+  "aiChat": {
+    "panel": {
+      "title": "AI-copilot",
+      "history": "Sessiegeschiedenis",
+      "settings": "Modelinstellingen",
+      "close": "Paneel sluiten",
+      "newChat": "Nieuwe chat",
+      "emptySessions": "Nog geen sessies",
+      "untitled": "Sessie zonder titel",
+      "deleteSession": "Sessie verwijderen"
+    },
+    "composer": {
+      "placeholder": "Vraag de AI… (Enter om te verzenden, Shift+Enter voor nieuwe regel)",
+      "send": "Verzenden",
+      "stop": "Stoppen",
+      "attachDoc": "Huidig document bijvoegen",
+      "dropHint": "Sleep een selectie hiernaartoe om te refereren",
+      "pickModel": "Kies een model",
+      "removeReference": "Referentie verwijderen"
+    },
+    "message": {
+      "roleUser": "Ik",
+      "roleAssistant": "AI",
+      "thinking": "Denkproces",
+      "running": "Bezig",
+      "success": "Gereed",
+      "failed": "Mislukt",
+      "copy": "Kopiëren",
+      "copied": "Gekopieerd",
+      "insertSvg": "SVG in document invoegen",
+      "emptyHint": "Vraag de AI of laat het de huidige document direct bewerken.",
+      "emptyHintSub": "Zonder geconfigureerde provider eerst de modelinstellingen openen."
+    },
+    "tools": {
+      "updateDocument": "Document bijwerken",
+      "replaceText": "Tekst vervangen",
+      "insertSvg": "SVG invoegen"
+    },
+    "settings": {
+      "title": "Modelinstellingen",
+      "provider": "Provider",
+      "addProvider": "Nieuw",
+      "deleteProvider": "Verwijderen",
+      "name": "Naam",
+      "type": "API-type",
+      "baseUrl": "API-basis-URL",
+      "apiKey": "API-sleutel",
+      "models": "Modellen",
+      "modelsPlaceholder": "Eén model per regel, bijv. gpt-4o",
+      "thinkingLevel": "Denkniveau",
+      "thinkingOff": "Uit",
+      "thinkingLow": "Laag",
+      "thinkingMedium": "Middel",
+      "thinkingHigh": "Hoog",
+      "save": "Opslaan",
+      "cancel": "Annuleren",
+      "noProvider": "Geen provider geconfigureerd",
+      "defaultProviderName": "Nieuwe provider",
+      "fetchModels": "Modellen ophalen",
+      "fetchModelsDone": "{count} nieuw(e) model(len) toegevoegd",
+      "fetchModelsFailed": "Ophalen mislukt",
+      "contextTokens": "Context-tokens",
+      "maxOutputTokens": "Max. uitvoer",
+      "temperature": "Temperatuur",
+      "testConnection": "Verbinding testen",
+      "testOk": "Verbonden ({latency}ms)",
+      "defaultValue": "Standaard",
+      "saved": "Instellingen opgeslagen",
+      "saveFailed": "Opslaan mislukt"
+    }
   }
 }

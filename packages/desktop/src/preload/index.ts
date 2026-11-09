@@ -18,7 +18,13 @@ import type {
   IpcMainEventChannels,
   BootInfo,
   SaveDialogRequest,
-  ClipboardImageWriteOptions
+  ClipboardImageWriteOptions,
+  AiChatConfig,
+  AiChatRequest,
+  AiChatSession,
+  AiModelProbeRequest,
+  AiProviderCredentials,
+  AiStreamEvent
 } from '@shared/types/ipc'
 
 type RendererEventListener<K extends keyof IpcMainEventChannels> = (
@@ -243,6 +249,26 @@ const diagramAPI = {
     invoke('mt::diagram::fetch-plantuml', server, encoded, format)
 }
 
+type AiChatEventHandler = (requestId: string, event: AiStreamEvent) => void
+const aiChatAPI = {
+  getConfig: () => invoke('mt::ai::config-get'),
+  updateConfig: (config: AiChatConfig) => invoke('mt::ai::config-update', config),
+  listSessions: () => invoke('mt::ai::session-list'),
+  loadSession: (id: string) => invoke('mt::ai::session-load', id),
+  saveSession: (session: AiChatSession) => invoke('mt::ai::session-save', session),
+  deleteSession: (id: string) => invoke('mt::ai::session-delete', id),
+  startChat: (request: AiChatRequest) => invoke('mt::ai::chat-start', request),
+  abortChat: (requestId: string) => invoke('mt::ai::chat-abort', requestId),
+  fetchModels: (credentials: AiProviderCredentials) => invoke('mt::ai::fetch-models', credentials),
+  testModel: (request: AiModelProbeRequest) => invoke('mt::ai::test-model', request),
+  onChatEvent: (handler: AiChatEventHandler) => {
+    const sub = (_e: IpcRendererEvent, requestId: string, event: AiStreamEvent) =>
+      handler(requestId, event)
+    ipcRenderer.on('mt::ai::chat-event', sub)
+    return () => ipcRenderer.removeListener('mt::ai::chat-event', sub)
+  }
+}
+
 const electronAPI = {
   ipcRenderer: ipcWrapper,
   shell: shellAPI,
@@ -297,6 +323,7 @@ try {
   contextBridge.exposeInMainWorld('uploader', uploaderAPI)
   contextBridge.exposeInMainWorld('fonts', fontsAPI)
   contextBridge.exposeInMainWorld('diagram', diagramAPI)
+  contextBridge.exposeInMainWorld('aiChat', aiChatAPI)
 } catch (error) {
   console.error(error)
 }
